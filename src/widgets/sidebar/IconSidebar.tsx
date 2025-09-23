@@ -17,7 +17,7 @@ export const IconSidebar = () => {
 
   return (
     <>
-      <div className="px-4 py-6 pt-7 logo">
+      <div className="px-4 py-6 pt-7 mb-4 logo">
         <FullLogo />
       </div>
       <SimpleBar className="miniicons">
@@ -29,15 +29,15 @@ export const IconSidebar = () => {
             className="flowbite-tooltip"
           >
             <Button
-              className={`h-12 w-12 hover:text-primary text-darklink hover:bg-lightprimary rounded-full flex justify-center items-center mx-auto mb-2 ${
+              className={`h-12 w-12 hover:text-primary hover:bg-white rounded-full flex justify-center items-center mx-auto mb-2 ${
                 links.id === selectedIconId
-                  ? "text-primary bg-lightprimary"
-                  : "text-darklink bg-transparent"
+                  ? "text-primary bg-white"
+                  : "text-white bg-transparent"
               }`}
               type="button"
               onClick={() => handleClick(links.id)}
             >
-              <Icon icon={links.icon} height={24} className="dark:bg-blue" />
+              <Icon icon={links.icon} height={24}/>
             </Button>
           </Tooltip>
         ))}

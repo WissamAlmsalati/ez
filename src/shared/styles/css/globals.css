@@ -2,14 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "../../shared/styles/layout/container.css";
-@import "../../widgets/sidebar/styles.css";
-@import "../../widgets/header/horizontal/styles.css";
-@import "../../widgets/header/styles.css";
-@import "../../shared/styles/theme/default-colors.css";
-@import "../../shared/styles/theme/dark.css";
-@import "../../shared/styles/reset/reboot.css";
-@import "../../shared/styles/layout/rtl.css";
+@import "../layout/container.css";
+@import "../../../widgets/sidebar/styles.css";
+@import "../../../widgets/header/styles.css";
+@import "../theme/default-colors.css";
+@import "../theme/dark.css";
+@import "../reset/reboot.css";
+@import "../layout/rtl.css";
 
 @layer components {
   .container {

@@ -5,14 +5,14 @@ const page = () => {
   return (
     <>
       <CardBox>
-        <h5 className="card-title">Sample page 1</h5>
+        <h5 className="card-title">Home Page</h5>
         <p>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry. Lorem Ipsum has been the industry's standard dummy text ever
-          since the 1500s
+
         </p>
+      
       </CardBox>
     </>
+
   );
 };
 

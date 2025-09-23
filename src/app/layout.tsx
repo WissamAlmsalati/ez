@@ -1,12 +1,19 @@
 import React from "react";
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./css/globals.css";
+import { Alexandria } from "next/font/google";
+import "@shared/styles/css/globals.css";
 import { Flowbite, ThemeModeScript } from "flowbite-react";
 import customTheme from "@/shared/lib/theme/custom-theme";
 import { CustomizerContextProvider } from "@processes/customizer/model/CustomizerContext";
+import QueryProvider from "./providers/QueryProvider";
+import AuthProvider from "./providers/AuthProvider";
+import { SessionInitializer } from "@/entities/session/ui/SessionInitializer";
+import ToastProvider from "./providers/ToastProvider";
 
-const inter = Inter({ subsets: ["latin"] });
+const alexandria = Alexandria({
+  subsets: ["arabic", "latin"],
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: "MaterialM - Nextjs",
@@ -23,11 +30,17 @@ export default function RootLayout({
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <ThemeModeScript />
       </head>
-      <body className={`${inter.className}`}>
+      <body className={`${alexandria.className}`}>
         <Flowbite theme={{ theme: customTheme }}>
-          <CustomizerContextProvider>
-            {children}
-          </CustomizerContextProvider>
+          <AuthProvider>
+            <CustomizerContextProvider>
+              <QueryProvider>
+                <SessionInitializer />
+                <ToastProvider />
+                {children}
+              </QueryProvider>
+            </CustomizerContextProvider>
+          </AuthProvider>
         </Flowbite>
       </body>
     </html>

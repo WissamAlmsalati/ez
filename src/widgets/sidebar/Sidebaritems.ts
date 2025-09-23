@@ -31,19 +31,76 @@ const SidebarContent: MenuItem[] = [
     name: "Pages",
     items: [
       {
-        heading: "Pages",
         children: [
           {
-            name: "Sample Page 1",
-            icon: "solar:home-angle-outline",
+            name: "الرئيسية",
+            icon: "solar:home-2-line-duotone",
             id: uid(),
             url: "/",
           },
           {
-            name: "Sample Page 2",
-            icon: "solar:settings-minimalistic-line-duotone",
+            name: "الأصناف",
+            icon: "tabler:category",
             id: uid(),
-            url: "/sample-page",
+            url: "/1",
+          },
+          {
+            name: "الأنواع",
+            icon: "tabler:layers",
+            id: uid(),
+            url: "/2",
+          },
+          {
+            name: "المنتجات",
+            icon: "tabler:package",
+            id: uid(),
+            url: "/3",
+          },
+          {
+            name: "الطلبات",
+            icon: "tabler:shopping-cart",
+            id: uid(),
+            url: "/4",
+            children: [
+              {
+                name: "إضافة طلب",
+                icon: "tabler:circle-plus",
+                id: uid(),
+                url: "/5",
+              },
+              {
+                name: "إدارة الطلبات",
+                icon: "tabler:list-check",
+                id: uid(),
+                url: "/6",
+              },
+            ],
+          },
+          {
+            name: "المستخدمون",
+            icon: "tabler:users",
+            id: uid(),
+            url: "/7",
+            children: [
+              {
+                name: "إضافة مستخدم",
+                icon: "tabler:user-plus",
+                id: uid(),
+                url: "/8",
+              },
+              {
+                name: "إدارة المستخدمين",
+                icon: "tabler:user-cog",
+                id: uid(),
+                url: "/9",
+              },
+            ],
+          },
+          {
+            name: "الإعلانات",
+            icon: "tabler:advertisement",
+            id: uid(),
+            url: "/10",
           },
         ],
       },
@@ -53,94 +110,94 @@ const SidebarContent: MenuItem[] = [
     id: 2,
     name: "Menu",
     items: [
-      {
-        heading: "Multi level",
-        children: [
-          {
-            name: "Menu Level",
-            icon: "solar:widget-add-line-duotone",
-            id: uid(),
-            children: [
-              {
-                id: uid(),
-                name: "Level 1",
-                url: "",
-              },
-              {
-                id: uid(),
-                name: "Level 1.1",
-                icon: "fad:armrecording",
-                url: "",
-                children: [
-                  {
-                    id: uid(),
-                    name: "Level 2",
-                    url: "",
-                  },
-                  {
-                    id: uid(),
-                    name: "Level 2.1",
-                    icon: "fad:armrecording",
-                    url: "",
-                    children: [
-                      {
-                        id: uid(),
-                        name: "Level 3",
-                        url: "",
-                      },
-                      {
-                        id: uid(),
-                        name: "Level 3.1",
-                        url: "",
-                      },
-                    ],
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-      {
-        heading: "More Options",
-        children: [
-          {
-            id: uid(),
-            url: "/sample-page",
-            name: "Applications",
-            icon: "solar:check-circle-bold",
-            color: "text-primary",
-          },
-          {
-            id: uid(),
-            url: "",
-            name: "Form Options",
-            icon: "solar:check-circle-bold",
-            color: "text-secondary",
-          },
-          {
-            id: uid(),
-            url: "",
-            name: "Table Variations",
-            icon: "solar:check-circle-bold",
-            color: "text-info",
-          },
-          {
-            id: uid(),
-            url: "",
-            name: "Charts Selection",
-            icon: "solar:check-circle-bold",
-            color: "text-warning",
-          },
-          {
-            id: uid(),
-            url: "",
-            name: "Widgets",
-            icon: "solar:check-circle-bold",
-            color: "text-success",
-          },
-        ],
-      },
+      // {
+      //   heading: "Multi level",
+      //   children: [
+      //     {
+      //       name: "Menu Level",
+      //       icon: "solar:widget-add-line-duotone",
+      //       id: uid(),
+      //       children: [
+      //         {
+      //           id: uid(),
+      //           name: "Level 1",
+      //           url: "",
+      //         },
+      //         {
+      //           id: uid(),
+      //           name: "Level 1.1",
+      //           icon: "fad:armrecording",
+      //           url: "",
+      //           children: [
+      //             {
+      //               id: uid(),
+      //               name: "Level 2",
+      //               url: "",
+      //             },
+      //             {
+      //               id: uid(),
+      //               name: "Level 2.1",
+      //               icon: "fad:armrecording",
+      //               url: "",
+      //               children: [
+      //                 {
+      //                   id: uid(),
+      //                   name: "Level 3",
+      //                   url: "",
+      //                 },
+      //                 {
+      //                   id: uid(),
+      //                   name: "Level 3.1",
+      //                   url: "",
+      //                 },
+      //               ],
+      //             },
+      //           ],
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
+      // {
+      //   heading: "More Options",
+      //   children: [
+      //     {
+      //       id: uid(),
+      //       url: "/sample-page",
+      //       name: "Applications",
+      //       icon: "solar:check-circle-bold",
+      //       color: "text-primary",
+      //     },
+      //     {
+      //       id: uid(),
+      //       url: "",
+      //       name: "Form Options",
+      //       icon: "solar:check-circle-bold",
+      //       color: "text-secondary",
+      //     },
+      //     {
+      //       id: uid(),
+      //       url: "",
+      //       name: "Table Variations",
+      //       icon: "solar:check-circle-bold",
+      //       color: "text-info",
+      //     },
+      //     {
+      //       id: uid(),
+      //       url: "",
+      //       name: "Charts Selection",
+      //       icon: "solar:check-circle-bold",
+      //       color: "text-warning",
+      //     },
+      //     {
+      //       id: uid(),
+      //       url: "",
+      //       name: "Widgets",
+      //       icon: "solar:check-circle-bold",
+      //       color: "text-success",
+      //     },
+      //   ],
+      // },
     ],
   },
 ];

@@ -2,21 +2,16 @@
 import "flowbite";
 import React, { useState, useEffect, useContext } from "react";
 import {Navbar } from "flowbite-react";
-import Search from "@widgets/header/Search";
 import { Icon } from "@iconify/react";
 import Profile from "@widgets/header/Profile";
 import { CustomizerContext } from "@processes/customizer/model/CustomizerContext";
-import FullLogo from "@shared/ui/logo/FullLogo";
 import MobileHeaderItems from "@widgets/header/MobileHeaderItems";
 import { Drawer } from "flowbite-react";
-import HorizontalMenu from "@widgets/header/horizontal/HorizontalMenu";
 import MobileSidebar from "../sidebar/MobileSidebar";
 
-interface HeaderPropsType {
-  layoutType: string;
-}
 
-const Header = ({ layoutType }: HeaderPropsType) => {
+
+const Header = () => {
   const [isSticky, setIsSticky] = useState(false);
 
   useEffect(() => {
@@ -38,15 +33,6 @@ const Header = ({ layoutType }: HeaderPropsType) => {
   const { setIsCollapse, isCollapse } =
     useContext(CustomizerContext);
 
-  const [mobileMenu, setMobileMenu] = useState("");
-
-  const handleMobileMenu = () => {
-    if (mobileMenu === "active") {
-      setMobileMenu("");
-    } else {
-      setMobileMenu("active");
-    }
-  };
 
 
   // mobile-sidebar
@@ -86,44 +72,22 @@ const Header = ({ layoutType }: HeaderPropsType) => {
                   <Icon icon="solar:hamburger-menu-line-duotone" height={21} />
                 </span>
 
-              <Search />
             </div>
           </Navbar.Collapse>
 
-          {/* mobile-logo */}
-          <div className="block xl:hidden">
-            <FullLogo />
-          </div>
+
 
           <Navbar.Collapse className="xl:block hidden">
             <div className="flex gap-3 items-center">
               <Profile />
             </div>
           </Navbar.Collapse>
-          {/* Mobile Toggle Icon */}
-          <span
-            className="h-10 w-10 flex xl:hidden hover:text-primary hover:bg-lightprimary rounded-full justify-center items-center cursor-pointer"
-            onClick={handleMobileMenu}
-          >
-            <Icon icon="tabler:dots" height={21} />
-          </span>
-        </Navbar>
-        <div
-          className={`w-full  xl:hidden block mobile-header-menu ${mobileMenu}`}
-        >
-          <MobileHeaderItems />
-        </div>
-
-        {/* Horizontal Menu  */}
-        {layoutType == "horizontal" ? (
-          <div className="xl:border-y xl:border-ld">
-            <div
-              className={`container`}
-            >
-              <HorizontalMenu />
+            <div className="xl:hidden">
+              <MobileHeaderItems />
             </div>
-          </div>
-        ) : null}
+          {/* Mobile Toggle Icon */}
+  
+        </Navbar>
       </header>
 
       {/* Mobile Sidebar */}

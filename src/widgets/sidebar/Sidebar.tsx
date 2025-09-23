@@ -6,7 +6,6 @@ import NavItems from "./NavItems";
 import NavCollapse from "./NavCollapse";
 import { CustomizerContext } from "@processes/customizer/model/CustomizerContext";
 import SimpleBar from "simplebar-react";
-import SideProfile from "./SideProfile";
 import { usePathname } from "next/navigation";
 import SidebarContent from "./Sidebaritems";
 import { IconSidebar } from "./IconSidebar";
@@ -50,14 +49,16 @@ const Sidebar = () => {
   return (
     <>
       <div className="xl:block hidden">
-        <div className="minisidebar-icon border-e border-ld bg-white dark:bg-darkgray fixed start-0 z-[1]">
+        <div className="minisidebar-icon border-e border-ld bg-primary fixed start-0 z-[1]">
           <IconSidebar />
-          <SideProfile />
         </div>
         <FlowSidebar
           className="fixed menu-sidebar pt-8 bg-white dark:bg-darkgray ps-4 rtl:pe-4 rtl:ps-0"
           aria-label="Sidebar with multi-level dropdown example"
         >
+          <h2 className="text-lg text-center font-normal pt-1 pb-2 sticky top-0 bg-white dark:bg-darkgray z-10">
+            الازدهار للحلويات
+          </h2>
           <SimpleBar className="h-[calc(100vh_-_85px)]">
             <FlowSidebar.Items className="pe-4 rtl:pe-0 rtl:ps-4">
               <FlowSidebar.ItemGroup className="sidebar-nav hide-menu ">

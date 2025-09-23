@@ -6,10 +6,10 @@ const MobileHeaderItems = () => {
   return (
     <Navbar
       fluid
-      className="rounded-none bg-lightgray dark:bg-dark flex-1 px-9 "
+      className="rounded-none bg-lightgray dark:bg-dark flex-1 "
     >
       <div className="xl:hidden block w-full">
-        <div className="flex gap-3 justify-center items-center">
+        <div className="flex gap-3 justify-end items-center">
           <Profile />
         </div>
       </div>

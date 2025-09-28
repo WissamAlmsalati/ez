@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import flowbite from "flowbite-react/tailwind";
+import { fail } from "assert";
 const config: Config = {
   darkMode: ["class"],
   content: [
@@ -52,6 +53,8 @@ const config: Config = {
         success: "var(--color-success)",
         warning: "var(--color-warning)",
         error: "var(--color-error)",
+        failure: "var(--color-failure)",
+        failureemphasis: "var(--color-failure-emphasis)",
         lightprimary: "var(--color-lightprimary)",
         lightsecondary: "var(--color-lightsecondary)",
         lightsuccess: "var( --color-lightsuccess)",
@@ -61,6 +64,7 @@ const config: Config = {
         border: "var(--color-border)",
         bordergray: "var(--color-bordergray)",
         lightgray: "var( --color-lightgray)",
+        lightgrayemphasis: "var( --color-lightgray-emphasis)",
         muted: "var(--color-muted)",
         lighthover: "var(--color-lighthover)",
         surface: "var(--color-surface-ld)",

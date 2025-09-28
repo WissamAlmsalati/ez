@@ -16,7 +16,7 @@ apiInstance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    if (config.data) {
+    if (config.data && !(config.data instanceof FormData)) {
       config.data = humps.decamelizeKeys(config.data);
     }
     if (config.params) {

@@ -15,10 +15,10 @@ export default function Layout({
         <div className="body-wrapper w-full bg-lightgray dark:bg-dark">
           {/* Top Header  */}
 
-          <Header layoutType="vertical" />
+          <Header/>
 
           {/* Body Content  */}
-          <div className="container mx-auto  py-[30px]">
+          <div className="container mx-auto  pb-[30px]">
             {children}
           </div>
         </div>

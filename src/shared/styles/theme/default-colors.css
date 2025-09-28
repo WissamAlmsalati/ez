@@ -23,10 +23,13 @@
   --color-darkmuted: #2a3851;
   --color-darklink: #7b8893;
   --color-lightgray: #f8fafd;
+  --color-lightgray-emphasis: #f1f5f9;
   --color-lighthover: #f6f9fc;
   --color-darkgray: #1a2537;
   --color-error-emphasis: #d5745b;
   --color-warning-emphasis: #d9941a;
   --color-success-emphasis: #10bd9d;
   --color-surface-ld: #ffffff;
+  --color-failure: #ff1e4e;
+  --color-failure-emphasis: #e6003e;
 }

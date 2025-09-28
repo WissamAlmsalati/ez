@@ -1,0 +1,128 @@
+import {
+  buildCreateMutation,
+  buildListQuery,
+  buildToggleMutation,
+  catalogKeys,
+} from "@/entities/catalog/api";
+import type { ProductType } from "./types";
+import type { ListParams } from "@/entities/catalog/types";
+import { mapProductTypeApi } from "@/entities/catalog/mapper";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { notFound } from "next/navigation";
+import { apiInstance } from "@/shared/api";
+
+export const TYPE_PATH = "/types";
+
+export const typeKeys = {
+  ...catalogKeys,
+  base: () => catalogKeys.byPath(TYPE_PATH),
+  list: (params?: ListParams) => catalogKeys.list(TYPE_PATH, params),
+  detail: (id: number | string) => catalogKeys.detail(TYPE_PATH, id),
+};
+
+export const useTypesQuery = buildListQuery<ProductType>(
+  TYPE_PATH,
+  mapProductTypeApi
+);
+export const useCreateType = buildCreateMutation<any, ProductType>(TYPE_PATH);
+export const useToggleType = buildToggleMutation<ProductType>(TYPE_PATH);
+
+export function useTypeDetail(id: number | string | undefined) {
+  return useQuery({
+    queryKey: id ? typeKeys.detail(id) : [TYPE_PATH, "detail", null],
+    enabled: !!id,
+    staleTime: 60_000,
+    queryFn: async () => {
+      try {
+        const { data } = await apiInstance.get(`${TYPE_PATH}/${id}`);
+        return (data.data || data) as ProductType; // backend wraps
+      } catch (e: any) {
+        if (e?.response?.status === 404) {
+          notFound();
+        }
+        throw e;
+      }
+    },
+  });
+}
+
+export function useUpdateType(id: number | string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (payload: Partial<ProductType> | FormData) => {
+      // إذا لم يكن هناك ملف، أرسل JSON للحفاظ على القيم البوليانية بدون تحويل لسلسلة
+      if (!(payload instanceof FormData)) {
+        const hasFile = Object.entries(payload).some(
+          ([k, v]) =>
+            k === "image" && v && typeof v === "object" && (v as any)?.name
+        );
+        if (!hasFile) {
+          const { data } = await apiInstance.put(`${TYPE_PATH}/${id}`, payload);
+          return data;
+        }
+      }
+      let fd: FormData;
+      if (payload instanceof FormData) fd = payload;
+      else {
+        fd = new FormData();
+        Object.entries(payload).forEach(([k, v]) => {
+          if (v === undefined || v === null) return;
+          if (k === "image" && typeof v === "object" && (v as any)?.name)
+            fd.append("image", v as any);
+          else fd.append(k, String(v)); // FormData سيحول البوليان إلى نص وهذا متوقع هنا مع وجود ملف
+        });
+      }
+      const { data } = await apiInstance.put(`${TYPE_PATH}/${id}`, fd);
+      return data;
+    },
+    onMutate: async (variables) => {
+      if (variables instanceof FormData) return {};
+      const keys = Object.keys(variables || {});
+      if (keys.length === 1 && keys[0] === "is_active") {
+        await qc.cancelQueries({ queryKey: typeKeys.detail(id) });
+        const previous = qc.getQueryData(typeKeys.detail(id));
+        qc.setQueryData(typeKeys.detail(id), (old: any) =>
+          old ? { ...old, is_active: variables.is_active } : old
+        );
+        return { previous, optimistic: true };
+      }
+      return {};
+    },
+    onError: (_err, _vars, ctx) => {
+      if (ctx && (ctx as any).optimistic) {
+        qc.setQueryData(typeKeys.detail(id), (ctx as any).previous);
+      }
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: typeKeys.detail(id) });
+      qc.invalidateQueries({ queryKey: typeKeys.base() });
+    },
+  });
+}
+
+export function useDeleteType(id: number | string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await apiInstance.delete(`${TYPE_PATH}/${id}`);
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: typeKeys.base() });
+    },
+  });
+}
+
+export function useRestoreType(id: number | string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await apiInstance.post(`${TYPE_PATH}/${id}/restore`);
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: typeKeys.detail(id) });
+      qc.invalidateQueries({ queryKey: typeKeys.base() });
+    },
+  });
+}

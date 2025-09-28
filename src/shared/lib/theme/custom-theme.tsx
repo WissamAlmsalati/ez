@@ -3,12 +3,13 @@ const customTheme = {
     base: "group relative flex items-stretch justify-center text-center p-0.5 text-center font-medium",
     fullSized: "w-full",
     color: {
-      primary: "bg-primary text-white hover:bg-primaryemphasis",
-      secondary: "bg-secondary text-white ",
-      error: "bg-error text-white ",
-      warning: "bg-warning text-white ",
-      info: "bg-info text-white hover:bg-primaryemphasis",
-      success: "bg-success text-white ",
+      primary: "bg-primary text-white hover:bg-primaryemphasis transition-colors duration-300 ",
+      secondary: "bg-secondary text-white hover:bg-secondaryemphasis transition-colors duration-300 ",
+      error: "bg-error text-white hover:bg-erroremphasis transition-colors duration-300 ",
+      warning: "bg-warning text-white hover:bg-warningemphasis transition-colors duration-300 ",
+      info: "bg-info text-white hover:bg-infoemphasis transition-colors duration-300 ",
+      success: "bg-success text-white hover:bg-successemphasis transition-colors duration-300 ",
+      failure: "bg-failure text-white hover:bg-failureemphasis transition-colors duration-300 ",
       muted: "bg-muted text-dark dark:text-white dark:bg-darkmuted ",
       lighterror:
         "bg-lighterror dark:bg-darkerror text-error hover:bg-error hover:text-white",
@@ -23,7 +24,7 @@ const customTheme = {
       lightwarning:
         "bg-lightwarning dark:bg-darkwarning text-warning hover:bg-warning dark:hover:bg-warning hover:text-white",
       outlineprimary:
-        "border border-primary bg-transparent text-primary hover:bg-primary dark:hover:bg-primary hover:text-white ",
+        "border border-primary bg-transparent text-primary hover:bg-lightprimary dark:hover:bg-primary transition-colors duration-300 ",
       outlinewhite:
         "border border-white bg-transparent text-white hover:bg-white dark:hover:bg-white hover:text-dark ",
       transparent:

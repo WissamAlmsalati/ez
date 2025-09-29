@@ -7,14 +7,43 @@ import NavCollapse from "./NavCollapse";
 import { CustomizerContext } from "@processes/customizer/model/CustomizerContext";
 import SimpleBar from "simplebar-react";
 import { usePathname } from "next/navigation";
-import SidebarContent from "./Sidebaritems";
+import SidebarContent, { ChildItem } from "./Sidebaritems";
 import { IconSidebar } from "./IconSidebar";
+import { useSessionStore } from "@/entities/session/model/sessionStore";
 
 const Sidebar = () => {
   const ctx = useContext(CustomizerContext) as any;
   const selectedIconId = ctx?.selectedIconId;
   const setSelectedIconId = ctx?.setSelectedIconId as (id: number) => void;
-  const selectedContent = SidebarContent.find(
+  const isManager = useSessionStore((s) => s.isManager);
+
+  // دالة تصفية متكررة لكل عناصر السايدبار حسب الدور المطلوب
+  const filterSidebarItems = (items: ChildItem[] = []): ChildItem[] => {
+    return items
+      .filter((item) => {
+        if (item.requiredRole === "manager" && !isManager) return false;
+        return true;
+      })
+      .map((item) => ({
+        ...item,
+        children: item.children ? filterSidebarItems(item.children) : undefined,
+      }));
+  };
+
+  // إنشاء نسخة مفلترة من المحتوى الكامل
+  const filteredSidebarContent = SidebarContent.map((menu: any) => ({
+    ...menu,
+    children: menu.children ? filterSidebarItems(menu.children) : undefined,
+    items: menu.items
+      ? menu.items.map((sub: any) => ({
+          ...sub,
+          children: sub.children ? filterSidebarItems(sub.children) : undefined,
+        }))
+      : undefined,
+  }));
+
+  // المحتوى المحدد بعد التصفية
+  const selectedContent = filteredSidebarContent.find(
     (data: any) => data.id === selectedIconId
   );
 
@@ -39,12 +68,12 @@ const Sidebar = () => {
 
   useEffect(() => {
     if (pathname) {
-      const result = findActiveUrl(SidebarContent, pathname);
+      const result = findActiveUrl(filteredSidebarContent as any[], pathname);
       if (result) {
         setSelectedIconId(result);
       }
     }
-  }, [pathname, setSelectedIconId]);
+  }, [pathname, setSelectedIconId, filteredSidebarContent]);
 
   return (
     <>
@@ -63,22 +92,26 @@ const Sidebar = () => {
             <FlowSidebar.Items className="pe-4 rtl:pe-0 rtl:ps-4">
               <FlowSidebar.ItemGroup className="sidebar-nav hide-menu ">
                 {selectedContent &&
-                  selectedContent.items?.map((item: any, index: number) => (
-                    <React.Fragment key={index}>
-                      <h5 className="text-link font-semibold text-sm caption ">
-                        {item.heading}
-                      </h5>
-                      {item.children?.map((child: any, index: number) => (
-                        <React.Fragment key={(child.id as string) ?? index}>
-                          {child.children ? (
-                            <NavCollapse item={child} />
-                          ) : (
-                            <NavItems item={child} />
-                          )}
-                        </React.Fragment>
-                      ))}
-                    </React.Fragment>
-                  ))}
+                  selectedContent.items?.map((item: any, index: number) => {
+                    if (!item.children || item.children.length === 0)
+                      return null;
+                    return (
+                      <React.Fragment key={index}>
+                        <h5 className="text-link font-semibold text-sm caption ">
+                          {item.heading}
+                        </h5>
+                        {item.children?.map((child: any, i: number) => (
+                          <React.Fragment key={(child.id as string) ?? i}>
+                            {child.children ? (
+                              <NavCollapse item={child} />
+                            ) : (
+                              <NavItems item={child} />
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </React.Fragment>
+                    );
+                  })}
               </FlowSidebar.ItemGroup>
             </FlowSidebar.Items>
           </SimpleBar>

@@ -1,11 +1,10 @@
 "use client";
-import CatalogFilters from "@/shared/ui/catalog/CatalogFilters";
 import CatalogGrid from "@/shared/ui/catalog/CatalogGrid";
 import CatalogCard from "@/shared/ui/catalog/CatalogCard";
 import EmptyState from "@/shared/ui/catalog/EmptyState";
 import CatalogSkeleton from "@/shared/ui/catalog/CatalogSkeleton";
 import Pagination from "@/shared/ui/catalog/Pagination";
-import { Breadcrumb, Button } from "flowbite-react";
+import { Button } from "flowbite-react";
 import { useSearchParams } from "next/navigation";
 import { useMemo, useState } from "react";
 import { useCategoriesQuery, useToggleCategory } from "@/entities/category/api";

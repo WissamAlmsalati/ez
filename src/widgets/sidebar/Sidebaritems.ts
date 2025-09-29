@@ -6,6 +6,7 @@ export interface ChildItem {
   item?: any;
   url?: any;
   color?: string;
+  requiredRole?: "manager" | "employee";
 }
 
 export interface MenuItem {
@@ -81,6 +82,7 @@ const SidebarContent: MenuItem[] = [
             icon: "tabler:users",
             id: uid(),
             url: "/7",
+            requiredRole: "manager",
             children: [
               {
                 name: "إضافة مستخدم",
@@ -101,6 +103,7 @@ const SidebarContent: MenuItem[] = [
             icon: "tabler:advertisement",
             id: uid(),
             url: "/10",
+            requiredRole: "manager",
           },
         ],
       },

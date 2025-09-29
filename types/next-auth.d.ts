@@ -4,7 +4,7 @@ import { JWT } from "next-auth/jwt";
 
 // 1. تعريف شكل المستخدم الكامل كما يأتي من Laravel
 interface IUser extends DefaultUser {
-  id: string;
+  id: number;
   phone: string | null;
   role: string;
   login_type: string;
@@ -23,15 +23,15 @@ declare module "next-auth" {
   }
 
   interface Session {
-    user: IUser & { token: string };
-    token: string; // API token for convenience
+    user: IUser;
+    token: string;
   }
 }
 
 declare module "next-auth/jwt" {
   // الـ JWT سيحتوي على هذه البيانات لتمريرها للجلسة
   interface JWT {
-    user: IUser & { token?: string };
+    user: IUser;
     token: string;
   }
 }

@@ -100,9 +100,9 @@ const SidebarContent: MenuItem[] = [
           },
           {
             name: "الإعلانات",
-            icon: "tabler:advertisement",
+            icon: "tabler:device-tv",
             id: uid(),
-            url: "/10",
+            url: "/advertisements",
             requiredRole: "manager",
           },
         ],

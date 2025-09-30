@@ -5,6 +5,7 @@ import type { Department } from "@/entities/department/types";
 import type { Unit } from "@/entities/unit/types";
 import type { ProductType } from "@/entities/product-type/types";
 import type { Product } from "@/entities/product/types";
+import type { Advertisement } from "@/entities/advertisement/types";
 
 // Example env helper (optional) – safe access
 const CDN = process.env.NEXT_PUBLIC_CDN?.replace(/\/$/, "");
@@ -111,6 +112,33 @@ export function mapProductApi(raw: any): Product {
     image: normalizedImage,
     imageUrl: normalizedImage,
   } as Product;
+}
+
+export function mapAdvertisementApi(raw: any): Advertisement {
+  if (!raw) return raw;
+  const rawImage = raw.image_url ?? raw.imageUrl ?? raw.image;
+  const isAbsolute =
+    typeof rawImage === "string" && /^https?:\/\//i.test(rawImage);
+  const normalizedImage = rawImage
+    ? isAbsolute
+      ? rawImage
+      : CDN
+      ? `${CDN}${rawImage.startsWith("/") ? "" : "/"}${rawImage}`
+      : rawImage
+    : null;
+  return {
+    // ننسخ الأصل (بعد camelCase interceptor)
+    ...raw,
+    // توحيد الحقول: API يرسل title بينما النظام الداخلي يستخدم name
+    name: raw.name ?? raw.title ?? "",
+    title: raw.title ?? raw.name,
+    description: raw.description ?? null,
+    image: normalizedImage,
+    imageUrl: normalizedImage,
+    is_active: raw.is_active ?? raw.isActive ?? true,
+    starts_at: raw.starts_at ?? raw.startsAt ?? null,
+    ends_at: raw.ends_at ?? raw.endsAt ?? null,
+  } as Advertisement;
 }
 
 // Generic helper for arrays (if needed elsewhere)

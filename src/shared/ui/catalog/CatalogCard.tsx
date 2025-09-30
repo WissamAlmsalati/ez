@@ -10,6 +10,8 @@ type Props = {
   footer?: React.ReactNode;
   switchSize?: "sm" | "md" | "lg";
   link?: string;
+  /** إظهار أو إخفاء مفتاح الحالة (StatusSwitch) - القيمة الافتراضية true */
+  showSwitch?: boolean;
 };
 
 export default function CatalogCard({
@@ -20,6 +22,7 @@ export default function CatalogCard({
   footer,
   switchSize = "sm",
   link,
+  showSwitch = true,
 }: Props) {
   return (
     <Link
@@ -39,11 +42,13 @@ export default function CatalogCard({
         <div className="flex flex-col justify-between h-full gap-2 flex-1 min-w-0">
           <div className="text-base font-semibold rtl:text-right text-primary flex items-center gap-3 justify-between w-full">
             {title}
-            <StatusSwitch
-              size={switchSize}
-              initial={active}
-              onToggle={onToggle}
-            />
+            {showSwitch && (
+              <StatusSwitch
+                size={switchSize}
+                initial={active}
+                onToggle={onToggle}
+              />
+            )}
           </div>
 
           <span className="text-xs text-primary rtl:text-right block truncate">

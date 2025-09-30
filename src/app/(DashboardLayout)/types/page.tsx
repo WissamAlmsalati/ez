@@ -45,9 +45,9 @@ export default function TypesPage() {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-start gap-3">
+            <SearchFilter />
             <CategoryFilter />
             <ActiveStatusFilter />
-            <SearchFilter />
           </div>
           <Button
             color={"primary"}

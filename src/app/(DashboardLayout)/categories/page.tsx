@@ -44,8 +44,8 @@ export default function CategoriesPage() {
       <div className="space-y-5">
         <div className="flex items-center justify-between">
         <div className="flex items-center justify-start gap-3">
-          <ActiveStatusFilter />
           <SearchFilter />
+          <ActiveStatusFilter />
         </div>
           <Button
             color={"primary"}

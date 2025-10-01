@@ -61,21 +61,7 @@ const SidebarContent: MenuItem[] = [
             name: "الطلبات",
             icon: "tabler:shopping-cart",
             id: uid(),
-            url: "/4",
-            children: [
-              {
-                name: "إضافة طلب",
-                icon: "tabler:circle-plus",
-                id: uid(),
-                url: "/5",
-              },
-              {
-                name: "إدارة الطلبات",
-                icon: "tabler:list-check",
-                id: uid(),
-                url: "/6",
-              },
-            ],
+            url: "/orders",
           },
           {
             name: "المستخدمون",

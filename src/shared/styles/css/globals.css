@@ -133,3 +133,12 @@
     --radius: 0.5rem;
   }
 }
+
+
+.centered-table th,
+.centered-table td {
+  text-align: center !important;
+}
+.white-header th {
+  background-color: white !important;
+}

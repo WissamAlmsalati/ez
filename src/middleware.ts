@@ -5,10 +5,20 @@ import { getToken } from "next-auth/jwt";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const token = await getToken({ req: request });
+  // Use secret to ensure getToken works correctly in middleware (edge)
+  const token = await getToken({
+    req: request,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
 
   // مسارات عامة (الصور، الصحة، الخ) يمكن توسيعها لاحقاً
-  const publicPaths = ["/favicon.ico", "/robots.txt", "/_next", "/public"];
+  const publicPaths = [
+    "/favicon.ico",
+    "/robots.txt",
+    "/_next",
+    "/public",
+    "/api/auth",
+  ];
   if (publicPaths.some((p) => pathname.startsWith(p))) {
     return NextResponse.next();
   }
@@ -26,16 +36,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Protect non-auth routes
+  // Protect non-auth routes strictly (remove cookie heuristic to prevent false positives)
   if (!token) {
-    // محاولة كشف وجود كعكة جلسة (next-auth.session-token أو __Secure-next-auth.session-token)
-    const hasSessionCookie = Array.from(request.cookies.getAll()).some((c) =>
-      /session-token$/i.test(c.name)
-    );
-    // إذا كان هناك كوكي جلسة قد يكون getToken تأخر في القراءة (تش race) نسمح بالمرور ليتم إعادة الجلب عبر العميل
-    if (!hasSessionCookie) {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
+    // Allow query flag force=login to bypass redirect loop diagnostics
+    const loginURL = new URL("/login", request.url);
+    return NextResponse.redirect(loginURL);
   }
 
   return NextResponse.next();

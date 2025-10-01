@@ -3,23 +3,27 @@ import { Button, Dropdown } from "flowbite-react";
 import React from "react";
 import Image from "next/image";
 import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useSessionStore } from '@/entities/session/model/sessionStore';
+import { useSessionStore } from "@/entities/session/model/sessionStore";
 import { apiInstance } from "@/shared/api";
 const Profile = () => {
-
   const { user } = useSessionStore();
+  const router = useRouter();
   const handleLogout = async () => {
     try {
-      await apiInstance.post("/auth/logout");
-       await signOut({
-        callbackUrl: "/login",
-      });
+      // best effort logout on backend (ignore network errors)
+      try {
+        await apiInstance.post("/auth/logout");
+      } catch {}
+      // signOut without redirect to avoid race with middleware then navigate manually
+      await signOut({ redirect: false });
       toast.success("تم تسجيل الخروج بنجاح");
-
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "حدث خطأ غير متوقع");
-    } 
+    } finally {
+      router.replace("/login");
+    }
   };
   return (
     <div className="relative group/menu">
@@ -61,11 +65,7 @@ const Profile = () => {
           </div>
         </div>
         <div className="pt-6 px-6">
-          <Button
-            color={"primary"}
-            className="w-full"
-            onClick={handleLogout}
-          >
+          <Button color={"primary"} className="w-full" onClick={handleLogout}>
             تسجيل الخروج
           </Button>
         </div>

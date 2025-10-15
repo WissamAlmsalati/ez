@@ -67,22 +67,8 @@ const SidebarContent: MenuItem[] = [
             name: "المستخدمون",
             icon: "tabler:users",
             id: uid(),
-            url: "/7",
+            url: "/users",
             requiredRole: "manager",
-            children: [
-              {
-                name: "إضافة مستخدم",
-                icon: "tabler:user-plus",
-                id: uid(),
-                url: "/8",
-              },
-              {
-                name: "إدارة المستخدمين",
-                icon: "tabler:user-cog",
-                id: uid(),
-                url: "/9",
-              },
-            ],
           },
           {
             name: "الإعلانات",

@@ -1,5 +1,6 @@
 "use client";
 import Image from "next/image";
+import { getImageUrl } from "@/shared/lib/getImageUrl";
 import StatusSwitch from "./StatusSwitch";
 import Link from "next/link";
 type Props = {
@@ -24,6 +25,7 @@ export default function CatalogCard({
   link,
   showSwitch = true,
 }: Props) {
+  const normalizedImage = getImageUrl({ image }) as string | null;
   return (
     <Link
       href={link ?? "#"}
@@ -31,8 +33,13 @@ export default function CatalogCard({
     >
       <div className="flex items-center gap-4">
         <div className="relative h-20 w-24 overflow-hidden rounded-2xl bg-slate-50">
-          {image ? (
-            <Image src={image} alt={title} fill className="object-cover" />
+          {normalizedImage ? (
+            <Image
+              src={normalizedImage}
+              alt={title}
+              fill
+              className="object-cover"
+            />
           ) : (
             <div className="h-full w-full flex items-center justify-center text-slate-400">
               —

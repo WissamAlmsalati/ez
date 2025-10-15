@@ -16,7 +16,7 @@ const alexandria = Alexandria({
 });
 
 export const metadata: Metadata = {
-  title: "MaterialM - Nextjs",
+  title: "الازدهار للحلويات",
 };
 
 export default function RootLayout({

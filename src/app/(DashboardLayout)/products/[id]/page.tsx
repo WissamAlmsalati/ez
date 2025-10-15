@@ -21,6 +21,8 @@ import dynamic from "next/dynamic";
 import { mapServerFieldErrors } from "@/shared/lib/mapServerFieldErrors";
 import RetryError from "@/shared/ui/feedback/RetryError";
 import { ProductDetailSkeleton } from "@/shared/ui/skeleton/ProductDetailSkeleton";
+import { getImageUrl } from "@/shared/lib/getImageUrl";
+import Image from "next/image";
 const ProductUnitsEditor = dynamic(
   () => import("@/features/products/units/ProductUnitsEditor"),
   {
@@ -257,11 +259,19 @@ export default function ProductDetailPage() {
                 </div>
                 <div className="order-1 md:order-1 mt-4 md:mt-0 flex flex-col items-center gap-4">
                   <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden ring-1 ring-gray-200 bg-gray-50 flex items-center justify-center">
-                    {localImage || p?.image ? (
+                    {localImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={localImage || (p as any).image}
+                        src={localImage}
                         alt={p?.name || "الصورة"}
                         className="object-cover w-full h-full"
+                      />
+                    ) : getImageUrl(p) ? (
+                      <Image
+                        src={getImageUrl(p) as string}
+                        alt={p?.name || "الصورة"}
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <span className="text-gray-400 text-sm">لا صورة</span>

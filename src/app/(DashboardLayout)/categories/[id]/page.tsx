@@ -26,6 +26,8 @@ import EmptyState from "@/shared/ui/catalog/EmptyState";
 import CatalogGrid from "@/shared/ui/catalog/CatalogGrid";
 import CatalogCard from "@/shared/ui/catalog/CatalogCard";
 import Pagination from "@/shared/ui/catalog/Pagination";
+import { getImageUrl } from "@/shared/lib/getImageUrl";
+import Image from "next/image";
 
 export default function CategoryDetailPage() {
   const params = useParams();
@@ -227,12 +229,19 @@ export default function CategoryDetailPage() {
                 </div>
                 <div className="order-1 md:order-1 mt-4 md:mt-0 flex flex-col items-center gap-4">
                   <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden ring-1 ring-gray-200 bg-gray-50 flex items-center justify-center">
-                    {localImage || c?.image ? (
+                    {localImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={localImage || c?.image}
+                        src={localImage}
                         alt={c?.name || "الصورة"}
                         className="object-cover w-full h-full"
+                      />
+                    ) : getImageUrl(c) ? (
+                      <Image
+                        src={getImageUrl(c) as string}
+                        alt={c?.name || "الصورة"}
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <span className="text-gray-400 text-sm">لا صورة</span>
@@ -351,7 +360,7 @@ export default function CategoryDetailPage() {
                   <CatalogCard
                     key={item.id}
                     title={item.name}
-                    image={item.image || null}
+                    image={getImageUrl(item)}
                     active={!!item.is_active}
                     onToggle={async () => {
                       await toggleType.mutateAsync(item.id);

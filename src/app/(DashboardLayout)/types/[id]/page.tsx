@@ -26,6 +26,8 @@ import CatalogGrid from "@/shared/ui/catalog/CatalogGrid";
 import CatalogCard from "@/shared/ui/catalog/CatalogCard";
 import Pagination from "@/shared/ui/catalog/Pagination";
 import CreateProductModal from "@/features/products/create/CreateProductModal";
+import { getImageUrl } from "@/shared/lib/getImageUrl";
+import Image from "next/image";
 
 export default function TypeDetailPage() {
   const params = useParams();
@@ -217,11 +219,19 @@ export default function TypeDetailPage() {
                 </div>
                 <div className="order-1 md:order-1 mt-4 md:mt-0 flex flex-col items-center gap-4">
                   <div className="relative w-28 h-28 sm:w-32 sm:h-32 md:w-36 md:h-36 rounded-full overflow-hidden ring-1 ring-gray-200 bg-gray-50 flex items-center justify-center">
-                    {localImage || t?.image ? (
+                    {localImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={localImage || t?.image}
+                        src={localImage}
                         alt={t?.name || "الصورة"}
                         className="object-cover w-full h-full"
+                      />
+                    ) : getImageUrl(t) ? (
+                      <Image
+                        src={getImageUrl(t) as string}
+                        alt={t?.name || "الصورة"}
+                        fill
+                        className="object-cover"
                       />
                     ) : (
                       <span className="text-gray-400 text-sm">لا صورة</span>
@@ -328,7 +338,7 @@ export default function TypeDetailPage() {
                   <CatalogCard
                     key={item.id}
                     title={item.name}
-                    image={item.image || null}
+                    image={getImageUrl(item)}
                     active={!!item.is_active}
                     onToggle={async () => {
                       await toggleProduct.mutateAsync(item.id);

@@ -1,6 +1,8 @@
 import { useSessionStore } from "@/entities/session/model/sessionStore";
 import axios, { AxiosError } from "axios";
 import humps from "humps";
+// Prevent multiple concurrent sign-out redirects on burst of 401s
+let isSigningOut = false;
 export const apiInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
@@ -60,14 +62,26 @@ apiInstance.interceptors.response.use(
     }
     return response;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
     if (error.response && error.response.status === 401) {
-      if (typeof window !== "undefined") {
-        window.location.href = "/login";
+      // Clear client session and cookies, then route to /login.
+      // If we only navigate without signing out, middleware may still see a stale token and redirect to "/".
+      if (typeof window !== "undefined" && !isSigningOut) {
+        isSigningOut = true;
+        try {
+          // Clear local session store immediately
+          const state = useSessionStore.getState();
+          state.setUser(null);
+          // Dynamically import to avoid SSR issues
+          const { signOut } = await import("next-auth/react");
+          await signOut({ redirect: false });
+        } catch (_) {
+          // no-op: even if signOut fails, still push to login
+        } finally {
+          window.location.href = "/login";
+        }
       }
     }
     return Promise.reject(error);
   }
 );
-
-// توحيد شكل الخطأ ________ يجب الاتفاق مع الباك

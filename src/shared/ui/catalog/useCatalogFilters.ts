@@ -7,6 +7,10 @@ export type Filters = {
   is_active?: string; // '1' | '0' | ''
   category_id?: string; // selected category id
   type_id?: string; // selected type id
+  // Users specific
+  role?: string; // manager | employee | customer
+  department_id?: string; // selected department id
+  include_deleted?: string; // '1' to include
 };
 
 export function useCatalogFilters() {

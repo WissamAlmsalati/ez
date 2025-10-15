@@ -24,6 +24,7 @@ export function OrdersTable() {
       pickup_date: filters.pickup_date,
       date_from: filters.date_from,
       date_to: filters.date_to,
+      user_id: filters.user_id ? Number(filters.user_id) : undefined,
     }),
     [filters, page, perPage]
   );

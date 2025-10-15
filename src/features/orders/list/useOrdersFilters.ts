@@ -12,6 +12,7 @@ export interface OrdersFilters {
   pickup_date?: string;
   date_from?: string;
   date_to?: string;
+  user_id?: string;
 }
 
 export function useOrdersFilters() {

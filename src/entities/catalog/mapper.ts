@@ -6,6 +6,7 @@ import type { Unit } from "@/entities/unit/types";
 import type { ProductType } from "@/entities/product-type/types";
 import type { Product } from "@/entities/product/types";
 import type { Advertisement } from "@/entities/advertisement/types";
+import type { User } from "@/entities/user/types";
 
 // Example env helper (optional) – safe access
 const CDN = process.env.NEXT_PUBLIC_CDN?.replace(/\/$/, "");
@@ -148,4 +149,25 @@ export function mapArray<T, R>(
 ): R[] {
   if (!items) return [];
   return items.map(fn);
+}
+
+export function mapUserApi(raw: any): User {
+  if (!raw) return raw;
+  // Ensure is_active consistency and optional department mapping passthrough
+  const dept = raw.department ? mapDepartmentApi(raw.department) : null;
+  return {
+    ...raw,
+    is_active: raw.is_active ?? raw.isActive ?? true,
+    department_id: raw.department_id ?? raw.departmentId ?? null,
+    department: dept,
+    // Explicitly ensure role is one of our union types when possible
+    role: (raw.role as any) ?? "customer",
+    role_text: raw.role_text ?? raw.roleText,
+    login_type: raw.login_type ?? raw.loginType ?? null,
+    login_type_text: raw.login_type_text ?? raw.loginTypeText ?? null,
+    status_text: raw.status_text ?? raw.statusText,
+    display_identifier: raw.display_identifier ?? raw.displayIdentifier,
+    can_login: raw.can_login ?? raw.canLogin,
+    image: null, // no image for users in cards
+  } as User;
 }

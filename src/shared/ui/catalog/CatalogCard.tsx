@@ -13,6 +13,8 @@ type Props = {
   link?: string;
   /** إظهار أو إخفاء مفتاح الحالة (StatusSwitch) - القيمة الافتراضية true */
   showSwitch?: boolean;
+  /** إخفاء صورة البطاقة كليًا */
+  hideImage?: boolean;
 };
 
 export default function CatalogCard({
@@ -24,6 +26,7 @@ export default function CatalogCard({
   switchSize = "sm",
   link,
   showSwitch = true,
+  hideImage = false,
 }: Props) {
   const normalizedImage = getImageUrl({ image }) as string | null;
   return (
@@ -32,20 +35,22 @@ export default function CatalogCard({
       className="rounded-3xl border border-primary p-2 gap-4 bg-lightgray hover:bg-lightgrayemphasis transition-colors duration-300 ease-out cursor-pointer"
     >
       <div className="flex items-center gap-4">
-        <div className="relative h-20 w-24 overflow-hidden rounded-2xl bg-slate-50">
-          {normalizedImage ? (
-            <Image
-              src={normalizedImage}
-              alt={title}
-              fill
-              className="object-cover"
-            />
-          ) : (
-            <div className="h-full w-full flex items-center justify-center text-slate-400">
-              —
-            </div>
-          )}
-        </div>
+        {!hideImage && (
+          <div className="relative h-20 w-24 overflow-hidden rounded-2xl bg-slate-50">
+            {normalizedImage ? (
+              <Image
+                src={normalizedImage}
+                alt={title}
+                fill
+                className="object-cover"
+              />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center text-slate-400">
+                —
+              </div>
+            )}
+          </div>
+        )}
         <div className="flex flex-col justify-between h-full gap-2 flex-1 min-w-0">
           <div className="text-base font-semibold rtl:text-right text-primary flex items-center gap-3 justify-between w-full">
             {title}

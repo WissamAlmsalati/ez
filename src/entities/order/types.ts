@@ -140,6 +140,7 @@ export interface OrdersListParams extends ListParams {
   pickup_date?: string; // YYYY-MM-DD
   date_from?: string; // YYYY-MM-DD
   date_to?: string; // YYYY-MM-DD
+  user_id?: number; // filter by user/customer id
 }
 
 export type OrdersPaginated = Paginated<Order>;

@@ -25,7 +25,7 @@ export function TypeFilter({ className, perPage = 100, categoryIdDep }: Props) {
 
   return (
     <Select
-      className={(className || "") + " min-w-40"}
+      className={(className || "") + " max-w-32"}
       value={filters.type_id ?? ""}
       disabled={isLoading || isError}
       onChange={(e) => update({ type_id: e.target.value })}

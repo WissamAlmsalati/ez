@@ -11,7 +11,7 @@ export function ActiveStatusFilter({ className }: Props) {
 
   return (
     <Select
-      className={className + " min-w-40"}
+      className={className + " max-w-32"}
       value={filters.is_active ?? ""}
       onChange={(e) => update({ is_active: e.target.value })}
     >

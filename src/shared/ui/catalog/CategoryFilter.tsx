@@ -18,7 +18,7 @@ export function CategoryFilter({ className, perPage = 100 }: Props) {
 
   return (
     <Select
-      className={(className || "") + " min-w-40"}
+      className={(className || "") + " max-w-32"}
       value={filters.category_id ?? ""}
       disabled={isLoading || isError}
       onChange={(e) => update({ category_id: e.target.value })}

@@ -1,7 +1,7 @@
 "use client";
-import { Table, Badge, Button } from "flowbite-react";
+import { Table } from "flowbite-react";
+import type { Order } from "@/entities/order/types";
 import Link from "next/link";
-import type { Order, OrderStatus } from "@/entities/order/types";
 import Pagination from "@/shared/ui/catalog/Pagination";
 import { useOrdersQuery } from "@/entities/order/api";
 import { useOrdersFilters } from "./useOrdersFilters";
@@ -57,7 +57,6 @@ export function OrdersTable() {
             <Table.HeadCell>ملاحظات</Table.HeadCell>
             <Table.HeadCell>الحالة</Table.HeadCell>
             <Table.HeadCell>تاريخ الطلب</Table.HeadCell>
-            <Table.HeadCell></Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
             {items.map((o) => {
@@ -68,44 +67,81 @@ export function OrdersTable() {
               return (
                 <Table.Row
                   key={o.id}
-                  className="bg-white dark:border-gray-700 dark:bg-gray-800"
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
                 >
                   <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    {o.order_number}
-                  </Table.Cell>
-                  <Table.Cell>{o.customer_name}</Table.Cell>
-                  <Table.Cell>{o.customer_phone}</Table.Cell>
-                  <Table.Cell>
-                    {pickupDate
-                      ? new Date(pickupDate).toLocaleDateString("ar-EG")
-                      : "-"}
-                  </Table.Cell>
-                  <Table.Cell>{o.formatted_total ?? o.total_amount}</Table.Cell>
-                  <Table.Cell
-                    className="max-w-[200px] truncate"
-                    title={o.notes || ""}
-                  >
-                    {o.notes
-                      ? o.notes.length > 40
-                        ? o.notes.slice(0, 40) + "…"
-                        : o.notes
-                      : "-"}
-                  </Table.Cell>
-                  <Table.Cell>{o.status_text || o.status}</Table.Cell>
-                  <Table.Cell>
-                    {o.created_at
-                      ? new Date(o.created_at).toLocaleDateString("ar-LY")
-                      : "-"}
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Button
-                      as={Link}
+                    <Link
                       href={`/orders/${o.id}`}
-                      size="xs"
-                      color="light"
+                      aria-label={`عرض الطلب رقم ${o.order_number}`}
+                      className="block w-full h-full no-underline text-gray-900 dark:text-white"
                     >
-                      عرض
-                    </Button>
+                      {o.order_number}
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link
+                      href={`/orders/${o.id}`}
+                      className="block w-full h-full no-underline text-current"
+                    >
+                      {o.customer_name}
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link
+                      href={`/orders/${o.id}`}
+                      className="block w-full h-full no-underline text-current"
+                    >
+                      {o.customer_phone}
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link
+                      href={`/orders/${o.id}`}
+                      className="block w-full h-full no-underline text-current"
+                    >
+                      {pickupDate
+                        ? new Date(pickupDate).toLocaleDateString("ar-EG")
+                        : "-"}
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link
+                      href={`/orders/${o.id}`}
+                      className="block w-full h-full no-underline text-current"
+                    >
+                      {o.formatted_total ?? o.total_amount}
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell className="max-w-[200px] truncate">
+                    <Link
+                      href={`/orders/${o.id}`}
+                      title={o.notes || ""}
+                      className="block w-full h-full no-underline text-current"
+                    >
+                      {o.notes
+                        ? o.notes.length > 40
+                          ? o.notes.slice(0, 40) + "…"
+                          : o.notes
+                        : "-"}
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link
+                      href={`/orders/${o.id}`}
+                      className="block w-full h-full no-underline text-current"
+                    >
+                      {o.status_text || o.status}
+                    </Link>
+                  </Table.Cell>
+                  <Table.Cell>
+                    <Link
+                      href={`/orders/${o.id}`}
+                      className="block w-full h-full no-underline text-current"
+                    >
+                      {o.created_at
+                        ? new Date(o.created_at).toLocaleDateString("ar-LY")
+                        : "-"}
+                    </Link>
                   </Table.Cell>
                 </Table.Row>
               );

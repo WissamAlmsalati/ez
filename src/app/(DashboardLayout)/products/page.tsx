@@ -15,6 +15,7 @@ import { SearchFilter } from "@/shared/ui/catalog/SearchFilter";
 import { CategoryFilter } from "@/shared/ui/catalog/CategoryFilter";
 import { TypeFilter } from "@/shared/ui/catalog/TypeFilter";
 // لاحقاً يمكن إضافة TypeFilter إن توفر
+import UnitsModal from "@/features/products/units/UnitsModal";
 
 export default function ProductsPage() {
   const searchParams = useSearchParams();
@@ -32,11 +33,12 @@ export default function ProductsPage() {
         : params.is_active === "0"
         ? false
         : undefined,
-  category_id: params.category_id ? Number(params.category_id) : undefined,
-  type_id: params.type_id ? Number(params.type_id) : undefined,
+    category_id: params.category_id ? Number(params.category_id) : undefined,
+    type_id: params.type_id ? Number(params.type_id) : undefined,
   });
   const toggle = useToggleProduct();
   const [open, setOpen] = useState(false);
+  const [unitsOpen, setUnitsOpen] = useState(false);
   const BCrumb = [
     {
       title: "المنتجات",
@@ -53,13 +55,22 @@ export default function ProductsPage() {
             <TypeFilter />
             <ActiveStatusFilter />
           </div>
-          <Button
-            color="primary"
-            className="transition-colors duration-300"
-            onClick={() => setOpen(true)}
-          >
-            إضافة منتج
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              color="light"
+              className="transition-colors duration-300"
+              onClick={() => setUnitsOpen(true)}
+            >
+              الوحدات
+            </Button>
+            <Button
+              color="primary"
+              className="transition-colors duration-300"
+              onClick={() => setOpen(true)}
+            >
+              إضافة منتج
+            </Button>
+          </div>
         </div>
 
         {isLoading ? (
@@ -85,6 +96,7 @@ export default function ProductsPage() {
         )}
         {data?.meta && <Pagination meta={data.meta} />}
         <CreateProductModal open={open} onClose={() => setOpen(false)} />
+        <UnitsModal open={unitsOpen} onClose={() => setUnitsOpen(false)} />
       </div>
     </>
   );

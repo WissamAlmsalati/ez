@@ -1,6 +1,5 @@
 "use client";
 import { Button, Select, TextInput } from "flowbite-react";
-import { StatusSwitch } from "@/shared/ui/detail/StatusSwitch";
 import { CardBox } from "@/shared/ui/cards";
 import { useUpdateUser } from "@/entities/user/api";
 import type { User } from "@/entities/user/types";

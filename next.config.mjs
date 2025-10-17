@@ -7,11 +7,11 @@ const nextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'api.alezdeehar.ly',
-        pathname: '/storage/**'
-      }
-    ]
-  }
-}
+        protocol: "https",
+        hostname: "api.alezdeehar.ly",
+        pathname: "/storage/**",
+      },
+    ],
+  },
+};
 export default nextConfig;

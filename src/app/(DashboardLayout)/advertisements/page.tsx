@@ -23,7 +23,7 @@ export default function AdvertisementsPage() {
     <>
       <BreadcrumbComp title="إعلانات" items={[{ title: "إعلانات" }]} />
       <Suspense fallback={<CatalogSkeleton />}>
-      <AdvertisementsPageContent />
+        <AdvertisementsPageContent />
       </Suspense>
     </>
   );

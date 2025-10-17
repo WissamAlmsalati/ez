@@ -1,13 +1,16 @@
-import { create } from 'zustand';
-import type { User as NextAuthUser } from 'next-auth';
+import { create } from "zustand";
+import type { User as NextAuthUser } from "next-auth";
 
 // Align our session user with backend payload: allow numeric ids while staying compatible with NextAuth
-type SessionUser = Omit<NextAuthUser, 'id'> & { id: number | string; token: string };
+type SessionUser = Omit<NextAuthUser, "id"> & {
+  id: number | string;
+  token: string;
+};
 
 interface SessionState {
   user: SessionUser | null;
   isAuthenticated: boolean;
-  isLoading: boolean; 
+  isLoading: boolean;
   setUser: (user: SessionUser | null) => void;
   setLoading: (loading: boolean) => void;
   isManager: boolean;
@@ -17,15 +20,15 @@ interface SessionState {
 export const useSessionStore = create<SessionState>((set) => ({
   user: null,
   isAuthenticated: false,
-  isLoading: true, 
+  isLoading: true,
   isManager: false,
   isEmployee: false,
-  setUser: (user) => set({ 
-    user, 
-    isAuthenticated: !!user,
-    isManager: user?.role === "manager",
-    isEmployee: user?.role === "employee" 
-  }),
+  setUser: (user) =>
+    set({
+      user,
+      isAuthenticated: !!user,
+      isManager: user?.role === "manager",
+      isEmployee: user?.role === "employee",
+    }),
   setLoading: (loading) => set({ isLoading: loading }),
-  
 }));

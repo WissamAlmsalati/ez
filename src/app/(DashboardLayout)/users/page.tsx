@@ -108,10 +108,7 @@ function UsersPageContent() {
         </CatalogGrid>
       )}
       {data?.meta && <Pagination meta={data.meta} />}
-      <CreateUserModal
-        open={openCreate}
-        onClose={() => setOpenCreate(false)}
-      />
+      <CreateUserModal open={openCreate} onClose={() => setOpenCreate(false)} />
     </div>
   );
 }

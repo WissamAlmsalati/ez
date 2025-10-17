@@ -11,22 +11,26 @@ export default function OrdersPage() {
   return (
     <>
       <BreadcrumbComp title="الطلبات" items={[{ title: "الطلبات" }]} />
-      <Suspense fallback={<div className="p-4 text-sm text-neutral-500">جارٍ التحميل...</div>}>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex-1 min-w-[300px]">
-            <OrdersFilters />
+      <Suspense
+        fallback={
+          <div className="p-4 text-sm text-neutral-500">جارٍ التحميل...</div>
+        }
+      >
+        <div className="space-y-6">
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div className="flex-1 min-w-[300px]">
+              <OrdersFilters />
+            </div>
+            <Button
+              color={"primary"}
+              className="shrink-0"
+              onClick={() => setOpenReport(true)}
+            >
+              استخراج تقرير
+            </Button>
           </div>
-          <Button
-            color={"primary"}
-            className="shrink-0"
-            onClick={() => setOpenReport(true)}
-          >
-            استخراج تقرير
-          </Button>
+          <OrdersTable />
         </div>
-        <OrdersTable />
-      </div>
       </Suspense>
       <EmployeeProductsReportModal
         open={openReport}

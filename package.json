@@ -27,7 +27,6 @@
     "react-apexcharts": "1.4.1",
     "react-dom": "^19.0.0",
     "react-hook-form": "^7.63.0",
-    "react-i18next": "^15.0.0",
     "simplebar-react": "3.2.5",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.0.1",

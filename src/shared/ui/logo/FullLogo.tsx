@@ -6,7 +6,7 @@ const FullLogo = () => {
   return (
     <Link href={"/"}>
       <Image
-        src="/izdihar-logo.png"
+        src="/Izdihar-logo.png"
         alt="logo"
         width={120}
         height={24}

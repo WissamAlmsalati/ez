@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="ar" dir="rtl">
       <head>
-        <link rel="icon" href="/test.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <ThemeModeScript />
       </head>
       <body className={`${alexandria.className}`}>

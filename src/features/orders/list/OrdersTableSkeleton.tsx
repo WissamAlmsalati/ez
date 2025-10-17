@@ -15,15 +15,13 @@ export function OrdersTableSkeleton({ rows = 8 }: SkeletonProps) {
       <div className="overflow-x-auto">
         <Table className="table-fixed centered-table white-header">
           <Table.Head className="border-b border-gray-200">
-            <Table.HeadCell>#</Table.HeadCell>
+            <Table.HeadCell>رقم الطلبية</Table.HeadCell>
             <Table.HeadCell>الزبون</Table.HeadCell>
             <Table.HeadCell>الهاتف</Table.HeadCell>
             <Table.HeadCell>تاريخ الاستلام</Table.HeadCell>
             <Table.HeadCell>المبلغ الكلي</Table.HeadCell>
-            <Table.HeadCell>ملاحظات</Table.HeadCell>
             <Table.HeadCell>الحالة</Table.HeadCell>
             <Table.HeadCell>تاريخ الطلب</Table.HeadCell>
-            <Table.HeadCell></Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
             {arr.map((_, i) => (
@@ -47,16 +45,10 @@ export function OrdersTableSkeleton({ rows = 8 }: SkeletonProps) {
                   <div className={`${cellBase} w-20`} />
                 </Table.Cell>
                 <Table.Cell>
-                  <div className={`${cellBase} w-40`} />
-                </Table.Cell>
-                <Table.Cell>
                   <div className={`${cellBase} w-16`} />
                 </Table.Cell>
                 <Table.Cell>
                   <div className={`${cellBase} w-24`} />
-                </Table.Cell>
-                <Table.Cell>
-                  <div className={`${cellBase} w-12`} />
                 </Table.Cell>
               </Table.Row>
             ))}

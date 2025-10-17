@@ -49,12 +49,12 @@ export function OrdersTable() {
       <div className="overflow-x-auto">
         <Table className="table-fixed centered-table white-header">
           <Table.Head className="border-b border-gray-200">
-            <Table.HeadCell>#</Table.HeadCell>
+            <Table.HeadCell>رقم الطلبية</Table.HeadCell>
             <Table.HeadCell>الزبون</Table.HeadCell>
             <Table.HeadCell>الهاتف</Table.HeadCell>
             <Table.HeadCell>تاريخ الاستلام</Table.HeadCell>
             <Table.HeadCell>المبلغ الكلي</Table.HeadCell>
-            <Table.HeadCell>ملاحظات</Table.HeadCell>
+            {/* <Table.HeadCell>ملاحظات</Table.HeadCell> */}
             <Table.HeadCell>الحالة</Table.HeadCell>
             <Table.HeadCell>تاريخ الطلب</Table.HeadCell>
           </Table.Head>
@@ -112,7 +112,7 @@ export function OrdersTable() {
                       {o.formatted_total ?? o.total_amount}
                     </Link>
                   </Table.Cell>
-                  <Table.Cell className="max-w-[200px] truncate">
+                  {/* <Table.Cell className="max-w-[200px] truncate">
                     <Link
                       href={`/orders/${o.id}`}
                       title={o.notes || ""}
@@ -124,7 +124,7 @@ export function OrdersTable() {
                           : o.notes
                         : "-"}
                     </Link>
-                  </Table.Cell>
+                  </Table.Cell> */}
                   <Table.Cell>
                     <Link
                       href={`/orders/${o.id}`}

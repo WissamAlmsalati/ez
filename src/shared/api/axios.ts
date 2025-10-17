@@ -57,7 +57,14 @@ apiInstance.interceptors.request.use(
 
 apiInstance.interceptors.response.use(
   (response) => {
-    if (response.data) {
+    // If server returns HTML/text (e.g., reports), keep it as-is
+    const contentType = (response.headers as any)?.["content-type"] as
+      | string
+      | undefined;
+    const isTextLike =
+      typeof response.data === "string" ||
+      (contentType && contentType.includes("text/html"));
+    if (response.data && !isTextLike) {
       response.data = humps.camelizeKeys(response.data);
     }
     return response;

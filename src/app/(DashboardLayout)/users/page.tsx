@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useMemo, useState, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
 import CatalogGrid from "@/shared/ui/catalog/CatalogGrid";
@@ -17,6 +17,23 @@ import { Button } from "flowbite-react";
 import { useSessionStore } from "@/entities/session/model/sessionStore";
 
 export default function UsersPage() {
+  const BCrumb = [
+    {
+      title: "المستخدمون",
+    },
+  ];
+
+  return (
+    <>
+      <BreadcrumbComp title="المستخدمون" items={BCrumb} />
+      <Suspense fallback={<CatalogSkeleton />}>
+        <UsersPageContent />
+      </Suspense>
+    </>
+  );
+}
+
+function UsersPageContent() {
   const [openCreate, setOpenCreate] = useState(false);
   const isManager = useSessionStore((s) => s.isManager);
   const searchParams = useSearchParams();
@@ -42,68 +59,59 @@ export default function UsersPage() {
     include_deleted: params.include_deleted === "1" ? true : undefined,
   });
 
-  const BCrumb = [
-    {
-      title: "المستخدمون",
-    },
-  ];
-
   return (
-    <>
-      <BreadcrumbComp title="المستخدمون" items={BCrumb} />
-      <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center justify-start gap-3">
-            <SearchFilter />
-            <RoleFilter />
-            <DepartmentFilter />
-            <ActiveStatusFilter />
-          </div>
-          {isManager && (
-            <div>
-              <Button
-                size="sm"
-                color="primary"
-                onClick={() => setOpenCreate(true)}
-              >
-                إضافة مستخدم
-              </Button>
-            </div>
-          )}
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start gap-3">
+          <SearchFilter />
+          <RoleFilter />
+          <DepartmentFilter />
+          <ActiveStatusFilter />
         </div>
-
-        {isLoading ? (
-          <CatalogSkeleton />
-        ) : !data || data.data.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <CatalogGrid>
-            {data.data.map((user) => (
-              <CatalogCard
-                key={user.id}
-                title={user.name}
-                image={null}
-                active={!!user.is_active}
-                link={`/users/${user.id}`}
-                onToggle={() => {}}
-                showSwitch={false}
-                hideImage
-                footer={
-                  <span className="text-xs">
-                    {user.role_text || user.role}{" "}
-                    {user.department ? `• ${user.department.name}` : ""}
-                  </span>
-                }
-              />
-            ))}
-          </CatalogGrid>
+        {isManager && (
+          <div>
+            <Button
+              size="sm"
+              color="primary"
+              onClick={() => setOpenCreate(true)}
+            >
+              إضافة مستخدم
+            </Button>
+          </div>
         )}
-        {data?.meta && <Pagination meta={data.meta} />}
-        <CreateUserModal
-          open={openCreate}
-          onClose={() => setOpenCreate(false)}
-        />
       </div>
-    </>
+
+      {isLoading ? (
+        <CatalogSkeleton />
+      ) : !data || data.data.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <CatalogGrid>
+          {data.data.map((user) => (
+            <CatalogCard
+              key={user.id}
+              title={user.name}
+              image={null}
+              active={!!user.is_active}
+              link={`/users/${user.id}`}
+              onToggle={() => {}}
+              showSwitch={false}
+              hideImage
+              footer={
+                <span className="text-xs">
+                  {user.role_text || user.role}{" "}
+                  {user.department ? `• ${user.department.name}` : ""}
+                </span>
+              }
+            />
+          ))}
+        </CatalogGrid>
+      )}
+      {data?.meta && <Pagination meta={data.meta} />}
+      <CreateUserModal
+        open={openCreate}
+        onClose={() => setOpenCreate(false)}
+      />
+    </div>
   );
 }

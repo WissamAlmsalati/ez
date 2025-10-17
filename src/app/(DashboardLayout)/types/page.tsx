@@ -6,7 +6,7 @@ import CatalogSkeleton from "@/shared/ui/catalog/CatalogSkeleton";
 import Pagination from "@/shared/ui/catalog/Pagination";
 import { Button } from "flowbite-react";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, Suspense } from "react";
 import { useToggleType, useTypesQuery } from "@/entities/product-type/api";
 import CreateTypeModal from "@/features/types/create/CreateTypeModal";
 import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
@@ -15,6 +15,22 @@ import { SearchFilter } from "@/shared/ui/catalog/SearchFilter";
 import { CategoryFilter } from "@/shared/ui/catalog/CategoryFilter";
 
 export default function TypesPage() {
+  const BCrumb = [
+    {
+      title: "الأنواع",
+    },
+  ];
+  return (
+    <>
+      <BreadcrumbComp title="الأنواع" items={BCrumb} />
+      <Suspense fallback={<CatalogSkeleton />}>
+        <TypesPageContent />
+      </Suspense>
+    </>
+  );
+}
+
+function TypesPageContent() {
   const searchParams = useSearchParams();
   const params = useMemo(
     () => Object.fromEntries(searchParams?.entries?.() ?? []) as any,
@@ -34,54 +50,47 @@ export default function TypesPage() {
   });
   const toggle = useToggleType();
   const [open, setOpen] = useState(false);
-  const BCrumb = [
-    {
-      title: "الأنواع",
-    },
-  ];
-  return (
-    <>
-      <BreadcrumbComp title="الأنواع" items={BCrumb} />
-      <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center justify-start gap-3">
-            <SearchFilter />
-            <CategoryFilter />
-            <ActiveStatusFilter />
-          </div>
-          <Button
-            color={"primary"}
-            className="transition-colors duration-300"
-            onClick={() => setOpen(true)}
-          >
-            إضافة نوع
-          </Button>
-        </div>
 
-        {isLoading ? (
-          <CatalogSkeleton />
-        ) : !data || data.data.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <CatalogGrid>
-            {data.data.map((item) => (
-              <CatalogCard
-                key={item.id}
-                title={item.name}
-                image={item.image ?? null}
-                active={!!item.is_active}
-                link={`/types/${item.id}`}
-                onToggle={async () => {
-                  await toggle.mutateAsync(item.id);
-                }}
-                footer={item.category.name}
-              />
-            ))}
-          </CatalogGrid>
-        )}
-        {data?.meta && <Pagination meta={data.meta} />}
-        <CreateTypeModal open={open} onClose={() => setOpen(false)} />
+  return (
+    <div className="space-y-5">
+      <div className="flex items_center justify_between">
+        <div className="flex items-center justify-start gap-3">
+          <SearchFilter />
+          <CategoryFilter />
+          <ActiveStatusFilter />
+        </div>
+        <Button
+          color={"primary"}
+          className="transition-colors duration-300"
+          onClick={() => setOpen(true)}
+        >
+          إضافة نوع
+        </Button>
       </div>
-    </>
+
+      {isLoading ? (
+        <CatalogSkeleton />
+      ) : !data || data.data.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <CatalogGrid>
+          {data.data.map((item) => (
+            <CatalogCard
+              key={item.id}
+              title={item.name}
+              image={item.image ?? null}
+              active={!!item.is_active}
+              link={`/types/${item.id}`}
+              onToggle={async () => {
+                await toggle.mutateAsync(item.id);
+              }}
+              footer={item.category.name}
+            />
+          ))}
+        </CatalogGrid>
+      )}
+      {data?.meta && <Pagination meta={data.meta} />}
+      <CreateTypeModal open={open} onClose={() => setOpen(false)} />
+    </div>
   );
 }

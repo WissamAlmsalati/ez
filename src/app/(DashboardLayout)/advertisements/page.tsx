@@ -1,5 +1,5 @@
 "use client";
-import { useState, useMemo } from "react";
+import { useState, useMemo, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "flowbite-react";
 import CatalogGrid from "@/shared/ui/catalog/CatalogGrid";
@@ -19,6 +19,17 @@ import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
 import AddFeaturedProductModal from "@/features/products/featured/AddFeaturedProductModal";
 
 export default function AdvertisementsPage() {
+  return (
+    <>
+      <BreadcrumbComp title="إعلانات" items={[{ title: "إعلانات" }]} />
+      <Suspense fallback={<CatalogSkeleton />}>
+      <AdvertisementsPageContent />
+      </Suspense>
+    </>
+  );
+}
+
+function AdvertisementsPageContent() {
   const { open, openModal, closeModal } = useCreateAdvertisementModal();
   const {
     open: openFeatured,
@@ -26,7 +37,6 @@ export default function AdvertisementsPage() {
     closeModal: closeFeaturedModal,
   } = useAddFeaturedProductModal();
 
-  // قراءة البارامز من الـ URL (مثل صفحة المنتجات) ليعمل Pagination الموحد
   const searchParams = useSearchParams();
   const params = useMemo(
     () => Object.fromEntries(searchParams?.entries?.() ?? []),
@@ -41,64 +51,58 @@ export default function AdvertisementsPage() {
     if (next === tab) return;
     const sp = new URLSearchParams(params as any);
     sp.set("tab", next);
-    // إعادة ضبط الصفحة عند تغيير التاب
     sp.delete("page");
     router.replace(`?${sp.toString()}`);
   }
 
   const adsQuery = useAdvertisementsQuery({ page, per_page: perPage });
   const featuredQuery = useFeaturedProductsQuery({ page, per_page: perPage });
-
   const isAds = tab === "ads";
 
   return (
-    <>
-      <BreadcrumbComp title="إعلانات" items={[{ title: "إعلانات" }]} />
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center gap-2">
-            <Button
-              color={isAds ? "primary" : "outlineprimary"}
-              size="sm"
-              onClick={() => setTab("ads")}
-            >
-              إعلانات
-            </Button>
-            <Button
-              color={!isAds ? "primary" : "outlineprimary"}
-              size="sm"
-              onClick={() => setTab("featured")}
-            >
-              أبرز المنتجات
-            </Button>
-          </div>
-          {isAds ? (
-            <Button color="primary" size="sm" onClick={openModal}>
-              إضافة إعلان
-            </Button>
-          ) : (
-            <Button color="primary" size="sm" onClick={openFeaturedModal}>
-              إضافة منتج للأبرز
-            </Button>
-          )}
+    <div className="flex flex-col gap-6">
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div className="flex items-center gap-2">
+          <Button
+            color={isAds ? "primary" : "outlineprimary"}
+            size="sm"
+            onClick={() => setTab("ads")}
+          >
+            إعلانات
+          </Button>
+          <Button
+            color={!isAds ? "primary" : "outlineprimary"}
+            size="sm"
+            onClick={() => setTab("featured")}
+          >
+            أبرز المنتجات
+          </Button>
         </div>
-
-        {/* Content */}
-        <div>
-          {isAds ? (
-            <AdsListSection query={adsQuery} />
-          ) : (
-            <FeaturedProductsSection query={featuredQuery} />
-          )}
-        </div>
-        {/* TODO: لاحقاً يمكن ربط التاب والصفحة مع search params للحفظ عند التحديث */}
-        <CreateAdvertisementModal open={open} onClose={closeModal} />
-        <AddFeaturedProductModal
-          open={openFeatured}
-          onClose={closeFeaturedModal}
-        />
+        {isAds ? (
+          <Button color="primary" size="sm" onClick={openModal}>
+            إضافة إعلان
+          </Button>
+        ) : (
+          <Button color="primary" size="sm" onClick={openFeaturedModal}>
+            إضافة منتج للأبرز
+          </Button>
+        )}
       </div>
-    </>
+
+      <div>
+        {isAds ? (
+          <AdsListSection query={adsQuery} />
+        ) : (
+          <FeaturedProductsSection query={featuredQuery} />
+        )}
+      </div>
+
+      <CreateAdvertisementModal open={open} onClose={closeModal} />
+      <AddFeaturedProductModal
+        open={openFeatured}
+        onClose={closeFeaturedModal}
+      />
+    </div>
   );
 }
 

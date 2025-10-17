@@ -1,11 +1,14 @@
 import { create } from 'zustand';
-import { User } from 'next-auth'; 
+import type { User as NextAuthUser } from 'next-auth';
+
+// Align our session user with backend payload: allow numeric ids while staying compatible with NextAuth
+type SessionUser = Omit<NextAuthUser, 'id'> & { id: number | string; token: string };
 
 interface SessionState {
-  user: User | null;
+  user: SessionUser | null;
   isAuthenticated: boolean;
   isLoading: boolean; 
-  setUser: (user: User | null) => void;
+  setUser: (user: SessionUser | null) => void;
   setLoading: (loading: boolean) => void;
   isManager: boolean;
   isEmployee: boolean;

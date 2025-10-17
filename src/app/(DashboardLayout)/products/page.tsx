@@ -1,4 +1,5 @@
 "use client";
+import { Suspense, useMemo, useState } from "react";
 import CatalogGrid from "@/shared/ui/catalog/CatalogGrid";
 import CatalogCard from "@/shared/ui/catalog/CatalogCard";
 import EmptyState from "@/shared/ui/catalog/EmptyState";
@@ -6,7 +7,6 @@ import CatalogSkeleton from "@/shared/ui/catalog/CatalogSkeleton";
 import Pagination from "@/shared/ui/catalog/Pagination";
 import { Button } from "flowbite-react";
 import { useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
 import { useProductsQueryV2, useToggleProduct } from "@/entities/product/api";
 import CreateProductModal from "@/features/products/create/CreateProductModal";
 import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
@@ -18,6 +18,22 @@ import { TypeFilter } from "@/shared/ui/catalog/TypeFilter";
 import UnitsModal from "@/features/products/units/UnitsModal";
 
 export default function ProductsPage() {
+  const BCrumb = [
+    {
+      title: "المنتجات",
+    },
+  ];
+  return (
+    <>
+      <BreadcrumbComp title="المنتجات" items={BCrumb} />
+      <Suspense fallback={<CatalogSkeleton />}>
+        <ProductsPageContent />
+      </Suspense>
+    </>
+  );
+}
+
+function ProductsPageContent() {
   const searchParams = useSearchParams();
   const params = useMemo(
     () => Object.fromEntries(searchParams?.entries?.() ?? []) as any,
@@ -39,65 +55,58 @@ export default function ProductsPage() {
   const toggle = useToggleProduct();
   const [open, setOpen] = useState(false);
   const [unitsOpen, setUnitsOpen] = useState(false);
-  const BCrumb = [
-    {
-      title: "المنتجات",
-    },
-  ];
-  return (
-    <>
-      <BreadcrumbComp title="المنتجات" items={BCrumb} />
-      <div className="space-y-5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center justify-start gap-3">
-            <SearchFilter />
-            <CategoryFilter />
-            <TypeFilter />
-            <ActiveStatusFilter />
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              color="light"
-              className="transition-colors duration-300"
-              onClick={() => setUnitsOpen(true)}
-            >
-              الوحدات
-            </Button>
-            <Button
-              color="primary"
-              className="transition-colors duration-300"
-              onClick={() => setOpen(true)}
-            >
-              إضافة منتج
-            </Button>
-          </div>
-        </div>
 
-        {isLoading ? (
-          <CatalogSkeleton />
-        ) : !data || data.data.length === 0 ? (
-          <EmptyState />
-        ) : (
-          <CatalogGrid>
-            {data.data.map((item) => (
-              <CatalogCard
-                key={item.id}
-                title={item.name}
-                image={item.image ?? null}
-                active={!!item.is_active}
-                link={`/products/${item.id}`}
-                onToggle={async () => {
-                  await toggle.mutateAsync(item.id);
-                }}
-                footer={`${item.type.name} - ${item.type.category.name}`}
-              />
-            ))}
-          </CatalogGrid>
-        )}
-        {data?.meta && <Pagination meta={data.meta} />}
-        <CreateProductModal open={open} onClose={() => setOpen(false)} />
-        <UnitsModal open={unitsOpen} onClose={() => setUnitsOpen(false)} />
+  return (
+    <div className="space-y-5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start gap-3">
+          <SearchFilter />
+          <CategoryFilter />
+          <TypeFilter />
+          <ActiveStatusFilter />
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            color="light"
+            className="transition-colors duration-300"
+            onClick={() => setUnitsOpen(true)}
+          >
+            الوحدات
+          </Button>
+          <Button
+            color="primary"
+            className="transition-colors duration-300"
+            onClick={() => setOpen(true)}
+          >
+            إضافة منتج
+          </Button>
+        </div>
       </div>
-    </>
+
+      {isLoading ? (
+        <CatalogSkeleton />
+      ) : !data || data.data.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <CatalogGrid>
+          {data.data.map((item) => (
+            <CatalogCard
+              key={item.id}
+              title={item.name}
+              image={item.image ?? null}
+              active={!!item.is_active}
+              link={`/products/${item.id}`}
+              onToggle={async () => {
+                await toggle.mutateAsync(item.id);
+              }}
+              footer={`${item.type.name} - ${item.type.category.name}`}
+            />
+          ))}
+        </CatalogGrid>
+      )}
+      {data?.meta && <Pagination meta={data.meta} />}
+      <CreateProductModal open={open} onClose={() => setOpen(false)} />
+      <UnitsModal open={unitsOpen} onClose={() => setUnitsOpen(false)} />
+    </div>
   );
 }

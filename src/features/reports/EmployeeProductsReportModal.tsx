@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Modal, Select, TextInput, Spinner } from "flowbite-react";
 import { apiInstance } from "@/shared/api/axios";
 import { useSessionStore } from "@/entities/session/model/sessionStore";
@@ -17,13 +17,15 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const reportOptions = useMemo(() => {
-    const opts: Array<{
-      value: string;
-      label: string;
-      roles: ("employee" | "manager")[];
-      path: string;
-    }> = [
+  type ReportOption = {
+    value: string;
+    label: string;
+    roles: ("employee" | "manager")[];
+    path: string;
+  };
+
+  const allOptions: ReportOption[] = useMemo(
+    () => [
       {
         value: "employee-products",
         label: "تقرير المنتجات والكميات",
@@ -42,24 +44,35 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
         roles: ["manager"],
         path: "/reports/manager/dashboard",
       },
-    ];
-    // Managers: show all reports. Employees: employee-only. Fallback: show all.
-    const allowed = isManager
-      ? opts
-      : isEmployee
-      ? opts.filter((o) => o.roles.includes("employee"))
-      : opts;
-    // Preselect the first option when modal opens
-    if (open && !reportType && allowed.length > 0) {
-      setReportType(allowed[0].value);
+    ],
+    []
+  );
+
+  const allowedOptions: ReportOption[] = useMemo(() => {
+    if (isManager)
+      return allOptions.filter((o) => o.value === "manager-dashboard");
+    if (isEmployee)
+      return allOptions.filter((o) => o.roles.includes("employee"));
+    return allOptions;
+  }, [allOptions, isManager, isEmployee]);
+
+  // Default selection based on role when modal opens
+  useEffect(() => {
+    if (!open) return;
+    if (isManager) {
+      setReportType("manager-dashboard");
+      return;
     }
-    return allowed;
-  }, [isManager, isEmployee, open, reportType]);
+    if (!reportType && allowedOptions.length > 0) {
+      setReportType(allowedOptions[0].value);
+    }
+  }, [open, isManager, allowedOptions, reportType]);
 
   const selectedPath = useMemo(() => {
-    const found = reportOptions.find((o) => o.value === reportType);
+    if (isManager) return "/reports/manager/dashboard";
+    const found = allOptions.find((o) => o.value === reportType);
     return found?.path;
-  }, [reportOptions, reportType]);
+  }, [allOptions, reportType, isManager]);
 
   const handleOpenInNewTab = async () => {
     setError(null);
@@ -106,19 +119,21 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
       <Modal.Header>استخراج تقرير</Modal.Header>
       <Modal.Body>
         <div className="space-y-4">
-          <div>
-            <label className="block mb-1 text-sm">نوع التقرير</label>
-            <Select
-              value={reportType}
-              onChange={(e) => setReportType(e.target.value)}
-            >
-              {reportOptions.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </Select>
-          </div>
+          {!isManager && (
+            <div>
+              <label className="block mb-1 text-sm">نوع التقرير</label>
+              <Select
+                value={reportType}
+                onChange={(e) => setReportType(e.target.value)}
+              >
+                {allowedOptions.map((opt: ReportOption) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+          )}
           <div className="flex gap-3">
             <div className="flex-1">
               <label className="block mb-1 text-sm">من تاريخ</label>
@@ -163,7 +178,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
           <Button
             color={"primary"}
             onClick={handleOpenInNewTab}
-            disabled={!reportType || loading}
+            disabled={loading || (!isManager && !reportType)}
           >
             فتح التقرير في تبويب
           </Button>

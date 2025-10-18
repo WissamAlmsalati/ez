@@ -50,29 +50,42 @@ export function useUpdateType(id: number | string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: Partial<ProductType> | FormData) => {
-      // إذا لم يكن هناك ملف، أرسل JSON للحفاظ على القيم البوليانية بدون تحويل لسلسلة
+      // إذا كان التحديث فقط لحقل is_active أرسل JSON PUT مباشرةً (تحسين للأداء ولتجنّب تحويل البوليان)
       if (!(payload instanceof FormData)) {
-        const hasFile = Object.entries(payload).some(
-          ([k, v]) =>
-            k === "image" && v && typeof v === "object" && (v as any)?.name
-        );
-        if (!hasFile) {
-          const { data } = await apiInstance.put(`${TYPE_PATH}/${id}`, payload);
+        const keys = Object.keys(payload || {});
+        if (keys.length === 1 && keys[0] === "is_active") {
+          const { data } = await apiInstance.put(
+            `${TYPE_PATH}/${id}`,
+            { is_active: (payload as any).is_active },
+            { headers: { Accept: "application/json" } }
+          );
           return data;
         }
       }
+
+      // أي تحديث آخر (مع أو بدون ملف) نرسله multipart عبر POST مع _method=PUT كما في الفئات
       let fd: FormData;
-      if (payload instanceof FormData) fd = payload;
-      else {
+      if (payload instanceof FormData) {
+        fd = payload;
+      } else {
         fd = new FormData();
         Object.entries(payload).forEach(([k, v]) => {
           if (v === undefined || v === null) return;
-          if (k === "image" && typeof v === "object" && (v as any)?.name)
+          if (k === "image" && typeof v === "object" && (v as any)?.name) {
             fd.append("image", v as any);
-          else fd.append(k, String(v)); // FormData سيحول البوليان إلى نص وهذا متوقع هنا مع وجود ملف
+            return;
+          }
+          if (k === "is_active") {
+            fd.append("is_active", (v as any) ? "true" : "false");
+            return;
+          }
+          fd.append(k, String(v));
         });
       }
-      const { data } = await apiInstance.put(`${TYPE_PATH}/${id}`, fd);
+      if (!fd.get("_method")) fd.append("_method", "PUT");
+      const { data } = await apiInstance.post(`${TYPE_PATH}/${id}`, fd, {
+        headers: { Accept: "application/json" },
+      });
       return data;
     },
     onMutate: async (variables) => {

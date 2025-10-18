@@ -53,21 +53,20 @@ function TypesPageContent() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items_center justify_between">
+      <div className="flex items-center justify-between">
         <div className="flex items-center justify-start gap-3">
           <SearchFilter />
           <CategoryFilter />
           <ActiveStatusFilter />
         </div>
         <Button
-          color={"primary"}
+          color="primary"
           className="transition-colors duration-300"
           onClick={() => setOpen(true)}
         >
           إضافة نوع
         </Button>
       </div>
-
       {isLoading ? (
         <CatalogSkeleton />
       ) : !data || data.data.length === 0 ? (

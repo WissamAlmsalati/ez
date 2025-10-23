@@ -47,12 +47,10 @@ export function useCategoryDetail(id: number | string | undefined) {
   });
 }
 
-// Update (POST with _method or PUT fallback)
 export function useUpdateCategory(id: number | string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: Partial<CategoryDetails> | FormData) => {
-      // Always use multipart/form-data with POST, no _method override
       const fd: FormData =
         payload instanceof FormData
           ? payload

@@ -61,7 +61,7 @@ export function useUpdateProduct(id: number | string) {
             k === "image" && v && typeof v === "object" && (v as any)?.name
         );
         if (!hasFile) {
-          const { data } = await apiInstance.put(
+          const { data } = await apiInstance.post(
             `${PRODUCT_PATH}/${id}`,
             payload
           );
@@ -79,7 +79,7 @@ export function useUpdateProduct(id: number | string) {
           else fd.append(k, String(v)); // مع وجود صورة سنستخدم FormData
         });
       }
-      const { data } = await apiInstance.put(`${PRODUCT_PATH}/${id}`, fd);
+      const { data } = await apiInstance.post(`${PRODUCT_PATH}/${id}`, fd);
       return data;
     },
     onMutate: async (variables) => {

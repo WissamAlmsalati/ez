@@ -124,7 +124,6 @@ export default function TypeDetailPage() {
       toast.info("لا توجد تغييرات");
       return;
     }
-    // fd.append("_method", "PUT");
     try {
       await update.mutateAsync(fd);
       toast.success("تم الحفظ");

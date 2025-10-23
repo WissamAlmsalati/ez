@@ -63,7 +63,6 @@ export function useUpdateType(id: number | string) {
         }
       }
 
-      // أي تحديث آخر (مع أو بدون ملف) نرسله multipart عبر POST مع _method=PUT كما في الفئات
       let fd: FormData;
       if (payload instanceof FormData) {
         fd = payload;
@@ -82,7 +81,6 @@ export function useUpdateType(id: number | string) {
           fd.append(k, String(v));
         });
       }
-      // if (!fd.get("_method")) fd.append("_method", "PUT");
       const { data } = await apiInstance.post(`${TYPE_PATH}/${id}`, fd, {
         headers: { Accept: "application/json" },
       });

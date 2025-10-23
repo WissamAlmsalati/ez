@@ -82,7 +82,7 @@ export function useUpdateType(id: number | string) {
           fd.append(k, String(v));
         });
       }
-      if (!fd.get("_method")) fd.append("_method", "PUT");
+      // if (!fd.get("_method")) fd.append("_method", "PUT");
       const { data } = await apiInstance.post(`${TYPE_PATH}/${id}`, fd, {
         headers: { Accept: "application/json" },
       });

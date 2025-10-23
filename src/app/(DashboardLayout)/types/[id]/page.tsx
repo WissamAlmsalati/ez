@@ -124,7 +124,7 @@ export default function TypeDetailPage() {
       toast.info("لا توجد تغييرات");
       return;
     }
-    fd.append("_method", "PUT");
+    // fd.append("_method", "PUT");
     try {
       await update.mutateAsync(fd);
       toast.success("تم الحفظ");
@@ -357,7 +357,7 @@ export default function TypeDetailPage() {
         onClose={() => setDeleteOpen(false)}
         isLoading={del.isPending}
         title="حذف النوع"
-        description="سيتم حذف النوع (حذف منطقي). هل أنت متأكد؟"
+        description="سيتم حذف النوع. هل أنت متأكد؟"
         onConfirm={async () => {
           await del.mutateAsync();
           toast.success("تم الحذف");

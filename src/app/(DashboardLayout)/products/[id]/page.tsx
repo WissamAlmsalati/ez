@@ -366,7 +366,7 @@ export default function ProductDetailPage() {
         onClose={() => setDeleteOpen(false)}
         isLoading={del.isPending}
         title="حذف المنتج"
-        description="سيتم حذف المنتج (حذف منطقي). هل أنت متأكد؟"
+        description="سيتم حذف المنتج. هل أنت متأكد؟"
         onConfirm={async () => {
           try {
             await del.mutateAsync();

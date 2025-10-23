@@ -7,10 +7,6 @@ export const createCategorySchema = z.object({
     (v) => (v === "" || v === undefined ? undefined : v),
     z.coerce.number().optional()
   ),
-  department_id: z.preprocess(
-    (v) => (v === "" || v === undefined ? undefined : v),
-    z.coerce.number().optional()
-  ),
   is_active: z.boolean().default(true),
   image: z.any().optional(),
 });
@@ -20,7 +16,6 @@ export interface CreateCategoryValues {
   name: string;
   description?: string;
   sort_order?: number;
-  department_id?: number;
   is_active: boolean;
   image?: any;
 }

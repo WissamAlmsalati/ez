@@ -52,40 +52,31 @@ export function useUpdateCategory(id: number | string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: Partial<CategoryDetails> | FormData) => {
-      // Restore optimized path: if only toggling is_active, send JSON PUT
-      if (!(payload instanceof FormData)) {
-        const keys = Object.keys(payload || {});
-        if (keys.length === 1 && keys[0] === "is_active") {
-          const { data } = await apiInstance.put(
-            `${CATEGORY_PATH}/${id}`,
-            { is_active: (payload as any).is_active },
-            {
-              headers: { Accept: "application/json" },
-            }
-          );
-          return data;
-        }
-      }
-      // multipart for any other update
-      let fd: FormData;
-      if (payload instanceof FormData) {
-        fd = payload;
-      } else {
-        fd = new FormData();
-        Object.entries(payload).forEach(([k, v]) => {
-          if (v === undefined || v === null) return;
-          if (k === "image" && typeof v === "object" && (v as any)?.name) {
-            fd.append("image", v as any);
-            return;
-          }
-          if (k === "is_active") {
-            fd.append("is_active", (v as any) ? "true" : "false");
-            return;
-          }
-          fd.append(k, String(v));
-        });
-      }
-      if (!fd.get("_method")) fd.append("_method", "PUT");
+      // Always use multipart/form-data with POST, no _method override
+      const fd: FormData =
+        payload instanceof FormData
+          ? payload
+          : (() => {
+              const form = new FormData();
+              Object.entries(payload || {}).forEach(([k, v]) => {
+                if (v === undefined || v === null) return;
+                if (
+                  k === "image" &&
+                  typeof v === "object" &&
+                  (v as any)?.name
+                ) {
+                  form.append("image", v as any);
+                  return;
+                }
+                if (k === "is_active") {
+                  form.append("is_active", (v as any) ? "true" : "false");
+                  return;
+                }
+                form.append(k, String(v));
+              });
+              return form;
+            })();
+
       const { data } = await apiInstance.post(`${CATEGORY_PATH}/${id}`, fd, {
         headers: { Accept: "application/json" },
       });

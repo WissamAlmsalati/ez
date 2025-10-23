@@ -133,7 +133,6 @@ export default function CategoryDetailPage() {
       toast.info("لا توجد تغييرات");
       return;
     }
-    fd.append("_method", "PUT");
     try {
       await update.mutateAsync(fd);
       toast.success("تم الحفظ");

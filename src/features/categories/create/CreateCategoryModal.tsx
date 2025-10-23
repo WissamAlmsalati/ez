@@ -16,7 +16,7 @@ import { useCreateCategory } from "@/entities/category/api";
 import { toFormData } from "@/entities/catalog/api";
 import { toast } from "sonner";
 import { useState } from "react";
-import RemoteSelect from "@/shared/ui/remote/RemoteSelect";
+// Removed department selection per request
 
 export default function CreateCategoryModal({
   open,
@@ -27,20 +27,15 @@ export default function CreateCategoryModal({
 }) {
   const createMutation = useCreateCategory();
   const [submitting, setSubmitting] = useState(false);
-  const [selectedDept, setSelectedDept] = useState<any | null>(null);
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
-    watch,
   } = useForm({
     resolver: zodResolver(createCategorySchema),
-    defaultValues: { is_active: true, department_id: undefined },
+    defaultValues: { is_active: true },
   });
-
-  const watchedDeptId = watch("department_id");
 
   const onSubmit = handleSubmit(async (values: any) => {
     try {
@@ -53,7 +48,6 @@ export default function CreateCategoryModal({
       toast.success("تم إضافة الصنف بنجاح");
       // Reset form + remote select state
       reset();
-      setSelectedDept(null);
       onClose();
     } catch (e: any) {
       toast.error(e?.body?.message || "حدث خطأ أثناء الإضافة");
@@ -78,36 +72,6 @@ export default function CreateCategoryModal({
                 {...register("name")}
                 color={errors.name ? "failure" : undefined}
               />
-            </div>
-            <div>
-              <Label value="القسم" />
-              <RemoteSelect
-                path="/departments"
-                value={selectedDept}
-                onChange={(val) => {
-                  setSelectedDept(val);
-                  if (val) {
-                    setValue("department_id", (val as any).id as number, {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                    });
-                  } else {
-                    setValue("department_id", undefined as any, {
-                      shouldValidate: true,
-                      shouldDirty: true,
-                    });
-                  }
-                }}
-                getOptionValue={(d: any) => d.id}
-                getOptionLabel={(d: any) => d.name}
-                placeholder="اختر القسم"
-                pageSize={100}
-              />
-              {errors.department_id && (
-                <p className="text-red-500 text-xs mt-1">
-                  {errors.department_id.message as any}
-                </p>
-              )}
             </div>
             <div>
               <Label value="وصف الصنف" />

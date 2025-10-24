@@ -27,7 +27,42 @@ export const useCategoriesQuery = buildListQuery<Category>(
 export const useCreateCategory = buildCreateMutation<any, Category>(
   CATEGORY_PATH
 );
-export const useToggleCategory = buildToggleMutation<Category>(CATEGORY_PATH);
+// Toggle status via POST /categories/{id}/toggle-status (no PATCH)
+export function useToggleCategory() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number | string) => {
+      const { data } = await apiInstance.post(
+        `${CATEGORY_PATH}/${id}/toggle-status`
+      );
+      return data;
+    },
+    onMutate: async (id: number | string) => {
+      const qkRoot = categoryKeys.base();
+      await qc.cancelQueries({ queryKey: qkRoot });
+      const snapshot = qc.getQueriesData<any>({ queryKey: qkRoot });
+      snapshot.forEach(([key, value]) => {
+        if (!value) return;
+        qc.setQueryData(key, {
+          ...value,
+          data: (value.data || []).map((it: any) =>
+            it.id === id ? { ...it, is_active: !it.is_active } : it
+          ),
+        });
+      });
+      return { snapshot } as any;
+    },
+    onError: (_err, _vars, ctx: any) => {
+      const qkRoot = categoryKeys.base();
+      ctx?.snapshot?.forEach?.(([key, value]: any) => {
+        qc.setQueryData(key, value);
+      });
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: categoryKeys.base() });
+    },
+  });
+}
 
 // Detail query
 export function useCategoryDetail(id: number | string | undefined) {

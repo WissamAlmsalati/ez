@@ -7,6 +7,7 @@ import {
   useDeleteType,
   useRestoreType,
   useUpdateType,
+  useToggleType,
 } from "@/entities/product-type/api";
 import { useProductsQueryV2, useToggleProduct } from "@/entities/product/api";
 import { Button, TextInput, Textarea } from "flowbite-react";
@@ -35,6 +36,7 @@ export default function TypeDetailPage() {
   const router = useRouter();
   const detail = useTypeDetail(id);
   const update = useUpdateType(id);
+  const toggleType = useToggleType();
   const del = useDeleteType(id);
   const restore = useRestoreType(id);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
@@ -200,9 +202,11 @@ export default function TypeDetailPage() {
                           <StatusSwitch
                             checked={normalizedIsActive}
                             label={normalizedIsActive ? "نشط" : "غير نشط"}
-                            onChange={async (next) => {
+                            onChange={async () => {
+                              if (toggleType.isPending) return;
                               try {
-                                await update.mutateAsync({ is_active: next });
+                                await toggleType.mutateAsync(id);
+                                await detail.refetch();
                                 toast.success("تم تحديث الحالة");
                               } catch (e: any) {
                                 toast.error(

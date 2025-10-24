@@ -8,6 +8,7 @@ import {
   useRestoreProduct,
   useUpdateProduct,
   useToggleFeaturedProduct,
+  useToggleProduct,
 } from "@/entities/product/api";
 import type { ProductDetails } from "@/entities/product/types";
 import { Button, Spinner, TextInput, Textarea } from "flowbite-react";
@@ -42,6 +43,7 @@ export default function ProductDetailPage() {
   const del = useDeleteProduct(id);
   const restore = useRestoreProduct(id);
   const toggleFeatured = useToggleFeaturedProduct(id);
+  const toggleProduct = useToggleProduct();
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [localImage, setLocalImage] = React.useState<string | null>(null);
   const BCrumb = [
@@ -221,8 +223,10 @@ export default function ProductDetailPage() {
                               checked={normalizedIsActive}
                               label={normalizedIsActive ? "نشط" : "غير نشط"}
                               onChange={async (next) => {
+                                if (toggleProduct.isPending) return;
                                 try {
-                                  await update.mutateAsync({ is_active: next });
+                                  await toggleProduct.mutateAsync(id);
+                                  await detail.refetch();
                                   toast.success("تم تحديث الحالة");
                                 } catch (e: any) {
                                   toast.error(

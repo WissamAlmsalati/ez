@@ -10,7 +10,6 @@ import Pagination from "@/shared/ui/catalog/Pagination";
 import { SearchFilter } from "@/shared/ui/catalog/SearchFilter";
 import { ActiveStatusFilter } from "@/shared/ui/catalog/ActiveStatusFilter";
 import RoleFilter from "@/shared/ui/catalog/RoleFilter";
-import DepartmentFilter from "@/shared/ui/catalog/DepartmentFilter";
 import { useUsersQuery } from "@/entities/user/api";
 import CreateUserModal from "@/features/users/create/CreateUserModal";
 import { Button } from "flowbite-react";
@@ -65,7 +64,6 @@ function UsersPageContent() {
         <div className="flex items-center justify-start gap-3">
           <SearchFilter />
           <RoleFilter />
-          <DepartmentFilter />
           <ActiveStatusFilter />
         </div>
         {isManager && (

@@ -6,6 +6,7 @@ import {
   useDeleteCategory,
   useRestoreCategory,
   useUpdateCategory,
+  useToggleCategory,
 } from "@/entities/category/api";
 import { useTypesQuery, useToggleType } from "@/entities/product-type/api";
 import { Button, Spinner, TextInput, Textarea } from "flowbite-react";
@@ -35,6 +36,7 @@ export default function CategoryDetailPage() {
   const router = useRouter();
   const detail = useCategoryDetail(id);
   const update = useUpdateCategory(id);
+  const toggleCategory = useToggleCategory();
   const del = useDeleteCategory(id);
   const restore = useRestoreCategory(id);
   const [deleteOpen, setDeleteOpen] = React.useState(false);
@@ -211,8 +213,10 @@ export default function CategoryDetailPage() {
                             checked={normalizedIsActive}
                             label={normalizedIsActive ? "نشط" : "غير نشط"}
                             onChange={async (next) => {
+                              if (toggleCategory.isPending) return;
                               try {
-                                await update.mutateAsync({ is_active: next });
+                                await toggleCategory.mutateAsync(id);
+                                await detail.refetch();
                                 toast.success("تم تحديث الحالة");
                               } catch (e: any) {
                                 toast.error(

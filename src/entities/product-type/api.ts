@@ -25,7 +25,41 @@ export const useTypesQuery = buildListQuery<ProductType>(
   mapProductTypeApi
 );
 export const useCreateType = buildCreateMutation<any, ProductType>(TYPE_PATH);
-export const useToggleType = buildToggleMutation<ProductType>(TYPE_PATH);
+// Toggle status via POST /types/{id}/toggle-status (no PATCH)
+export function useToggleType() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number | string) => {
+      const { data } = await apiInstance.post(
+        `${TYPE_PATH}/${id}/toggle-status`
+      );
+      return data;
+    },
+    onMutate: async (id: number | string) => {
+      const qkRoot = typeKeys.base();
+      await qc.cancelQueries({ queryKey: qkRoot });
+      const snapshot = qc.getQueriesData<any>({ queryKey: qkRoot });
+      snapshot.forEach(([key, value]) => {
+        if (!value) return;
+        qc.setQueryData(key, {
+          ...value,
+          data: (value.data || []).map((it: any) =>
+            it.id === id ? { ...it, is_active: !it.is_active } : it
+          ),
+        });
+      });
+      return { snapshot } as any;
+    },
+    onError: (_err, _vars, ctx: any) => {
+      ctx?.snapshot?.forEach?.(([key, value]: any) => {
+        qc.setQueryData(key, value);
+      });
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: typeKeys.base() });
+    },
+  });
+}
 
 export function useTypeDetail(id: number | string | undefined) {
   return useQuery({

@@ -31,7 +31,41 @@ export const useProductsQueryV2 = buildListQuery<Product>(
   mapProductApi
 );
 export const useCreateProduct = buildCreateMutation<any, Product>(PRODUCT_PATH);
-export const useToggleProduct = buildToggleMutation<Product>(PRODUCT_PATH);
+// Toggle status via POST /products/{id}/toggle-status (no PATCH)
+export function useToggleProduct() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async (id: number | string) => {
+      const { data } = await apiInstance.post(
+        `${PRODUCT_PATH}/${id}/toggle-status`
+      );
+      return data;
+    },
+    onMutate: async (id: number | string) => {
+      const qkRoot = productKeysV2.base();
+      await qc.cancelQueries({ queryKey: qkRoot });
+      const snapshot = qc.getQueriesData<any>({ queryKey: qkRoot });
+      snapshot.forEach(([key, value]) => {
+        if (!value) return;
+        qc.setQueryData(key, {
+          ...value,
+          data: (value.data || []).map((it: any) =>
+            it.id === id ? { ...it, is_active: !it.is_active } : it
+          ),
+        });
+      });
+      return { snapshot } as any;
+    },
+    onError: (_err, _vars, ctx: any) => {
+      ctx?.snapshot?.forEach?.(([key, value]: any) => {
+        qc.setQueryData(key, value);
+      });
+    },
+    onSettled: () => {
+      qc.invalidateQueries({ queryKey: productKeysV2.base() });
+    },
+  });
+}
 
 export function useProductDetail(id: number | string | undefined) {
   return useQuery({
@@ -139,7 +173,7 @@ export function useToggleFeaturedProduct(id: number | string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      const { data } = await apiInstance.patch(
+      const { data } = await apiInstance.post(
         `${PRODUCT_PATH}/${id}/toggle-featured`
       );
       return data;

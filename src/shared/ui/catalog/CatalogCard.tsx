@@ -30,47 +30,73 @@ export default function CatalogCard({
 }: Props) {
   const normalizedImage = getImageUrl({ image }) as string | null;
   return (
-    <Link
-      href={link ?? "#"}
-      className="rounded-3xl border border-primary p-2 gap-4 bg-lightgray hover:bg-lightgrayemphasis transition-colors duration-300 ease-out cursor-pointer"
-    >
+    <div className="rounded-3xl border border-primary p-2 gap-4 bg-lightgray hover:bg-lightgrayemphasis transition-colors duration-300 ease-out">
       <div className="flex items-center gap-4">
-        {!hideImage && (
-          <div className="relative h-20 w-24 overflow-hidden rounded-2xl bg-slate-50">
-            {normalizedImage ? (
-              <Image
-                src={normalizedImage}
-                alt={title}
-                fill
-                className="object-cover"
-              />
-            ) : (
-              <div className="h-full w-full flex items-center justify-center text-slate-400">
-                —
+        {link ? (
+          <Link
+            href={link}
+            className="flex items-center gap-4 flex-1 min-w-0 cursor-pointer"
+          >
+            {!hideImage && (
+              <div className="relative h-20 w-24 overflow-hidden rounded-2xl bg-slate-50">
+                {normalizedImage ? (
+                  <Image
+                    src={normalizedImage}
+                    alt={title}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-slate-400">
+                    —
+                  </div>
+                )}
               </div>
             )}
+            <div className="flex flex-col justify-between h-full gap-2 flex-1 min-w-0">
+              <div className="text-base font-semibold rtl:text-right text-primary flex items-center gap-3 justify-between w-full">
+                {title}
+              </div>
+            </div>
+          </Link>
+        ) : (
+          <div className="flex items-center gap-4 flex-1 min-w-0">
+            {!hideImage && (
+              <div className="relative h-20 w-24 overflow-hidden rounded-2xl bg-slate-50">
+                {normalizedImage ? (
+                  <Image
+                    src={normalizedImage}
+                    alt={title}
+                    fill
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center text-slate-400">
+                    —
+                  </div>
+                )}
+              </div>
+            )}
+            <div className="flex flex-col justify-between h-full gap-2 flex-1 min-w-0">
+              <div className="text-base font-semibold rtl:text-right text-primary flex items-center gap-3 justify-between w-full">
+                {title}
+              </div>
+            </div>
           </div>
         )}
-        <div className="flex flex-col justify-between h-full gap-2 flex-1 min-w-0">
-          <div className="text-base font-semibold rtl:text-right text-primary flex items-center gap-3 justify-between w-full">
-            {title}
-            {showSwitch && (
-              <StatusSwitch
-                size={switchSize}
-                initial={active}
-                onToggle={onToggle}
-              />
-            )}
-          </div>
 
-          <span className="text-xs text-primary rtl:text-right block truncate">
-            {footer}
-          </span>
-        </div>
+        {showSwitch && (
+          <StatusSwitch
+            size={switchSize}
+            initial={active}
+            onToggle={onToggle}
+          />
+        )}
       </div>
-      {/* <div className="flex items-center gap-3"> */}
-      {/* <StatusSwitch size={switchSize} initial={active} onToggle={onToggle} /> */}
-      {/* </div> */}
-    </Link>
+
+      <span className="text-xs text-primary rtl:text-right block truncate mt-1">
+        {footer}
+      </span>
+    </div>
   );
 }

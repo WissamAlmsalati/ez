@@ -39,7 +39,7 @@ const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
 
   const list = useUnitsQuery({
     page: 1,
-    per_page: 100,
+    per_page: 500,
     search: debounced || undefined,
   });
   const createMut = useCreateUnit();

@@ -51,7 +51,7 @@ export function AdvertisementCard({
       )}
       <div className="flex flex-col gap-1">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-sm font-medium line-clamp-2 rtl:text-right">
+          <h3 className="text-sm font-medium line-clamp-2 rtl:text-right truncate">
             {item.name || item.title}
           </h3>
           <span

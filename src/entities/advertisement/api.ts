@@ -52,7 +52,7 @@ export function useAdvertisementDetail(id: number | string | undefined) {
   });
 }
 
-// Update advertisement (PUT). إذا وُجد ملف صورة نرسل multipart تلقائياً.
+// Update advertisement (POST). إذا وُجد ملف صورة نرسل multipart تلقائياً.
 export function useUpdateAdvertisement(id: number | string) {
   const qc = useQueryClient();
   return useMutation({
@@ -64,7 +64,7 @@ export function useUpdateAdvertisement(id: number | string) {
             k === "image" && v && typeof v === "object" && (v as any)?.name
         );
         if (!hasFile) {
-          const { data } = await apiInstance.put(`${AD_PATH}/${id}`, payload);
+          const { data } = await apiInstance.post(`${AD_PATH}/${id}`, payload);
           return data;
         }
       }
@@ -98,8 +98,8 @@ export function useUpdateAdvertisement(id: number | string) {
           fd.append(k, String(v));
         });
       }
-      // نرسل PUT مباشر (مثل المنتج)
-      const { data } = await apiInstance.put(`${AD_PATH}/${id}`, fd);
+      // نرسل POST مباشر مع الـ FormData (تغيير من PUT إلى POST حسب طلب backend)
+      const { data } = await apiInstance.post(`${AD_PATH}/${id}`, fd);
       return data;
     },
     onSuccess: () => {
@@ -140,9 +140,7 @@ export function useToggleAdvertisement(id: number | string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async () => {
-      const { data } = await apiInstance.patch(
-        `${AD_PATH}/${id}/toggle-status`
-      );
+      const { data } = await apiInstance.post(`${AD_PATH}/${id}/toggle-status`);
       return data;
     },
     onMutate: async () => {

@@ -14,7 +14,6 @@ export const orderKeys = {
 
 // Transport -> domain mapper: normalize order_id to id and include status_text
 export function mapOrderApi(raw: any): Order {
-  console.log("Mapping order raw data:", raw);
   // NEW API WRAPS FIELDS INSIDE order_details & customer_details
   const od = raw?.orderDetails ?? raw;
   const cd = raw?.customerDetails ?? raw;

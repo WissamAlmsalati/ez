@@ -6,7 +6,7 @@ import { useTypesQuery } from "@/entities/product-type/api";
 interface Props {
   className?: string;
   perPage?: number;
-  categoryIdDep?: boolean; // لو أردنا لاحقاً تصفية الأنواع حسب الصنف المحدد
+  categoryIdDep?: boolean; // لو أردنا لاحقاً تصفية المجموعات حسب الصنف المحدد
 }
 
 export function TypeFilter({ className, perPage = 100, categoryIdDep }: Props) {

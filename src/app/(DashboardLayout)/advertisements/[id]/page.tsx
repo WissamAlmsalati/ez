@@ -12,21 +12,39 @@ import { Button, TextInput, Textarea, Spinner } from "flowbite-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Image from "next/image";
 import { toast } from "sonner";
 import { StatusSwitch } from "@/shared/ui/detail/StatusSwitch";
 import ConfirmDeleteModal from "@/shared/ui/detail/ConfirmDeleteModal";
 import AdvertisementDetailSkeleton from "@/entities/advertisement/ui/AdvertisementDetailSkeleton";
 
-const schema = z.object({
-  title: z.string().min(1, "العنوان مطلوب").optional(),
-  description: z.string().optional(),
-  starts_at: z.string().optional(),
-  ends_at: z.string().optional(),
-  is_active: z.boolean().optional(),
-  image: z.any().optional(),
-});
+const schema = z
+  .object({
+    title: z.string().min(1, "العنوان مطلوب").optional(),
+    description: z.string().optional(),
+    starts_at: z.string().optional(),
+    ends_at: z.string().optional(),
+    is_active: z.boolean().optional(),
+    image: z.any().optional(),
+  })
+  .superRefine((vals, ctx) => {
+    const todayStr = new Date().toLocaleDateString("en-CA"); // YYYY-MM-DD
+    if (vals.starts_at && vals.starts_at < todayStr) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "لا يمكن أن يكون تاريخ البدء قبل التاريخ الحالي",
+        path: ["starts_at"],
+      });
+    }
+    if (vals.starts_at && vals.ends_at && vals.ends_at < vals.starts_at) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء",
+        path: ["ends_at"],
+      });
+    }
+  });
 type FormVals = z.infer<typeof schema>;
 
 export default function AdvertisementDetailPage() {
@@ -60,6 +78,8 @@ export default function AdvertisementDetailPage() {
     },
   });
   const watchedImage = watch("image");
+  const watchedStart = watch("starts_at");
+  const todayStr = useMemo(() => new Date().toLocaleDateString("en-CA"), []);
   useEffect(() => {
     if (
       watchedImage &&
@@ -156,9 +176,7 @@ export default function AdvertisementDetailPage() {
               {/* Header side description */}
               <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-8">
                 <div className="md:order-2 md:text-right md:pl-6 max-w-sm">
-                  <h3 className="font-semibold text-lg mb-1">
-                    بيانات الإعلان
-                  </h3>
+                  <h3 className="font-semibold text-lg mb-1">بيانات الإعلان</h3>
                   <p className="text-xs text-neutral-500 leading-relaxed">
                     لتعديل بيانات الإعلان قم بتحديثها وحفظها من هنا
                   </p>
@@ -194,17 +212,31 @@ export default function AdvertisementDetailPage() {
                       <label className="block text-sm">تاريخ البدء</label>
                       <TextInput
                         type="date"
+                        min={todayStr}
                         disabled={update.isPending}
                         {...register("starts_at")}
+                        color={errors.starts_at ? "failure" : undefined}
                       />
+                      {errors.starts_at && (
+                        <p className="text-xs text-red-600">
+                          {errors.starts_at.message as any}
+                        </p>
+                      )}
                     </div>
                     <div className="space-y-1">
                       <label className="block text-sm">تاريخ الإنتهاء</label>
                       <TextInput
                         type="date"
+                        min={watchedStart || todayStr}
                         disabled={update.isPending}
                         {...register("ends_at")}
+                        color={errors.ends_at ? "failure" : undefined}
                       />
+                      {errors.ends_at && (
+                        <p className="text-xs text-red-600">
+                          {errors.ends_at.message as any}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="space-y-2 pt-2">

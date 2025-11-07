@@ -32,7 +32,7 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
     per_page: 100,
     is_active: true,
   });
-  // الأنواع حسب التصنيف
+  // المجموعات حسب التصنيف
   const typesQuery = useTypesQuery(
     categoryId ? { per_page: 100, category_id: categoryId } : undefined
   );

@@ -97,8 +97,7 @@ function UsersPageContent() {
               hideImage
               footer={
                 <span className="text-xs">
-                  {user.role_text || user.role}{" "}
-                  {user.department ? `• ${user.department.name}` : ""}
+                  { user.role === "manager" ? "مدير" : user.role === "employee" ? "موظف" : "زبون"}
                 </span>
               }
             />

@@ -13,7 +13,7 @@ export function RoleFilter({ className }: { className?: string }) {
       <option value="">كل الأدوار</option>
       <option value="manager">مدير</option>
       <option value="employee">موظف</option>
-      <option value="customer">عميل</option>
+      <option value="customer">زبون</option>
     </Select>
   );
 }

@@ -30,7 +30,7 @@ export default function CatalogCard({
 }: Props) {
   const normalizedImage = getImageUrl({ image }) as string | null;
   return (
-    <div className="rounded-3xl border border-primary p-2 gap-4 bg-lightgray hover:bg-lightgrayemphasis transition-colors duration-300 ease-out">
+    <div className={`rounded-3xl border border-primary ${hideImage ?"p-4" : "p-2" } gap-4 bg-lightgray hover:bg-lightgrayemphasis transition-colors duration-300 ease-out`} >
       <div className="flex items-center gap-4">
         {link ? (
           <Link

@@ -25,7 +25,7 @@ export default function CreateUserModal({
 }) {
   const createMutation = useCreateUser();
   const [submitting, setSubmitting] = useState(false);
-  const [selectedDept, setSelectedDept] = useState<any | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<any | null>(null);
   const {
     register,
     handleSubmit,
@@ -49,14 +49,14 @@ export default function CreateUserModal({
         password: values.password,
         phone: values.phone || undefined,
         role: values.role,
-        department_id:
-          values.role === "employee" ? values.department_id : undefined,
+        category_id:
+          values.role === "employee" ? values.category_id : undefined,
         is_active: values.is_active,
       };
       await createMutation.mutateAsync(payload);
       toast.success("تم إضافة المستخدم بنجاح");
       reset();
-      setSelectedDept(null);
+      setSelectedCategory(null);
       onClose();
     } catch (e: any) {
       toast.error(e?.body?.message || "حدث خطأ أثناء الإضافة");
@@ -116,6 +116,10 @@ export default function CreateUserModal({
             <Label value="الهاتف" />
             <TextInput
               {...register("phone")}
+              placeholder="09XXXXXXXX"
+              maxLength={10}
+              inputMode="numeric"
+              pattern="^09\\d{8}$"
               color={errors.phone ? "failure" : undefined}
             />
             {errors.phone && (
@@ -135,17 +139,17 @@ export default function CreateUserModal({
             <div>
               <Label value="القسم" />
               <RemoteSelect
-                path="/departments"
-                value={selectedDept}
+                path="/categories"
+                value={selectedCategory}
                 onChange={(val) => {
-                  setSelectedDept(val);
+                  setSelectedCategory(val);
                   if (val) {
-                    setValue("department_id", (val as any).id as number, {
+                    setValue("category_id", (val as any).id as number, {
                       shouldValidate: true,
                       shouldDirty: true,
                     });
                   } else {
-                    setValue("department_id", undefined as any, {
+                    setValue("category_id", undefined as any, {
                       shouldValidate: true,
                       shouldDirty: true,
                     });
@@ -156,9 +160,9 @@ export default function CreateUserModal({
                 placeholder="اختر القسم"
                 pageSize={100}
               />
-              {errors.department_id && (
+              {errors.category_id && (
                 <p className="text-red-500 text-xs mt-1">
-                  {errors.department_id.message as any}
+                  {errors.category_id.message as any}
                 </p>
               )}
             </div>

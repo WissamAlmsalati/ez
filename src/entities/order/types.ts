@@ -12,7 +12,11 @@ export type OrderStatus =
   | "in_preparation"
   | "ready"
   | "delivered"
-  | "cancelled";
+  | "cancelled"
+  // new backend variants observed in payloads
+  | "new"
+  | "in_progress"
+  | "completed";
 
 export interface OrderUserDepartment {
   id: number;

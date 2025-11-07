@@ -14,39 +14,69 @@ export const orderKeys = {
 
 // Transport -> domain mapper: normalize order_id to id and include status_text
 export function mapOrderApi(raw: any): Order {
+  console.log("Mapping order raw data:", raw);
+  // NEW API WRAPS FIELDS INSIDE order_details & customer_details
+  const od = raw?.orderDetails ?? raw;
+  const cd = raw?.customerDetails ?? raw;
+  const products = raw?.products;
+
+  const parseNumber = (v: any) => {
+    if (v == null) return 0;
+    if (typeof v === "number") return v;
+    if (typeof v === "string") return Number(v.replace(/,/g, "")) || 0;
+    return 0;
+  };
+
   return {
-    // humps.camelizeKeys يحول order_id -> orderId لذلك ندعم الاحتمالين
-    id: raw.order_id ?? raw.orderId ?? raw.id,
-    order_number: raw.order_number ?? raw.orderNumber,
-    user_id: raw.user_id ?? raw.userId ?? 0,
-    customer_name: raw.customer_name ?? raw.customerName ?? "غير محدد",
-    customer_phone: raw.customer_phone ?? raw.customerPhone ?? "غير محدد",
+    // Support both old flat shape and new nested shape
+    id: od.order_id ?? od.orderId ?? od.id,
+    order_number: od.order_number ?? od.orderNumber,
+    user_id: od.user_id ?? od.userId ?? 0,
+    customer_name: cd.name ?? cd.customer_name ?? cd.customerName ?? "غير محدد",
+    customer_phone:
+      cd.phone ?? cd.customer_phone ?? cd.customerPhone ?? "غير محدد",
     delivery_date:
-      raw.delivery_date ??
-      raw.deliveryDate ??
-      raw.pickup_date ??
-      raw.pickupDate ??
+      od.delivery_date ??
+      od.deliveryDate ??
+      od.pickup_date ??
+      od.pickupDate ??
       null,
     delivery_time:
-      raw.delivery_time ??
-      raw.deliveryTime ??
-      raw.pickup_time ??
-      raw.pickupTime ??
+      od.delivery_time ??
+      od.deliveryTime ??
+      od.pickup_time ??
+      od.pickupTime ??
       null,
-    delivery_address: raw.delivery_address ?? raw.deliveryAddress ?? null,
-    notes: raw.notes ?? null,
-    total_amount: Number(raw.total_amount ?? raw.totalAmount ?? 0),
-    formatted_total: raw.formatted_total ?? raw.formattedTotal,
-    status: raw.status,
-    status_text: raw.status_text ?? raw.statusText,
-    created_at: raw.created_at ?? raw.createdAt,
-    updated_at: raw.updated_at ?? raw.updatedAt,
-    items: raw.items ?? [],
-    departments: raw.departments ?? [],
-    status_history: raw.status_history ?? raw.statusHistory ?? [],
-    items_count: raw.items_count ?? raw.itemsCount,
-    departments_count: raw.departments_count ?? raw.departmentsCount,
-    items_summary: raw.items_summary ?? raw.itemsSummary ?? [],
+    delivery_address: od.delivery_address ?? od.deliveryAddress ?? null,
+    notes: od.notes ?? null,
+    total_amount: parseNumber(od.total_amount ?? od.totalAmount),
+    formatted_total: od.formatted_total ?? od.formattedTotal,
+    status: od.status,
+    status_text: od.status_text ?? od.statusText,
+    created_at: od.created_at ?? od.createdAt ?? od.placed_at,
+    updated_at: od.updated_at ?? od.updatedAt,
+    // Preserve old optional arrays, fallback to nested products mapping for summary
+    items: od.items ?? raw.items ?? [],
+    departments: od.departments ?? raw.departments ?? [],
+    status_history:
+      od.status_history ??
+      raw.status_history ??
+      od.statusHistory ??
+      raw.statusHistory ??
+      [],
+    items_count: od.items_count ?? od.itemsCount,
+    departments_count: od.departments_count ?? od.departmentsCount,
+    items_summary:
+      od.items_summary ??
+      od.itemsSummary ??
+      (products
+        ? products.map((p: any) => ({
+            product_name: p.product_name ?? p.name,
+            quantity: p.quantity,
+            unit_name: p.unit_name,
+            total_price: p.line_total ?? null,
+          }))
+        : []),
   };
 }
 

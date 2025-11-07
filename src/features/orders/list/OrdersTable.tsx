@@ -1,15 +1,16 @@
 "use client";
 import { Table } from "flowbite-react";
 import type { Order } from "@/entities/order/types";
-import Link from "next/link";
 import Pagination from "@/shared/ui/catalog/Pagination";
 import { useOrdersQuery } from "@/entities/order/api";
 import { useOrdersFilters } from "./useOrdersFilters";
 import { useMemo } from "react";
 import { CardBox } from "@/shared/ui/cards";
 import { OrdersTableSkeleton } from "./OrdersTableSkeleton";
+import { useRouter } from "next/navigation";  
 
 export function OrdersTable() {
+  const router = useRouter();
   const { filters } = useOrdersFilters();
   const page = filters.page ? Number(filters.page) : 1;
   const perPage = filters.per_page ? Number(filters.per_page) : 15;
@@ -37,6 +38,7 @@ export function OrdersTable() {
       <p className="text-center text-sm text-red-500">فشل في تحميل الطلبات</p>
     );
 
+  // After updating the mapper, query now returns normalized Order objects
   const items = query.data?.data as Order[] | undefined;
   if (!items || items.length === 0)
     return (
@@ -44,15 +46,23 @@ export function OrdersTable() {
     );
   const meta = query.data?.meta;
 
+  // Helper to parse non-ISO date strings like "2025-11-06 18:09:45"
+  const parseDateTime = (value?: string) => {
+    if (!value) return null;
+    // Replace space with 'T' to improve cross-browser compatibility.
+    const isoCandidate = value.replace(" ", "T");
+    const d = new Date(isoCandidate);
+    return isNaN(d.getTime()) ? null : d;
+  };
   return (
     <CardBox className="space-y-4">
       <div className="overflow-x-auto">
         <Table className="table-fixed centered-table white-header">
-          <Table.Head className="border-b border-gray-200">
+          <Table.Head className="border-b border-gray-200 text-xs">
             <Table.HeadCell>رقم الطلبية</Table.HeadCell>
             <Table.HeadCell>الزبون</Table.HeadCell>
             <Table.HeadCell>الهاتف</Table.HeadCell>
-            <Table.HeadCell>تاريخ الاستلام</Table.HeadCell>
+            {/* <Table.HeadCell>تاريخ الاستلام</Table.HeadCell> */}
             <Table.HeadCell>المبلغ الكلي</Table.HeadCell>
             {/* <Table.HeadCell>ملاحظات</Table.HeadCell> */}
             <Table.HeadCell>الحالة</Table.HeadCell>
@@ -60,57 +70,35 @@ export function OrdersTable() {
           </Table.Head>
           <Table.Body className="divide-y">
             {items.map((o) => {
-              const pickupDate =
-                o.delivery_date || o.delivery_time
-                  ? o.delivery_date ?? o.delivery_time
-                  : null;
+              const pickupDate = o.delivery_date || o.delivery_time ? o.delivery_date ?? o.delivery_time : null;
+              const placedAt = parseDateTime(o.created_at);
               return (
                 <Table.Row
                   key={o.id}
-                  className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
-                >
-                  <Table.Cell className="whitespace-nowrap font-medium text-gray-900 dark:text-white">
-                    <Link
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:cursor-pointer text-xs"
+                  onClick={ () => router.push(`/orders/${o.id}`)}
+                  >
+                  {/* <Link
                       href={`/orders/${o.id}`}
                       aria-label={`عرض الطلب رقم ${o.order_number}`}
                       className="block w-full h-full no-underline text-gray-900 dark:text-white"
-                    >
-                      {o.order_number}
-                    </Link>
+                    > */}
+                  <Table.Cell 
+                  // className="whitespace-nowrap font-medium text-gray-900 dark:text-white"
+                  >
+                      {o.order_number}                  
                   </Table.Cell>
                   <Table.Cell>
-                    <Link
-                      href={`/orders/${o.id}`}
-                      className="block w-full h-full no-underline text-current"
-                    >
                       {o.customer_name}
-                    </Link>
                   </Table.Cell>
-                  <Table.Cell>
-                    <Link
-                      href={`/orders/${o.id}`}
-                      className="block w-full h-full no-underline text-current"
-                    >
+                  <Table.Cell className="whitespace-nowrap ">
                       {o.customer_phone}
-                    </Link>
                   </Table.Cell>
+                  {/* <Table.Cell>
+                      {pickupDate ? new Date(pickupDate).toLocaleDateString("ar-EG") : "-"}
+                  </Table.Cell> */}
                   <Table.Cell>
-                    <Link
-                      href={`/orders/${o.id}`}
-                      className="block w-full h-full no-underline text-current"
-                    >
-                      {pickupDate
-                        ? new Date(pickupDate).toLocaleDateString("ar-EG")
-                        : "-"}
-                    </Link>
-                  </Table.Cell>
-                  <Table.Cell>
-                    <Link
-                      href={`/orders/${o.id}`}
-                      className="block w-full h-full no-underline text-current"
-                    >
                       {o.formatted_total ?? o.total_amount}
-                    </Link>
                   </Table.Cell>
                   {/* <Table.Cell className="max-w-[200px] truncate">
                     <Link
@@ -126,23 +114,13 @@ export function OrdersTable() {
                     </Link>
                   </Table.Cell> */}
                   <Table.Cell>
-                    <Link
-                      href={`/orders/${o.id}`}
-                      className="block w-full h-full no-underline text-current"
-                    >
                       {o.status_text || o.status}
-                    </Link>
                   </Table.Cell>
                   <Table.Cell>
-                    <Link
-                      href={`/orders/${o.id}`}
-                      className="block w-full h-full no-underline text-current"
-                    >
-                      {o.created_at
-                        ? new Date(o.created_at).toLocaleDateString("ar-LY")
-                        : "-"}
-                    </Link>
+
+                      {placedAt ? placedAt.toLocaleDateString("ar-LY") : "-"}
                   </Table.Cell>
+                  {/* </Link> */}
                 </Table.Row>
               );
             })}

@@ -14,16 +14,47 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateAdvertisement } from "@/entities/advertisement/api";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
-const schema = z.object({
-  title: z.string().min(2, "العنوان مطلوب"),
-  description: z.string().optional(),
-  starts_at: z.string().min(1, "تاريخ البداية مطلوب"),
-  ends_at: z.string().min(1, "تاريخ النهاية مطلوب"),
-  is_active: z.boolean(),
-  image: z.any().optional(),
-});
+const schema = z
+  .object({
+    title: z.string().min(2, "العنوان مطلوب"),
+    description: z.string().min(1, "الوصف مطلوب"),
+    starts_at: z.string().min(1, "تاريخ البداية مطلوب"),
+    ends_at: z.string().min(1, "تاريخ النهاية مطلوب"),
+    is_active: z.boolean(),
+    image: z.any(),
+  })
+  .superRefine((values, ctx) => {
+    // Ensure local-date comparisons using YYYY-MM-DD format
+    const todayStr = new Date().toLocaleDateString("en-CA");
+    if (values.starts_at && values.starts_at < todayStr) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "لا يمكن أن يكون تاريخ البدء قبل التاريخ الحالي",
+        path: ["starts_at"],
+      });
+    }
+    if (
+      values.starts_at &&
+      values.ends_at &&
+      values.ends_at < values.starts_at
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "لا يمكن أن يكون تاريخ الانتهاء قبل تاريخ البدء",
+        path: ["ends_at"],
+      });
+    }
+    const imgFile = (values as any).image?.[0];
+    if (!imgFile) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "الصورة مطلوبة",
+        path: ["image"],
+      });
+    }
+  });
 
 export type CreateAdvertisementValues = z.infer<typeof schema>;
 
@@ -40,11 +71,14 @@ export default function CreateAdvertisementModal({
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<CreateAdvertisementValues>({
     resolver: zodResolver(schema),
     defaultValues: { is_active: true },
   });
+
+  const todayStr = useMemo(() => new Date().toLocaleDateString("en-CA"), []);
 
   const onSubmit = handleSubmit(async (values) => {
     try {
@@ -53,7 +87,7 @@ export default function CreateAdvertisementModal({
       fd.append("title", values.title);
       fd.append("starts_at", values.starts_at);
       fd.append("ends_at", values.ends_at);
-      if (values.description) fd.append("description", values.description);
+      fd.append("description", values.description);
       fd.append("is_active", values.is_active ? "1" : "0");
       const imgFile = (values as any).image?.[0];
       if (imgFile) fd.append("image", imgFile);
@@ -70,10 +104,14 @@ export default function CreateAdvertisementModal({
 
   return (
     <Modal show={open} size="lg" onClose={onClose} popup>
-      <Modal.Header />
+      <Modal.Header className="p-4">
+        <span className="text-lg font-semibold rtl:text-right">
+          إضافة إعلان
+        </span>
+      </Modal.Header>
       <Modal.Body>
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold rtl:text-right">إضافة إعلان</h3>
+          {/* <h3 className="text-lg font-semibold rtl:text-right">إضافة إعلان</h3> */}
           <form onSubmit={onSubmit} className="space-y-5">
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1 col-span-2">
@@ -98,7 +136,11 @@ export default function CreateAdvertisementModal({
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1">
                 <Label value="تاريخ البدء" />
-                <TextInput type="date" {...register("starts_at")} />
+                <TextInput
+                  type="date"
+                  min={todayStr}
+                  {...register("starts_at")}
+                />
                 {errors.starts_at && (
                   <p className="text-red-500 text-xs mt-1">
                     {errors.starts_at.message as any}
@@ -107,7 +149,11 @@ export default function CreateAdvertisementModal({
               </div>
               <div className="flex flex-col gap-1">
                 <Label value="تاريخ الانتهاء" />
-                <TextInput type="date" {...register("ends_at")} />
+                <TextInput
+                  type="date"
+                  min={watch("starts_at") || todayStr}
+                  {...register("ends_at")}
+                />
                 {errors.ends_at && (
                   <p className="text-red-500 text-xs mt-1">
                     {errors.ends_at.message as any}
@@ -118,6 +164,11 @@ export default function CreateAdvertisementModal({
             <div className="flex flex-col gap-1">
               <Label value="صورة الإعلان" />
               <FileInput accept="image/*" {...register("image")} />
+              {errors.image && (
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.image.message as any}
+                </p>
+              )}
             </div>
             <div className="flex gap-6">
               <div className="flex items-center gap-2">

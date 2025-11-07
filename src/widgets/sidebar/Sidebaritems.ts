@@ -46,7 +46,7 @@ const SidebarContent: MenuItem[] = [
             url: "/categories",
           },
           {
-            name: "المنتجات",
+            name: "الأنواع",
             icon: "tabler:layers",
             id: uid(),
             url: "/types",

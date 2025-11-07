@@ -98,10 +98,9 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
 
   return (
     <Modal show={open} size="md" onClose={handleClose} popup>
-      <Modal.Header />
+      <Modal.Header className="p-4" >إضافة صنف إلى الأبرز</Modal.Header>
       <Modal.Body>
         <div className="flex flex-col gap-5">
-          <h3 className="text-lg font-semibold">إضافة منتج إلى الأبرز</h3>
           {errorMsg && (
             <Alert color="failure" className="text-sm">
               {errorMsg}
@@ -109,13 +108,13 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
           )}
           {/* Select التصنيفات */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">التصنيف</label>
+            <label className="text-sm font-medium">القسم</label>
             <Select
               value={categoryId}
               disabled={categoriesQuery.isLoading}
               onChange={(e) => setCategoryId(Number(e.target.value) || "")}
             >
-              <option value="">اختر التصنيف</option>
+              <option value="">اختر القسم</option>
               {categories.map((c: any) => (
                 <option key={c.id} value={c.id}>
                   {c.name}
@@ -124,20 +123,20 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
             </Select>
             {categoriesQuery.isLoading && (
               <p className="text-xs text-neutral-500 flex items-center gap-1">
-                <Spinner size="xs" /> تحميل التصنيفات...
+                <Spinner size="xs" /> تحميل الأقسام...
               </p>
             )}
           </div>
-          {/* Select الأنواع */}
+          {/* Select المجموعات */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">النوع</label>
+            <label className="text-sm font-medium">المجموعة</label>
             <Select
               value={typeId}
               disabled={!categoryId || typesQuery.isLoading}
               onChange={(e) => setTypeId(Number(e.target.value) || "")}
             >
               <option value="">
-                {!categoryId ? "اختر التصنيف أولاً" : "اختر النوع"}
+                {!categoryId ? "اختر القسم أولاً" : "اختر المجموعة"}
               </option>
               {types.map((t: any) => (
                 <option key={t.id} value={t.id}>
@@ -147,20 +146,20 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
             </Select>
             {typesQuery.isLoading && categoryId && (
               <p className="text-xs text-neutral-500 flex items-center gap-1">
-                <Spinner size="xs" /> تحميل الأنواع...
+                <Spinner size="xs" /> تحميل المجموعات...
               </p>
             )}
           </div>
           {/* Select الأصناف */}
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium">المنتج</label>
+            <label className="text-sm font-medium">الصنف</label>
             <Select
               value={productId}
               disabled={!typeId || productsQuery.isLoading}
               onChange={(e) => setProductId(Number(e.target.value) || "")}
             >
               <option value="">
-                {!typeId ? "اختر النوع أولاً" : "اختر المنتج"}
+                {!typeId ? "اختر المجموعة أولاً" : "اختر الصنف"}
               </option>
               {products.map((p: any) => (
                 <option key={p.id} value={p.id}>
@@ -170,12 +169,12 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
             </Select>
             {productsQuery.isLoading && typeId && (
               <p className="text-xs text-neutral-500 flex items-center gap-1">
-                <Spinner size="xs" /> تحميل الاصناف...
+                <Spinner size="xs" /> تحميل الأصناف...
               </p>
             )}
             {typeId && !productsQuery.isLoading && products.length === 0 && (
               <p className="text-xs text-primary">
-                لا توجد منتجات متاحة (غير مميزة) لهذا النوع.
+                لا توجد أصناف متاحة (غير مميزة) لهذا النوع.
               </p>
             )}
           </div>

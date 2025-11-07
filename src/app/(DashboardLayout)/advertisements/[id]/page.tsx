@@ -145,7 +145,7 @@ export default function AdvertisementDetailPage() {
         title={adv?.name || adv?.title || (loading ? "تحميل..." : "-")}
         items={[
           { title: "الإعلانات", to: "/advertisements" },
-          { title: "تفاصيل إعلان" },
+          { title: adv?.name || adv?.title || "تفاصيل إعلان" },
         ]}
       />
       {loading && !adv && <AdvertisementDetailSkeleton />}
@@ -191,7 +191,7 @@ export default function AdvertisementDetailPage() {
                   </div>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="block text-sm">تاريخ النشر</label>
+                      <label className="block text-sm">تاريخ البدء</label>
                       <TextInput
                         type="date"
                         disabled={update.isPending}

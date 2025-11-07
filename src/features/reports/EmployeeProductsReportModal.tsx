@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { Button, Modal, Select, TextInput, Spinner } from "flowbite-react";
+import { Button, Modal, Select, Spinner } from "flowbite-react";
 import { apiInstance } from "@/shared/api/axios";
 import { useSessionStore } from "@/entities/session/model/sessionStore";
 
@@ -12,8 +12,6 @@ type Props = {
 export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   const { isManager, isEmployee } = useSessionStore();
   const [reportType, setReportType] = useState<string>("");
-  const [fromDate, setFromDate] = useState<string>("");
-  const [toDate, setToDate] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,7 +24,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
 
   const allOptions: ReportOption[] = useMemo(
     () => [
-      {   
+      {
         value: "employee-products",
         label: "تقرير الأصناف والكميات",
         roles: ["employee"],
@@ -49,8 +47,8 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   );
 
   const allowedOptions: ReportOption[] = useMemo(() => {
-    if (isManager)
-      return allOptions.filter((o) => o.value === "manager-dashboard");
+    // Managers should see all report types
+    if (isManager) return allOptions;
     if (isEmployee)
       return allOptions.filter((o) => o.roles.includes("employee"));
     return allOptions;
@@ -59,20 +57,15 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   // Default selection based on role when modal opens
   useEffect(() => {
     if (!open) return;
-    if (isManager) {
-      setReportType("manager-dashboard");
-      return;
-    }
     if (!reportType && allowedOptions.length > 0) {
       setReportType(allowedOptions[0].value);
     }
-  }, [open, isManager, allowedOptions, reportType]);
+  }, [open, allowedOptions, reportType]);
 
   const selectedPath = useMemo(() => {
-    if (isManager) return "/reports/manager/dashboard";
     const found = allOptions.find((o) => o.value === reportType);
     return found?.path;
-  }, [allOptions, reportType, isManager]);
+  }, [allOptions, reportType]);
 
   const handleOpenInNewTab = async () => {
     setError(null);
@@ -91,11 +84,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
       reportWindow.document.write(
         "<p style='font-family: sans-serif'>جاري تحميل التقرير…</p>"
       );
-      const params: Record<string, string> = {};
-      if (fromDate) params.from_date = fromDate;
-      if (toDate) params.to_date = toDate;
       const res = await apiInstance.get(selectedPath, {
-        params,
         responseType: "text" as any,
         headers: { Accept: "text/html" },
       });
@@ -119,52 +108,23 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
       <Modal.Header>استخراج تقرير</Modal.Header>
       <Modal.Body>
         <div className="space-y-4">
-          {!isManager && (
-            <div>
-              <label className="block mb-1 text-sm">نوع التقرير</label>
-              <Select
-                value={reportType}
-                onChange={(e) => setReportType(e.target.value)}
-              >
-                {allowedOptions.map((opt: ReportOption) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </Select>
-            </div>
-          )}
-          <div className="flex gap-3">
-            <div className="flex-1">
-              <label className="block mb-1 text-sm">من تاريخ</label>
-              <TextInput
-                type="date"
-                value={fromDate}
-                onChange={(e) => setFromDate(e.target.value)}
-              />
-            </div>
-            <div className="flex-1">
-              <label className="block mb-1 text-sm">إلى تاريخ</label>
-              <TextInput
-                type="date"
-                value={toDate}
-                onChange={(e) => setToDate(e.target.value)}
-              />
-            </div>
+          <div>
+            <label className="block mb-1 text-sm">نوع التقرير</label>
+            <Select
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value)}
+            >
+              {allowedOptions.map((opt: ReportOption) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </Select>
           </div>
           {error && <p className="text-red-500 text-sm">{error}</p>}
         </div>
       </Modal.Body>
-      <Modal.Footer className="flex items-center justify-between">
-        <div className="text-sm text-gray-500">
-          {fromDate || toDate ? (
-            <span>
-              الفترة: {fromDate || "—"} إلى {toDate || "—"}
-            </span>
-          ) : (
-            <span>بدون تحديد فترة</span>
-          )}
-        </div>
+      <Modal.Footer className="flex items-center justify-end">
         <div className="flex items-center gap-3">
           {loading && (
             <div className="flex items-center gap-2 text-sm text-gray-500">
@@ -178,7 +138,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
           <Button
             color={"primary"}
             onClick={handleOpenInNewTab}
-            disabled={loading || (!isManager && !reportType)}
+            disabled={loading || !reportType}
           >
             فتح التقرير في تبويب
           </Button>

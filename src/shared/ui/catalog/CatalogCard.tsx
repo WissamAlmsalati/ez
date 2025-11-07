@@ -54,8 +54,11 @@ export default function CatalogCard({
               </div>
             )}
             <div className="flex flex-col justify-between h-full gap-2 flex-1 min-w-0">
-              <div className="text-base font-semibold rtl:text-right text-primary flex items-center gap-3 justify-between w-full">
+              <div className="text-sm font-semibold rtl:text-right text-primary flex items-center gap-3 justify-between w-full">
                 {title}
+              </div>
+               <div className="text-xs text-primary rtl:text-right block truncate mt-1">
+                {footer}
               </div>
             </div>
           </Link>
@@ -93,10 +96,6 @@ export default function CatalogCard({
           />
         )}
       </div>
-
-      <span className="text-xs text-primary rtl:text-right block truncate mt-1">
-        {footer}
-      </span>
     </div>
   );
 }

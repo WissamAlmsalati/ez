@@ -71,7 +71,7 @@ export default function CreateTypeModal({
         image: (values as any).image?.[0] ?? undefined,
       });
       await createMutation.mutateAsync(fd);
-      toast.success("تم إضافة النوع بنجاح");
+      toast.success("تم إضافة المجموعة بنجاح");
       reset();
       onClose();
     } catch (e: any) {
@@ -84,26 +84,25 @@ export default function CreateTypeModal({
   return (
     <Modal show={open} size="md" onClose={onClose} popup>
       <Modal.Header className="p-4">
-        <span className="text-lg font-semibold rtl:text-right">إضافة نوع</span>
+        <span className="text-lg font-semibold rtl:text-right">إضافة مجموعة</span>
       </Modal.Header>
       <Modal.Body>
         <div className="space-y-4">
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
-              <Label value="اسم النوع" />
+              <Label value="اسم المجموعة" />
               <TextInput
-                placeholder="مثال: بقلاوة"
                 {...register("name")}
                 color={errors.name ? "failure" : undefined}
               />
             </div>
             <div>
-              <Label value="وصف النوع" />
+              <Label value="وصف المجموعة" />
               <Textarea rows={3} {...register("description")} />
             </div>
             {!categoryId && (
               <div>
-                <Label value="الصنف" />
+                <Label value="القسم" />
                 <Controller
                   name="category"
                   control={control}
@@ -114,7 +113,7 @@ export default function CreateTypeModal({
                       onChange={(val) => field.onChange(val || null)}
                       getOptionValue={(c) => c.id as any}
                       getOptionLabel={(c) => c.name}
-                      placeholder="اختر الصنف"
+                      placeholder="اختر القسم"
                       pageSize={100}
                     />
                   )}

@@ -17,8 +17,8 @@ interface Props {
 
 // ملاحظات:
 // 1. يتم تفعيل كل Select بعد اختيار السابق.
-// 2. نصفي المنتجات is_featured=false حتى لا نكرر.
-// 3. عند النجاح: إغلاق المودال وتفريغ الاختيارات و invalidation لقائمة المنتجات المميزة.
+// 2. نصفي الأصناف is_featured=false حتى لا نكرر.
+// 3. عند النجاح: إغلاق المودال وتفريغ الاختيارات و invalidation لقائمة الأصناف المميزة.
 
 export default function AddFeaturedProductModal({ open, onClose }: Props) {
   const { closeModal } = useAddFeaturedProductModal();
@@ -36,7 +36,7 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
   const typesQuery = useTypesQuery(
     categoryId ? { per_page: 100, category_id: categoryId } : undefined
   );
-  // المنتجات حسب النوع وغير مميزة
+  // الأصناف حسب النوع وغير مميزة
   const productsQuery = useProductsQueryV2(
     typeId
       ? {
@@ -72,14 +72,14 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
   async function handleSubmit() {
     setErrorMsg(null);
     if (!productId) {
-      setErrorMsg("اختر المنتج أولاً");
+      setErrorMsg("اختر الصنف أولاً");
       return;
     }
     try {
       await updateMutation.mutateAsync({ is_featured: true });
-      // نعمل invalidate لقوائم المنتجات + قائمة المنتجات المميزة (تعتمد على is_featured=true)
+      // نعمل invalidate لقوائم الأصناف + قائمة الأصناف المميزة (تعتمد على is_featured=true)
       qc.invalidateQueries({ queryKey: productKeysV2.base() });
-      toast.success("تمت إضافة المنتج إلى الأبرز بنجاح");
+      toast.success("تمت إضافة الصنف إلى الأبرز بنجاح");
       handleClose();
     } catch (e: any) {
       setErrorMsg(e?.message || "حدث خطأ");
@@ -151,7 +151,7 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
               </p>
             )}
           </div>
-          {/* Select المنتجات */}
+          {/* Select الأصناف */}
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">المنتج</label>
             <Select
@@ -170,7 +170,7 @@ export default function AddFeaturedProductModal({ open, onClose }: Props) {
             </Select>
             {productsQuery.isLoading && typeId && (
               <p className="text-xs text-neutral-500 flex items-center gap-1">
-                <Spinner size="xs" /> تحميل المنتجات...
+                <Spinner size="xs" /> تحميل الاصناف...
               </p>
             )}
             {typeId && !productsQuery.isLoading && products.length === 0 && (

@@ -20,12 +20,12 @@ import UnitsModal from "@/features/products/units/UnitsModal";
 export default function ProductsPage() {
   const BCrumb = [
     {
-      title: "المنتجات",
+      title: "الأصناف",
     },
   ];
   return (
     <>
-      <BreadcrumbComp title="المنتجات" items={BCrumb} />
+      <BreadcrumbComp title="الأصناف" items={BCrumb} />
       <Suspense fallback={<CatalogSkeleton />}>
         <ProductsPageContent />
       </Suspense>
@@ -78,7 +78,7 @@ function ProductsPageContent() {
             className="transition-colors duration-300"
             onClick={() => setOpen(true)}
           >
-            إضافة منتج
+            إضافة صنف
           </Button>
         </div>
       </div>

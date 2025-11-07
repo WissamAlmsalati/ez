@@ -23,7 +23,7 @@ export function CategoryFilter({ className, perPage = 100 }: Props) {
       disabled={isLoading || isError}
       onChange={(e) => update({ category_id: e.target.value })}
     >
-      <option value="">كل الأصناف</option>
+      <option value="">كل الأقسام</option>
       {isLoading && (
         <option value="" disabled>
           جاري التحميل...

@@ -17,12 +17,12 @@ import { CategoryFilter } from "@/shared/ui/catalog/CategoryFilter";
 export default function TypesPage() {
   const BCrumb = [
     {
-      title: "الأنواع",
+      title: "المجموعات",
     },
   ];
   return (
     <>
-      <BreadcrumbComp title="الأنواع" items={BCrumb} />
+      <BreadcrumbComp title="المجموعات" items={BCrumb} />
       <Suspense fallback={<CatalogSkeleton />}>
         <TypesPageContent />
       </Suspense>
@@ -64,7 +64,7 @@ function TypesPageContent() {
           className="transition-colors duration-300"
           onClick={() => setOpen(true)}
         >
-          إضافة نوع
+          إضافة مجموعة
         </Button>
       </div>
       {isLoading ? (

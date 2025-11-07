@@ -47,8 +47,8 @@ export default function ProductDetailPage() {
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [localImage, setLocalImage] = React.useState<string | null>(null);
   const BCrumb = [
-    { title: "المنتجات", to: "/products" },
-    { title: "تفاصيل منتج" },
+    { title: "الأصناف", to: "/products" },
+    { title: detail.data?.name || "تفاصيل الصنف" },
   ];
   const loading = detail.isLoading;
   const loadError = detail.isError || !detail.data;
@@ -165,7 +165,7 @@ export default function ProductDetailPage() {
       />
       {loadError && !loading && (
         <RetryError
-          message="تعذر تحميل بيانات المنتج"
+          message="تعذر تحميل بيانات الصنف"
           onRetry={() => detail.refetch()}
           retrying={detail.isFetching}
         />
@@ -177,9 +177,9 @@ export default function ProductDetailPage() {
             <form className="space-y-8" onSubmit={handleSubmit(submitForm)}>
               <div className="flex flex-col md:grid md:grid-cols-2 md:gap-12 gap-4">
                 <div className="text-right md:pl-6 md:order-2">
-                  <h3 className="font-semibold text-lg">بيانات المنتج</h3>
+                  <h3 className="font-semibold text-lg">بيانات الصنف</h3>
                   <p className="mt-1 text-xs text-gray-500">
-                    لتعديل بيانات المنتج قم بتحديثها واحفظ من هنا
+                    لتعديل بيانات الصنف قم بتحديثها واحفظ من هنا
                   </p>
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function ProductDetailPage() {
                   {loading ? null : (
                     <>
                       <div className="space-y-1">
-                        <label className="block text-sm">اسم المنتج</label>
+                        <label className="block text-sm">اسم الصنف</label>
                         <TextInput
                           disabled={loading}
                           {...register("name")}
@@ -201,7 +201,7 @@ export default function ProductDetailPage() {
                         )}
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-sm">وصف المنتج</label>
+                        <label className="block text-sm">وصف الصنف</label>
                         <Textarea
                           rows={3}
                           disabled={loading}
@@ -368,8 +368,8 @@ export default function ProductDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         isLoading={del.isPending}
-        title="حذف المنتج"
-        description="سيتم حذف المنتج. هل أنت متأكد؟"
+        title="حذف الصنف"
+        description="سيتم حذف الصنف. هل أنت متأكد؟"
         onConfirm={async () => {
           try {
             await del.mutateAsync();

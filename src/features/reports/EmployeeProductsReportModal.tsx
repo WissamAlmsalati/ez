@@ -26,15 +26,15 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
 
   const allOptions: ReportOption[] = useMemo(
     () => [
-      {
+      {   
         value: "employee-products",
-        label: "تقرير المنتجات والكميات",
+        label: "تقرير الأصناف والكميات",
         roles: ["employee"],
         path: "/reports/employee/products",
       },
       {
         value: "employee-products-by-store",
-        label: "تقرير المنتجات حسب الزبون/المتجر",
+        label: "تقرير الأصناف حسب الزبون/المتجر",
         roles: ["employee"],
         path: "/reports/employee/products-by-store",
       },

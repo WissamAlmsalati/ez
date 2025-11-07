@@ -16,12 +16,12 @@ import { SearchFilter } from "@/shared/ui/catalog/SearchFilter";
 export default function CategoriesPage() {
   const BCrumb = [
     {
-      title: "الأصناف",
+      title: "الأقسام",
     },
   ];
   return (
     <>
-      <BreadcrumbComp title="الأصناف" items={BCrumb} />
+      <BreadcrumbComp title="الأقسام" items={BCrumb} />
       <Suspense fallback={<CatalogSkeleton />}>
         <CategoriesPageContent />
       </Suspense>
@@ -62,7 +62,7 @@ function CategoriesPageContent() {
           className="transition-colors duration-300"
           onClick={() => setOpen(true)}
         >
-          إضافة صنف
+          إضافة قسم
         </Button>
       </div>
 

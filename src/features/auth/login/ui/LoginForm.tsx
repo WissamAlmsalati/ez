@@ -47,7 +47,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full flex justify-center items-center min-h-screen px-4">
+    <div className="w-full flex justify-center items-center min-h-screen px-4 bg-gray-50">
       <Card className="w-full max-w-md shadow-md">
         <div className="mb-2 text-center">
           <h2 className="text-2xl font-semibold text-dark dark:text-white">

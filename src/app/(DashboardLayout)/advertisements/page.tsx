@@ -75,7 +75,7 @@ function AdvertisementsPageContent() {
             size="sm"
             onClick={() => setTab("featured")}
           >
-            أبرز المنتجات
+            أبرز الأصناف
           </Button>
         </div>
         {isAds ? (
@@ -84,7 +84,7 @@ function AdvertisementsPageContent() {
           </Button>
         ) : (
           <Button color="primary" size="sm" onClick={openFeaturedModal}>
-            إضافة منتج للأبرز
+            إضافة صنف للأبرز
           </Button>
         )}
       </div>
@@ -141,7 +141,7 @@ function FeaturedProductsSection({ query }: { query: any }) {
   if (query.isLoading) return <CatalogSkeleton />;
   if (query.isError)
     return (
-      <p className="text-center text-sm text-red-500">فشل في تحميل المنتجات</p>
+      <p className="text-center text-sm text-red-500">فشل في تحميل الأصناف</p>
     );
   const data = query.data;
   if (!data || data.data.length === 0) return <EmptyState />;

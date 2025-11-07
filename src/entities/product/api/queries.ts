@@ -10,6 +10,6 @@ export const getProducts = async (params: GetProductsParams): Promise<ProductsAp
   const response = await apiInstance.get<ProductsApiResponse>('/products', {
     params,
   });
-  // الـ API الخاص بك يضع المنتجات داخل حقل 'data'
+  // الـ API الخاص بك يضع الأصناف داخل حقل 'data'
   return response.data;
 };

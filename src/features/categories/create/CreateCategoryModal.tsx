@@ -45,7 +45,7 @@ export default function CreateCategoryModal({
         image: (values as any).image?.[0] ?? undefined,
       });
       await createMutation.mutateAsync(fd);
-      toast.success("تم إضافة الصنف بنجاح");
+      toast.success("تم إضافة القسم بنجاح");
       // Reset form + remote select state
       reset();
       onClose();
@@ -59,22 +59,21 @@ export default function CreateCategoryModal({
   return (
     <Modal show={open} size="md" onClose={onClose} popup>
       <Modal.Header className="p-4">
-        <span className="text-lg font-semibold rtl:text-right">إضافة صنف</span>
+        <span className="text-lg font-semibold rtl:text-right">إضافة قسم</span>
       </Modal.Header>
       <Modal.Body>
         <div className="space-y-4">
           {/* <h3 className="text-lg font-semibold rtl:text-right">إضافة صنف</h3> */}
           <form onSubmit={onSubmit} className="space-y-4">
             <div>
-              <Label value="اسم الصنف" />
+              <Label value="اسم القسم" />
               <TextInput
-                placeholder="مثال: شرقي"
                 {...register("name")}
                 color={errors.name ? "failure" : undefined}
               />
             </div>
             <div>
-              <Label value="وصف الصنف" />
+              <Label value="وصف القسم" />
               <Textarea rows={3} {...register("description")} />
             </div>
             <div className="flex items-center gap-2">

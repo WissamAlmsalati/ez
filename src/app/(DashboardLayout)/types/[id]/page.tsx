@@ -44,7 +44,7 @@ export default function TypeDetailPage() {
   const [createProductOpen, setCreateProductOpen] = React.useState(false);
   const products = useProductsQueryV2({ type_id: Number(id), per_page: 50 });
   const toggleProduct = useToggleProduct();
-  const BCrumb = [{ title: "الأنواع", to: "/types" }, { title: "تفاصيل نوع" }];
+  const BCrumb = [{ title: "المجموعات", to: "/types" }, { title: detail.data?.name || "تفاصيل مجموعة" }];
 
   const loading = detail.isLoading;
   const loadError = detail.isError || !detail.data;
@@ -147,7 +147,7 @@ export default function TypeDetailPage() {
       />
       {loadError && !loading && (
         <RetryError
-          message="تعذر تحميل بيانات النوع"
+          message="تعذر تحميل بيانات المجموعة"
           onRetry={() => detail.refetch()}
           retrying={detail.isFetching}
         />
@@ -159,9 +159,9 @@ export default function TypeDetailPage() {
             <form className="space-y-8" onSubmit={handleSubmit(submitForm)}>
               <div className="flex flex-col md:grid md:grid-cols-2 md:gap-12 gap-4">
                 <div className="text-right md:pl-6 md:order-2">
-                  <h3 className="font-semibold text-lg">بيانات النوع</h3>
+                  <h3 className="font-semibold text-lg">بيانات المجموعة</h3>
                   <p className="mt-1 text-xs text-gray-500">
-                    لتعديل بيانات النوع قم بتحديثها واحفظ من هنا
+                    لتعديل بيانات المجموعة قم بتحديثها واحفظ من هنا
                   </p>
                 </div>
               </div>
@@ -170,7 +170,7 @@ export default function TypeDetailPage() {
                   {loading ? null : (
                     <>
                       <div className="space-y-1">
-                        <label className="block text-sm">اسم النوع</label>
+                        <label className="block text-sm">اسم المجموعة</label>
                         <TextInput
                           disabled={loading}
                           {...register("name")}
@@ -183,7 +183,7 @@ export default function TypeDetailPage() {
                         )}
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-sm">وصف النوع</label>
+                        <label className="block text-sm">وصف المجموعة</label>
                         <Textarea
                           rows={3}
                           disabled={loading}
@@ -320,14 +320,14 @@ export default function TypeDetailPage() {
           </div>
           <div className="space-y-4 bg-white rounded-lg p-4 sm:p-6 md:p-8 shadow-sm border">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-base">المنتجات التابعة</h3>
+              <h3 className="font-semibold text-base">الأصناف التابعة</h3>
               <div className="flex items-center gap-3">
                 <Button
                   size="sm"
                   color="primary"
                   onClick={() => setCreateProductOpen(true)}
                 >
-                  إضافة منتج
+                  إضافة صنف
                 </Button>
               </div>
             </div>
@@ -359,8 +359,8 @@ export default function TypeDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         isLoading={del.isPending}
-        title="حذف النوع"
-        description="سيتم حذف النوع. هل أنت متأكد؟"
+        title="حذف المجموعة"
+        description="سيتم حذف المجموعة. هل أنت متأكد؟"
         onConfirm={async () => {
           await del.mutateAsync();
           toast.success("تم الحذف");

@@ -91,7 +91,7 @@ export default function CreateProductModal({
       const pricesJson = JSON.stringify(pricesPayload);
       fd.append("prices", pricesJson);
       await createMutation.mutateAsync(fd);
-      toast.success("تم إضافة المنتج بنجاح");
+      toast.success("تم إضافة الصنف بنجاح");
       reset();
       if (resetType) resetType();
       onClose();
@@ -104,12 +104,12 @@ export default function CreateProductModal({
 
   return (
     <Modal show={open} size="lg" onClose={onClose} popup>
-      <Modal.Header />
+      <Modal.Header className="p-4">
+        <span className="text-lg font-semibold rtl:text-right">إضافة صنف</span>
+      </Modal.Header>
       <Modal.Body>
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold rtl:text-right">إضافة منتج</h3>
           <form onSubmit={onSubmit} className="space-y-5">
-            {/* Row: Name + (Type if not fixed). إذا كان النوع ثابت يصبح الاسم بعرض كامل */}
             <div
               className={`grid gap-4 ${
                 !typeId ? "grid-cols-2" : "grid-cols-1"
@@ -118,7 +118,7 @@ export default function CreateProductModal({
               <div
                 className={`flex flex-col gap-1 ${!typeId ? "" : "col-span-1"}`}
               >
-                <Label value="اسم المنتج" />
+                <Label value="اسم الصنف" />
                 <TextInput {...register("name")} />
                 {errors.name && (
                   <p className="text-red-500 text-xs mt-1">
@@ -128,7 +128,7 @@ export default function CreateProductModal({
               </div>
               {!typeId && (
                 <div className="flex flex-col gap-1">
-                  <Label value="النوع" />
+                  <Label value="المجموعة" />
                   <RemoteSelect
                     path="/types"
                     pageSize={100}
@@ -136,7 +136,7 @@ export default function CreateProductModal({
                     onChange={onTypeChange}
                     getOptionValue={(t: any) => t.id}
                     getOptionLabel={(t: any) => t.name}
-                    placeholder="اختر النوع"
+                    placeholder="اختر المجموعة"
                   />
                   {errors.type_id && (
                     <p className="text-red-500 text-xs mt-1">
@@ -148,7 +148,7 @@ export default function CreateProductModal({
             </div>
             {/* Description */}
             <div className="flex flex-col gap-1">
-              <Label value="الوصف" />
+              <Label value="وصف الصنف" />
               <Textarea rows={3} {...register("description")} />
               {errors.description && (
                 <p className="text-red-500 text-xs mt-1">
@@ -158,7 +158,7 @@ export default function CreateProductModal({
             </div>
             {/* Image */}
             <div className="flex flex-col gap-1">
-              <Label value="صورة المنتج" />
+              <Label value="صورة الصنف" />
               <FileInput accept="image/*" {...register("image")} />
             </div>
             {/* Toggles */}

@@ -9,7 +9,7 @@ export function ItemsTable({ order }: { order: Order }) {
     <CardBox className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-medium text-gray-800 dark:text-gray-100">
-          كل المنتجات
+          كل الأصناف
         </h3>
       </div>
       <div className="overflow-x-auto">

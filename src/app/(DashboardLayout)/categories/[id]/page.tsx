@@ -48,8 +48,8 @@ export default function CategoryDetailPage() {
   const toggleType = useToggleType();
 
   const BCrumb = [
-    { title: "الأصناف", to: "/categories" },
-    { title: "تفاصيل صنف" },
+    { title: "الأقسام", to: "/categories" },
+    { title: detail.data?.name || "تفاصيل القسم" },
   ];
 
   const loading = detail.isLoading;
@@ -169,9 +169,9 @@ export default function CategoryDetailPage() {
               <div className="flex flex-col md:grid md:grid-cols-2 md:gap-12 gap-4">
                 {/* الحقول في اليسار (مع RTL) تعني ترتيبها بعد الصورة بصرياً لذا نضع الصورة order-1 في DOM ونجبر flex-row-reverse على الشاشات الكبيرة إذا لزم */}
                 <div className="text-right md:pl-6 md:order-2">
-                  <h3 className="font-semibold text-lg">بيانات الصنف</h3>
+                  <h3 className="font-semibold text-lg">بيانات القسم</h3>
                   <p className="mt-1 text-xs text-gray-500">
-                    لتعديل بيانات الصنف قم بتحديثها واحفظ من هنا
+                    لتعديل بيانات القسم قم بتحديثها واحفظ من هنا
                   </p>
                 </div>
               </div>
@@ -180,7 +180,7 @@ export default function CategoryDetailPage() {
                   {loading ? null : (
                     <>
                       <div className="space-y-1">
-                        <label className="block text-sm">اسم الصنف</label>
+                        <label className="block text-sm">اسم القسم</label>
                         <TextInput
                           disabled={loading}
                           {...register("name")}
@@ -193,7 +193,7 @@ export default function CategoryDetailPage() {
                         )}
                       </div>
                       <div className="space-y-1">
-                        <label className="block text-sm">وصف الصنف</label>
+                        <label className="block text-sm">وصف القسم</label>
                         <Textarea
                           rows={3}
                           disabled={loading}
@@ -330,29 +330,16 @@ export default function CategoryDetailPage() {
           </div>
           <div className="space-y-4 bg-white rounded-lg p-4 sm:p-6 md:p-8 shadow-sm border">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-base">الأنواع</h3>
+              <h3 className="font-semibold text-base">المجموعات</h3>
               <Button
                 size="sm"
                 color="primary"
                 onClick={() => setCreateTypeOpen(true)}
               >
-                إضافة نوع
+                إضافة مجموعة
               </Button>
             </div>
-            {/* <ChildrenGrid
-              loading={typesList.isLoading}
-              items={(typesList.data?.data || []).map((t) => ({
-                id: t.id,
-                title: t.name,
-                image: (t as any).image ?? (t as any).imageUrl,
-                active: !!t.is_active,
-                footer: t.category?.name,
-              }))}
-              onToggle={async (childId) => {
-                await toggleType.mutateAsync(childId);
-              }}
-              empty={<span>لا توجد أنواع</span>}
-            /> */}
+
             {typesList.isLoading ? (
               <CatalogSkeleton />
             ) : !typesList || typesList.data?.data.length === 0 ? (
@@ -381,8 +368,8 @@ export default function CategoryDetailPage() {
         open={deleteOpen}
         onClose={() => setDeleteOpen(false)}
         isLoading={del.isPending}
-        title="حذف الصنف"
-        description="سيتم حذف الصنف . هل أنت متأكد؟"
+        title="حذف القسم"
+        description="سيتم حذف القسم . هل أنت متأكد؟"
         onConfirm={async () => {
           await del.mutateAsync();
           toast.success("تم الحذف");

@@ -44,7 +44,7 @@ export function useUpdateUser(id: number | string) {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (payload: Partial<User>) => {
-      const { data } = await apiInstance.put(`${USERS_PATH}/${id}`, payload);
+      const { data } = await apiInstance.post(`${USERS_PATH}/${id}`, payload);
       return data;
     },
     onMutate: async (variables) => {
@@ -80,6 +80,34 @@ export function useCreateUser() {
       return data;
     },
     onSuccess: () => {
+      qc.invalidateQueries({ queryKey: userKeys.base() });
+    },
+  });
+}
+
+export function useDeleteUser(id: number | string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await apiInstance.delete(`${USERS_PATH}/${id}`);
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: userKeys.detail(id) });
+      qc.invalidateQueries({ queryKey: userKeys.base() });
+    },
+  });
+}
+
+export function useRestoreUser(id: number | string) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async () => {
+      const { data } = await apiInstance.post(`${USERS_PATH}/${id}/restore`);
+      return data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: userKeys.detail(id) });
       qc.invalidateQueries({ queryKey: userKeys.base() });
     },
   });

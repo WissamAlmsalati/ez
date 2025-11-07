@@ -1,15 +1,20 @@
 "use client";
-import { Button, Select, TextInput } from "flowbite-react";
+import { Button, Select, TextInput, Modal } from "flowbite-react";
 import { CardBox } from "@/shared/ui/cards";
-import { useUpdateUser } from "@/entities/user/api";
+import {
+  useUpdateUser,
+  useDeleteUser,
+  useRestoreUser,
+} from "@/entities/user/api";
 import type { User } from "@/entities/user/types";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { mapServerFieldErrors } from "@/shared/lib/mapServerFieldErrors";
-import { useEffect, useMemo } from "react";
-import { useDepartmentsQuery } from "@/entities/department/api";
+import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useCategoriesQuery } from "@/entities/category/api";
 import { useSessionStore } from "@/entities/session/model/sessionStore";
 
 const schema = z.object({
@@ -26,7 +31,7 @@ const schema = z.object({
     .or(z.literal(""))
     .nullable()
     .optional(),
-  department_id: z.union([z.string(), z.number()]).nullable().optional(),
+  category_id: z.union([z.string(), z.number()]).nullable().optional(),
   is_active: z.boolean().optional(),
 });
 type FormVals = z.infer<typeof schema>;
@@ -34,19 +39,23 @@ type FormVals = z.infer<typeof schema>;
 export default function UserInfoSection({ user }: { user: User }) {
   const isManager = useSessionStore((s) => s.isManager);
   const update = useUpdateUser(user.id);
+  const delUser = useDeleteUser(user.id);
+  const restoreUser = useRestoreUser(user.id);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const router = useRouter();
   const {
-    data: depsData,
-    isLoading: depsLoading,
-    isError: depsError,
-  } = useDepartmentsQuery({ per_page: 100 });
-  const departments = depsData?.data ?? [];
+    data: catsData,
+    isLoading: catsLoading,
+    isError: catsError,
+  } = useCategoriesQuery({ per_page: 100 });
+  const categories = catsData?.data ?? [];
 
   const defaultValues: FormVals = useMemo(
     () => ({
       name: user.name || "",
       email: user.email || "",
       phone: user.phone || "",
-      department_id: user.department?.id ? String(user.department.id) : "",
+      category_id: user.department?.id ? String(user.department.id) : "",
       is_active: !!user.is_active,
     }),
     [user]
@@ -73,18 +82,18 @@ export default function UserInfoSection({ user }: { user: User }) {
   // After departments load, ensure the select shows the user's department on refresh
   useEffect(() => {
     if (user.role !== "employee") return;
-    if (depsLoading || depsError) return;
+    if (catsLoading || catsError) return;
     const target = user.department?.id ? String(user.department.id) : "";
-    const current = getValues("department_id") as any;
+    const current = getValues("category_id") as any;
     if (!current && target) {
-      setValue("department_id", target, {
+      setValue("category_id", target, {
         shouldDirty: false,
         shouldTouch: false,
       });
     }
   }, [
-    depsLoading,
-    depsError,
+    catsLoading,
+    catsError,
     user.role,
     user.department?.id,
     getValues,
@@ -99,10 +108,9 @@ export default function UserInfoSection({ user }: { user: User }) {
     Object.entries(dirtyFields).forEach(([k, dirty]) => {
       if (!dirty) return;
       const v = (values as any)[k];
-      if (k === "department_id") {
+      if (k === "category_id") {
         // value from select is string or ""; convert to number|null for API
-        (payload as any).department_id =
-          v === "" || v == null ? null : Number(v);
+        (payload as any).category_id = v === "" || v == null ? null : Number(v);
       } else if (k === "email" || k === "phone") {
         (payload as any)[k] = v || null;
       } else {
@@ -192,46 +200,39 @@ export default function UserInfoSection({ user }: { user: User }) {
           <div className="space-y-2">
             <label className="block text-sm">القسم</label>
             <Select
-              disabled={!isManager || depsLoading || depsError}
-              {...register("department_id")}
+              disabled={!isManager || catsLoading || catsError}
+              {...register("category_id")}
             >
               <option value="">
-                {depsLoading
+                {catsLoading
                   ? "جاري التحميل..."
-                  : depsError
+                  : catsError
                   ? "فشل التحميل"
                   : "اختر قسماً"}
               </option>
-              {!depsLoading &&
-                !depsError &&
-                departments.map((d) => (
+              {!catsLoading &&
+                !catsError &&
+                categories.map((d) => (
                   <option key={d.id} value={String(d.id)}>
                     {d.name}
                   </option>
                 ))}
             </Select>
-            {errors.department_id && (
+            {errors.category_id && (
               <p className="text-xs text-red-600">
-                {errors.department_id.message as any}
+                {errors.category_id.message as any}
               </p>
             )}
           </div>
         )}
         <div className="md:col-span-2 pt-2 flex gap-3 justify-end">
           <Button
-            color={user.is_active ? "failure" : "outlineprimary"}
-            onClick={() =>
-              update
-                .mutateAsync({ is_active: !user.is_active })
-                .then(() => toast.success("تم تحديث الحالة"))
-                .catch((e: any) =>
-                  toast.error(e?.body?.message || "فشل تحديث الحالة")
-                )
-            }
+            color="failure"
+            onClick={() => setShowDeleteConfirm(true)}
             size="sm"
             disabled={!isManager}
           >
-            {user.is_active ? "إلغاء تفعيل حساب" : "تفعيل الحساب"}
+            حذف
           </Button>
           <Button
             type="button"
@@ -250,6 +251,54 @@ export default function UserInfoSection({ user }: { user: User }) {
             حفظ التغييرات
           </Button>
         </div>
+        <Modal
+          show={showDeleteConfirm}
+          size="md"
+          popup
+          onClose={() =>
+            delUser.isPending ? null : setShowDeleteConfirm(false)
+          }
+        >
+          <Modal.Header />
+          <Modal.Body>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-700">
+                هل أنت متأكد أنك تريد حذف هذا المستخدم؟ لا يمكن التراجع عن هذا
+                الإجراء.
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button
+                  color="gray"
+                  type="button"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  disabled={delUser.isPending}
+                >
+                  إلغاء
+                </Button>
+                <Button
+                  color="failure"
+                  type="button"
+                  isProcessing={delUser.isPending}
+                  onClick={() =>
+                    delUser
+                      .mutateAsync()
+                      .then(() => {
+                        toast.success("تم حذف المستخدم");
+                        setShowDeleteConfirm(false);
+                        router.push("/users");
+                      })
+                      .catch((e: any) =>
+                        toast.error(e?.body?.message || "فشل حذف المستخدم")
+                      )
+                  }
+                  disabled={!isManager}
+                >
+                  تأكيد الحذف
+                </Button>
+              </div>
+            </div>
+          </Modal.Body>
+        </Modal>
       </form>
     </CardBox>
   );

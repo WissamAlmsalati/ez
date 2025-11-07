@@ -12,7 +12,16 @@ export default function UserDetailPage() {
   const intId = id ? Number(id) : undefined;
   const query = useUserDetail(intId);
 
-  if (query.isLoading) return <UserDetailSkeleton />;
+  if (query.isLoading) return (
+    <div className="space-y-6">
+      <BreadcrumbComp
+        title={"جاري التحميل..."}
+        items={[{ title: "المستخدمون", to: "/users" }, { title: "مستخدم" }]}
+      />
+
+      <UserDetailSkeleton />;
+    </div>
+  );
   if (query.isError || !query.data)
     return (
       <p className="text-center text-sm text-red-500">تعذر تحميل المستخدم</p>

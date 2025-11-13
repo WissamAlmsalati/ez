@@ -77,102 +77,15 @@ const SidebarContent: MenuItem[] = [
             url: "/advertisements",
             requiredRole: "manager",
           },
+          {
+            name: "إعدادات النظام",
+            icon: "tabler:settings",
+            id: uid(),
+            url: "/settings",
+            requiredRole: "manager",
+          },
         ],
       },
-    ],
-  },
-  {
-    id: 2,
-    name: "Menu",
-    items: [
-      // {
-      //   heading: "Multi level",
-      //   children: [
-      //     {
-      //       name: "Menu Level",
-      //       icon: "solar:widget-add-line-duotone",
-      //       id: uid(),
-      //       children: [
-      //         {
-      //           id: uid(),
-      //           name: "Level 1",
-      //           url: "",
-      //         },
-      //         {
-      //           id: uid(),
-      //           name: "Level 1.1",
-      //           icon: "fad:armrecording",
-      //           url: "",
-      //           children: [
-      //             {
-      //               id: uid(),
-      //               name: "Level 2",
-      //               url: "",
-      //             },
-      //             {
-      //               id: uid(),
-      //               name: "Level 2.1",
-      //               icon: "fad:armrecording",
-      //               url: "",
-      //               children: [
-      //                 {
-      //                   id: uid(),
-      //                   name: "Level 3",
-      //                   url: "",
-      //                 },
-      //                 {
-      //                   id: uid(),
-      //                   name: "Level 3.1",
-      //                   url: "",
-      //                 },
-      //               ],
-      //             },
-      //           ],
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
-      // {
-      //   heading: "More Options",
-      //   children: [
-      //     {
-      //       id: uid(),
-      //       url: "/sample-page",
-      //       name: "Applications",
-      //       icon: "solar:check-circle-bold",
-      //       color: "text-primary",
-      //     },
-      //     {
-      //       id: uid(),
-      //       url: "",
-      //       name: "Form Options",
-      //       icon: "solar:check-circle-bold",
-      //       color: "text-secondary",
-      //     },
-      //     {
-      //       id: uid(),
-      //       url: "",
-      //       name: "Table Variations",
-      //       icon: "solar:check-circle-bold",
-      //       color: "text-info",
-      //     },
-      //     {
-      //       id: uid(),
-      //       url: "",
-      //       name: "Charts Selection",
-      //       icon: "solar:check-circle-bold",
-      //       color: "text-warning",
-      //     },
-      //     {
-      //       id: uid(),
-      //       url: "",
-      //       name: "Widgets",
-      //       icon: "solar:check-circle-bold",
-      //       color: "text-success",
-      //     },
-      //   ],
-      // },
     ],
   },
 ];

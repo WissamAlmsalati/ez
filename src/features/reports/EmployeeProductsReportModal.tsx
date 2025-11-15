@@ -154,21 +154,21 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     html,body { background: var(--soft); }
     body { margin: 0; font-family: 'Arial','Segoe UI',system-ui,-apple-system,sans-serif; }
     .sheet { margin: 16px; background: var(--bg); padding: 24px 24px 40px; border: 1px solid var(--border); border-radius: 0px; box-shadow: 0 4px 16px rgba(0,0,0,.06); }
-    .brandbar { display:flex;  align-items:center; justify-content:center; gap:12px; padding-bottom: 12px; }
-    .brand-left { display:flex; flex-direction: column; align-items:center; gap:12px; }
-    .logo { width:100px; height:100px; object-fit:contain; }
+    .brandbar { display:flex; align-items:center; justify-content:right; gap:32px;  }
+    .header{font-size:18px; font-weight:500; color:var(--primary);}
+    .brand-left { display:flex; flex-direction: column; align-items:right; gap:4px; }
+    .logo { width:56px; height:100px; object-fit:contain; }
     .org { font-size:18px; font-weight:700; color:var(--primary); }
     .org-sub { font-size:12px; color:var(--muted); }
     .doc-title { text-align:center; margin:18px 0 8px; font-size:22px; font-weight:800; color:var(--accent); letter-spacing:.5px; }
     .generated { text-align:center; font-weight:600; }
     .meta { display:flex; gap:24px; justify-content:center; color:var(--muted); font-size:12px; margin-bottom:18px; }
-    .hr { height:1px; background:linear-gradient(to left, transparent, black, transparent); margin:12px 0 20px; }
-    .summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:6px; margin:10px 0 28px; }
+    .summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:6px; margin:44px 0 28px; }
     .card { background:var(--bg); border:1px solid var(--border); border-radius:0px; padding:12px 14px; }
     .card h4 { margin:0 0 6px; font-size:12px; font-weight:700; color:var(--muted); }
     .card .value { font-size:22px; font-weight:800; color:var(--primary); }
     section.category { margin: 26px 0 34px; page-break-inside: avoid; }
-    section.category h3 { margin:0 0 10px; font-size:16px; font-weight:800;  display:flex; align-items:center; gap:8px; }
+    section.category h3 { margin:0 0 10px; font-size:16px; font-weight500;  display:flex; align-items:center; gap:8px; }
     section.category h3 .cat-title { padding:3px 10px; border-radius:0px; }
     section.category h3 .count {  font-weight:500; font-size:12px; }
     .table-wrapper { overflow:auto; border:1px solid var(--border); border-radius:0px; background:var(--bg); }
@@ -192,7 +192,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
       html,body { background:#fff; }
       .sheet { margin: 0; border: none; border-radius:0; box-shadow:none; padding: 0 6mm 8mm; }
       .actions { display:none; }
-      .brandbar { padding: 6mm 0 3mm; border-bottom: 2px solid var(--primary); }
+      .brandbar { padding: 3mm 0 0mm; solid var(--primary); }
       .doc-title { margin: 3mm 0 0; }
     }
     /* * Optional subtle watermark: uncomment to enable */
@@ -213,12 +213,14 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   <div class="sheet">
 
     <div class="brandbar">
-      <div class="brand-left ">
         <img class="logo" src="/Izdihar_logo_report.svg" alt="Izdihar Sweets" />
-      </div>
-      <div></div>
-      </div>
-      <div class="hr"></div>
+        <div class="brand-left header">
+          <div>شركة الازدهار للحلويات</div>
+          <div> ${title}</div>
+          <div>${generatedAt}</div>
+        </div>
+    </div>
+    <hr/>
     <div class="summary-cards">
       ${
         summary.totalStores !== undefined

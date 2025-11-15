@@ -12,6 +12,7 @@ import CreateCategoryModal from "@/features/categories/create/CreateCategoryModa
 import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
 import { ActiveStatusFilter } from "@/shared/ui/catalog/ActiveStatusFilter";
 import { SearchFilter } from "@/shared/ui/catalog/SearchFilter";
+import { useSessionStore } from "@/entities/session/model/sessionStore";
 
 export default function CategoriesPage() {
   const BCrumb = [
@@ -31,6 +32,7 @@ export default function CategoriesPage() {
 
 function CategoriesPageContent() {
   const searchParams = useSearchParams();
+  const isManager = useSessionStore((s) => s.isManager);
   const params = useMemo(
     () => Object.fromEntries(searchParams?.entries?.() ?? []) as any,
     [searchParams]
@@ -57,13 +59,15 @@ function CategoriesPageContent() {
           <SearchFilter />
           <ActiveStatusFilter />
         </div>
-        <Button
-          color={"primary"}
-          className="transition-colors duration-300"
-          onClick={() => setOpen(true)}
-        >
-          إضافة قسم
-        </Button>
+        {isManager && (
+          <Button
+            color={"primary"}
+            className="transition-colors duration-300"
+            onClick={() => setOpen(true)}
+          >
+            إضافة قسم
+          </Button>
+        )}
       </div>
 
       {isLoading ? (
@@ -87,7 +91,9 @@ function CategoriesPageContent() {
         </CatalogGrid>
       )}
       {data?.meta && <Pagination meta={data.meta} />}
-      <CreateCategoryModal open={open} onClose={() => setOpen(false)} />
+      {isManager && (
+        <CreateCategoryModal open={open} onClose={() => setOpen(false)} />
+      )}
     </div>
   );
 }

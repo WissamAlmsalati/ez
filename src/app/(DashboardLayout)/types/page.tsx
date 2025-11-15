@@ -13,6 +13,7 @@ import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
 import { ActiveStatusFilter } from "@/shared/ui/catalog/ActiveStatusFilter";
 import { SearchFilter } from "@/shared/ui/catalog/SearchFilter";
 import { CategoryFilter } from "@/shared/ui/catalog/CategoryFilter";
+import { useSessionStore } from "@/entities/session/model/sessionStore";
 
 export default function TypesPage() {
   const BCrumb = [
@@ -32,6 +33,7 @@ export default function TypesPage() {
 
 function TypesPageContent() {
   const searchParams = useSearchParams();
+  const isManager = useSessionStore((s) => s.isManager);
   const params = useMemo(
     () => Object.fromEntries(searchParams?.entries?.() ?? []) as any,
     [searchParams]
@@ -56,16 +58,22 @@ function TypesPageContent() {
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-start gap-3">
           <SearchFilter />
-          <CategoryFilter />
-          <ActiveStatusFilter />
+          {isManager && (
+            <>
+              <CategoryFilter />
+              <ActiveStatusFilter />
+            </>
+          )}
         </div>
-        <Button
-          color="primary"
-          className="transition-colors duration-300"
-          onClick={() => setOpen(true)}
-        >
-          إضافة مجموعة
-        </Button>
+        {isManager && (
+          <Button
+            color="primary"
+            className="transition-colors duration-300"
+            onClick={() => setOpen(true)}
+          >
+            إضافة مجموعة
+          </Button>
+        )}
       </div>
       {isLoading ? (
         <CatalogSkeleton />
@@ -89,7 +97,9 @@ function TypesPageContent() {
         </CatalogGrid>
       )}
       {data?.meta && <Pagination meta={data.meta} />}
-      <CreateTypeModal open={open} onClose={() => setOpen(false)} />
+      {isManager && (
+        <CreateTypeModal open={open} onClose={() => setOpen(false)} />
+      )}
     </div>
   );
 }

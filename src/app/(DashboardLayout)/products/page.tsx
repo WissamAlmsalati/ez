@@ -16,6 +16,7 @@ import { CategoryFilter } from "@/shared/ui/catalog/CategoryFilter";
 import { TypeFilter } from "@/shared/ui/catalog/TypeFilter";
 // لاحقاً يمكن إضافة TypeFilter إن توفر
 import UnitsModal from "@/features/products/units/UnitsModal";
+import { useSessionStore } from "@/entities/session/model/sessionStore";
 
 export default function ProductsPage() {
   const BCrumb = [
@@ -35,6 +36,7 @@ export default function ProductsPage() {
 
 function ProductsPageContent() {
   const searchParams = useSearchParams();
+  const isManager = useSessionStore((s) => s.isManager);
   const params = useMemo(
     () => Object.fromEntries(searchParams?.entries?.() ?? []) as any,
     [searchParams]
@@ -61,26 +63,35 @@ function ProductsPageContent() {
       <div className="flex items-center justify-between">
         <div className="flex items-center justify-start gap-3">
           <SearchFilter />
-          <CategoryFilter />
-          <TypeFilter />
-          <ActiveStatusFilter />
+          {isManager ? (
+            <>
+              <CategoryFilter />
+              <TypeFilter />
+              <ActiveStatusFilter />
+            </>
+          ) : (
+            <TypeFilter />
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <Button
-            color="light"
-            className="transition-colors duration-300"
-            onClick={() => setUnitsOpen(true)}
-          >
-            الوحدات
-          </Button>
-          <Button
-            color="primary"
-            className="transition-colors duration-300"
-            onClick={() => setOpen(true)}
-          >
-            إضافة صنف
-          </Button>
-        </div>
+        {isManager && (
+          <div className="flex items-center gap-2">
+            <Button
+              color="light"
+              className="transition-colors duration-300"
+              onClick={() => setUnitsOpen(true)}
+            >
+              الوحدات
+            </Button>
+
+            <Button
+              color="primary"
+              className="transition-colors duration-300"
+              onClick={() => setOpen(true)}
+            >
+              إضافة صنف
+            </Button>
+          </div>
+        )}
       </div>
 
       {isLoading ? (
@@ -105,7 +116,9 @@ function ProductsPageContent() {
         </CatalogGrid>
       )}
       {data?.meta && <Pagination meta={data.meta} />}
-      <CreateProductModal open={open} onClose={() => setOpen(false)} />
+      {isManager && (
+        <CreateProductModal open={open} onClose={() => setOpen(false)} />
+      )}
       <UnitsModal open={unitsOpen} onClose={() => setUnitsOpen(false)} />
     </div>
   );

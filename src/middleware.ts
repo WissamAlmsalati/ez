@@ -43,6 +43,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginURL);
   }
 
+  // Manager-only sections: restrict /categories and its subpaths to role=manager
+  const managerOnlyPrefixes = ["/categories"];
+  const isManagerOnlyRoute = managerOnlyPrefixes.some(
+    (p) => pathname === p || pathname.startsWith(p + "/")
+  );
+  const userRole = (token as any)?.user?.role as string | undefined;
+  if (isManagerOnlyRoute && userRole !== "manager") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   return NextResponse.next();
 }
 

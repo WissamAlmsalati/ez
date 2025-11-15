@@ -44,6 +44,7 @@ const SidebarContent: MenuItem[] = [
             icon: "tabler:category",
             id: uid(),
             url: "/categories",
+            requiredRole: "manager",
           },
           {
             name: "المجموعات",

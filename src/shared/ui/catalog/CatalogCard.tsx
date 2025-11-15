@@ -3,6 +3,7 @@ import Image from "next/image";
 import { getImageUrl } from "@/shared/lib/getImageUrl";
 import StatusSwitch from "./StatusSwitch";
 import Link from "next/link";
+import { useSessionStore } from "@/entities/session/model/sessionStore";
 type Props = {
   title: string;
   image?: string | null;
@@ -28,9 +29,14 @@ export default function CatalogCard({
   showSwitch = true,
   hideImage = false,
 }: Props) {
+  const isManager = useSessionStore((s) => s.isManager);
   const normalizedImage = getImageUrl({ image }) as string | null;
   return (
-    <div className={`rounded-3xl border border-primary ${hideImage ?"p-4" : "p-2" } gap-4 bg-lightgray hover:bg-lightgrayemphasis transition-colors duration-300 ease-out`} >
+    <div
+      className={`rounded-3xl border border-primary ${
+        hideImage ? "p-4" : "p-2"
+      } gap-4 bg-lightgray hover:bg-lightgrayemphasis transition-colors duration-300 ease-out`}
+    >
       <div className="flex items-center gap-4">
         {link ? (
           <Link
@@ -57,7 +63,7 @@ export default function CatalogCard({
               <div className="text-sm font-semibold rtl:text-right text-primary flex items-center gap-3 justify-between w-full">
                 {title}
               </div>
-               <div className="text-xs text-primary rtl:text-right block truncate mt-1">
+              <div className="text-xs text-primary rtl:text-right block truncate mt-1">
                 {footer}
               </div>
             </div>
@@ -88,7 +94,7 @@ export default function CatalogCard({
           </div>
         )}
 
-        {showSwitch && (
+        {showSwitch && isManager && (
           <StatusSwitch
             size={switchSize}
             initial={active}

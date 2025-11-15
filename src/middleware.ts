@@ -43,8 +43,14 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginURL);
   }
 
-  // Manager-only sections: restrict /categories and its subpaths to role=manager
-  const managerOnlyPrefixes = ["/categories"];
+  // Manager-only sections: restrict these prefixes and their subpaths to role=manager
+  // NOTE: Keep this list in sync with admin-only pages in the app router
+  const managerOnlyPrefixes = [
+    "/categories",
+    "/advertisements",
+    "/users",
+    "/settings",
+  ];
   const isManagerOnlyRoute = managerOnlyPrefixes.some(
     (p) => pathname === p || pathname.startsWith(p + "/")
   );

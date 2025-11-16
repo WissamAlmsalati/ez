@@ -65,7 +65,7 @@ export default function ChangePasswordForm({
       <div className="mb-4">
         <h3 className="font-semibold">تغيير كلمة المرور</h3>
         <p className="text-xs text-darklink mt-1">
-          قم بتحديث كلمة مرورك من هنا. لن يؤثر ذلك على باقي المستخدمين.
+          قم بتحديث كلمة مرورك من هنا.
         </p>
       </div>
       <form

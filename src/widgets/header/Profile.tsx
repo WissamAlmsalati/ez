@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useSessionStore } from "@/entities/session/model/sessionStore";
 import { apiInstance } from "@/shared/api";
+import Link from "next/link";
 const Profile = () => {
   const { user } = useSessionStore();
   const router = useRouter();
@@ -34,7 +35,7 @@ const Profile = () => {
         renderTrigger={() => (
           <span className="h-10 w-10 hover:text-primary hover:bg-lightprimary rounded-full flex justify-center items-center cursor-pointer group-hover/menu:bg-lightprimary group-hover/menu:text-primary">
             <Image
-              src={`${user?.image ?? "/image.jpg"}`}
+              src="/image.png"
               alt="logo"
               height="35"
               width="35"
@@ -45,15 +46,19 @@ const Profile = () => {
       >
         <div className="px-6">
           <div className="flex items-center gap-6 pb-5 border-b mt-5 mb-3">
-            <Image
-              src={`${user?.image ?? "/image.jpg"}`}
-              alt="logo"
-              height="80"
-              width="80"
-              className="rounded-full"
-            />
+            <Link href={`/users/${user?.id}`} className="hover:underline cursor:pointer">
+              <Image
+                src={"/image.png"}
+                alt="logo"
+                height="80"
+                width="80"
+                className="rounded-full"
+              />
+            </Link>
             <div>
-              <h5 className="card-title">{user?.name}</h5>
+              <Link href={`/users/${user?.id}`} className="hover:underline cursor:pointer">
+                <h5 className="card-title">{user?.name}</h5>
+              </Link>
               <p className="card-subtitle mb-0 mt-1 flex items-center">
                 <Icon
                   icon="solar:mailbox-line-duotone"

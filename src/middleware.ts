@@ -8,8 +8,10 @@ export async function middleware(request: NextRequest) {
   // Use secret to ensure getToken works correctly in middleware (edge)
   const token = await getToken({
     req: request,
-    secret: process.env.NEXTAUTH_SECRET,
+    // Support either NEXTAUTH_SECRET (v4) or AUTH_SECRET (v5 env name)
+    secret: process.env.NEXTAUTH_SECRET || process.env.AUTH_SECRET,
   });
+  const userRole = (token as any)?.user?.role as string | undefined;
 
   // مسارات عامة (الصور، الصحة، الخ) يمكن توسيعها لاحقاً
   const publicPaths = [
@@ -27,10 +29,17 @@ export async function middleware(request: NextRequest) {
   const authRoutes = ["/login", "/login/forgot-password"];
   const isAuthRoute = authRoutes.includes(pathname);
 
-  // Handle auth routes for authenticated users
+  // إذا كان الدور customer: سجّل الخروج مباشرة (امسح الكوكيز وأعد التوجيه لصفحة الدخول)
+  if (token && userRole === "customer") {
+    const resp = NextResponse.redirect(new URL("/login", request.url));
+    resp.cookies.delete("next-auth.session-token");
+    resp.cookies.delete("__Secure-next-auth.session-token");
+    return resp;
+  }
+
+  // Handle auth routes for authenticated users (غير العملاء)
   if (isAuthRoute) {
     if (token) {
-      // Redirect authenticated users from auth routes to home page
       return NextResponse.redirect(new URL("/", request.url));
     }
     return NextResponse.next();
@@ -54,7 +63,7 @@ export async function middleware(request: NextRequest) {
   const isManagerOnlyRoute = managerOnlyPrefixes.some(
     (p) => pathname === p || pathname.startsWith(p + "/")
   );
-  const userRole = (token as any)?.user?.role as string | undefined;
+
   if (isManagerOnlyRoute && userRole !== "manager") {
     return NextResponse.redirect(new URL("/", request.url));
   }

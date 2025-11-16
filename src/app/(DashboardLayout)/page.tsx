@@ -1,5 +1,4 @@
 import React from "react";
-import CardBox from "@shared/ui/cards/CardBox";
 import HomeStatsGrid from "@/features/dashboard/components/HomeStatsGrid";
 import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
 

@@ -10,28 +10,29 @@ export default function HomeStatsSkeleton() {
     <div className="grid gap-5 xl:grid-cols-12">
       {/* Top row cards */}
       <div className="xl:col-span-4">
-        <CardBox className="p-5 space-y-4">
-          <div className={`${pulse} h-5 w-32`} />
-          <div className={`${pulse} h-8 w-24`} />
-          <div className={`${pulse} h-4 w-40`} />
-        </CardBox>
-      </div>
-      <div className="xl:col-span-4">
-        <CardBox className="p-5 space-y-4">
-          <div className={`${pulse} h-5 w-40`} />
-          <div className="flex gap-3">
-            <div className={`${pulse} h-16 w-16`} />
-            <div className={`${pulse} h-16 w-16`} />
-            <div className={`${pulse} h-16 w-16`} />
+        <CardBox className="p-5 space-y-4 h-80">
+          <div className="flex w-full justify-around place-items-end">
+            <div className={`${pulse} h-32 w-12`} />
+            <div className={`${pulse} h-24 w-12`} />
+            <div className={`${pulse} h-40 w-12`} />
           </div>
         </CardBox>
       </div>
       <div className="xl:col-span-4">
-        <CardBox className="p-5 space-y-4">
-          <div className={`${pulse} h-5 w-36`} />
-          <div className="flex gap-3">
-            <div className={`${pulse} h-16 w-20`} />
-            <div className={`${pulse} h-16 w-20`} />
+        <CardBox className="p-5 space-y-4 h-80">
+          <div className="flex w-full justify-around place-items-end">
+            <div className={`${pulse} h-32 w-12`} />
+            <div className={`${pulse} h-36 w-12`} />
+            <div className={`${pulse} h-28 w-12`} />
+          </div>
+        </CardBox>
+      </div>
+       <div className="xl:col-span-4">
+        <CardBox className="p-5 space-y-4 h-80">
+          <div className="flex w-full justify-around place-items-end">
+            <div className={`${pulse} h-16 w-12`} />
+            <div className={`${pulse} h-24 w-12`} />
+            <div className={`${pulse} h-40 w-12`} />
           </div>
         </CardBox>
       </div>

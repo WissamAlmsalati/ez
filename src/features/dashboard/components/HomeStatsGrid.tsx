@@ -6,10 +6,11 @@ import ProductsStatusChart from "./ProductsStatusChart";
 import LatestOrdersTable from "./LatestOrdersTable";
 import HomeStatsSkeleton from "./HomeStatsSkeleton";
 import { useHomeDashboardQuery } from "@/entities/home/api";
-
+import { useSessionStore } from "@/entities/session/model/sessionStore";
 export default function HomeStatsGrid() {
   const { data, isLoading, isError, refetch } = useHomeDashboardQuery();
 
+  const isManager = useSessionStore((s) => s.isManager);
   if (isLoading) return <HomeStatsSkeleton />;
   if (isError) {
     return (
@@ -28,27 +29,31 @@ export default function HomeStatsGrid() {
   const stats = data?.stats;
 
   return (
-    <div className="grid gap-5 xl:grid-cols-12 max-h-20">
+    <div className="grid gap-5 xl:grid-cols-12 max-h-full">
       {/* Top row */}
-      <div className="xl:col-span-4">
-        <DailyProfitCard
-          amount={stats?.dailyProfit.amount || 0}
-          change={stats?.dailyProfit.change || "0%"}
-        />
-      </div>
-      <div className="xl:col-span-4">
-        <OrdersStatusChart
-          pending={stats?.orders.pending || 0}
-          inProgress={stats?.orders.inProgress || 0}
-          completed={stats?.orders.completed || 0}
-        />
-      </div>
-      <div className="xl:col-span-4">
-        <ProductsStatusChart
-          active={stats?.products.active || 0}
-          inactive={stats?.products.inactive || 0}
-        />
-      </div>
+      {isManager && (
+        <>
+          <div className="xl:col-span-4">
+            <DailyProfitCard
+              amount={stats?.dailyProfit.amount || 0}
+              change={stats?.dailyProfit.change || "0%"}
+            />
+          </div>
+          <div className="xl:col-span-4">
+            <OrdersStatusChart
+              pending={stats?.orders.pending || 0}
+              inProgress={stats?.orders.inProgress || 0}
+              completed={stats?.orders.completed || 0}
+            />
+          </div>
+          <div className="xl:col-span-4">
+            <ProductsStatusChart
+              active={stats?.products.active || 0}
+              inactive={stats?.products.inactive || 0}
+            />
+          </div>
+        </>
+      )}
 
       {/* Latest orders full width */}
       <div className="xl:col-span-12">

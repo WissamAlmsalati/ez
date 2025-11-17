@@ -5,8 +5,6 @@ import { OrderDetailSkeleton } from "@/features/orders/detail/OrderDetailSkeleto
 import OrderInfoSection from "@/features/orders/detail/OrderInfoSection";
 import CustomerSection from "@/features/orders/detail/CustomerSection";
 import CategoryItemsTable from "@/features/orders/detail/CategoryItemsTable";
-import DepartmentsTable from "@/features/orders/detail/DepartmentsTable";
-import StatusHistoryTable from "@/features/orders/detail/StatusHistoryTable";
 import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
 import { useParams } from "next/navigation";
 

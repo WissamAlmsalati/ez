@@ -114,6 +114,8 @@ export interface Order /* internal normalized shape */ {
   user_id: number;
   customer_name: string;
   customer_phone: string;
+  customer_email?: string | null;
+  customer_status?: string | null; // localized label, e.g., "نشط"
   delivery_date?: string | null;
   delivery_time?: string | null;
   delivery_address?: string | null;
@@ -135,6 +137,19 @@ export interface Order /* internal normalized shape */ {
     quantity: string;
     unit_name: string;
     total_price: string | null;
+  }>;
+  // New API: products grouped by category (snake_case as requested)
+  grouped_products?: Array<{
+    category_name: string;
+    products: Array<{
+      id: number;
+      product_name: string;
+      quantity: string; // e.g. "4.000"
+      unit_name: string;
+      unit_price?: string | null;
+      line_total?: string | null;
+      notes?: string | null;
+    }>;
   }>;
 }
 

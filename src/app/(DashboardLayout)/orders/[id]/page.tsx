@@ -4,7 +4,7 @@ import { useOrderQuery } from "@/entities/order/api";
 import { OrderDetailSkeleton } from "@/features/orders/detail/OrderDetailSkeleton";
 import OrderInfoSection from "@/features/orders/detail/OrderInfoSection";
 import CustomerSection from "@/features/orders/detail/CustomerSection";
-import ItemsTable from "@/features/orders/detail/ItemsTable";
+import CategoryItemsTable from "@/features/orders/detail/CategoryItemsTable";
 import DepartmentsTable from "@/features/orders/detail/DepartmentsTable";
 import StatusHistoryTable from "@/features/orders/detail/StatusHistoryTable";
 import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
@@ -36,9 +36,10 @@ export default function OrderDetailPage() {
       <div className="grid gap-6">
         <OrderInfoSection order={order} />
         <CustomerSection order={order} />
-        <ItemsTable order={order} />
-        <DepartmentsTable order={order} />
-        <StatusHistoryTable order={order} />
+        {/* Render per-category tables if provided by backend; otherwise fallback to flat items table */}
+        {order.grouped_products && order.grouped_products.length > 0 && (
+          <CategoryItemsTable order={order} />
+        ) }
       </div>
     </div>
   );

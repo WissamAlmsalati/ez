@@ -15,8 +15,8 @@ export const orderKeys = {
 // Transport -> domain mapper: normalize order_id to id and include status_text
 export function mapOrderApi(raw: any): Order {
   // NEW API WRAPS FIELDS INSIDE order_details & customer_details
-  const od = raw?.orderDetails ?? raw;
-  const cd = raw?.customerDetails ?? raw;
+  const od = raw?.order_details ?? raw?.orderDetails ?? raw;
+  const cd = raw?.customer_details ?? raw?.customerDetails ?? raw;
   const products = raw?.products;
 
   const parseNumber = (v: any) => {
@@ -26,7 +26,7 @@ export function mapOrderApi(raw: any): Order {
     return 0;
   };
 
-  return {
+  const mapped: Order = {
     // Support both old flat shape and new nested shape
     id: od.order_id ?? od.orderId ?? od.id,
     order_number: od.order_number ?? od.orderNumber,
@@ -34,6 +34,9 @@ export function mapOrderApi(raw: any): Order {
     customer_name: cd.name ?? cd.customer_name ?? cd.customerName ?? "غير محدد",
     customer_phone:
       cd.phone ?? cd.customer_phone ?? cd.customerPhone ?? "غير محدد",
+    customer_email: cd.email ?? cd.customer_email ?? cd.customerEmail ?? null,
+    customer_status:
+      cd.status ?? cd.customer_status ?? cd.customerStatus ?? null,
     delivery_date:
       od.delivery_date ??
       od.deliveryDate ??
@@ -77,6 +80,24 @@ export function mapOrderApi(raw: any): Order {
           }))
         : []),
   };
+
+  // Attach grouped products by category if present in the new API (snake_case keys)
+  if (Array.isArray(products)) {
+    mapped.grouped_products = products.map((grp: any) => ({
+      category_name: grp.category_name ?? grp.categoryName,
+      products: (grp.products ?? []).map((p: any) => ({
+        id: p.id,
+        product_name: p.product_name ?? p.name ?? p.productName,
+        quantity: String(p.quantity ?? ""),
+        unit_name: p.unit_name ?? p.unitName,
+        unit_price: p.unit_price ?? p.unitPrice ?? null,
+        line_total: p.line_total ?? p.lineTotal ?? null,
+        notes: p.notes ?? null,
+      })),
+    }));
+  }
+
+  return mapped;
 }
 
 export const useOrdersQuery = buildListQuery<any, Order>(

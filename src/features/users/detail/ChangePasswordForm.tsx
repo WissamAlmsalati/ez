@@ -6,12 +6,13 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button, Label, TextInput } from "flowbite-react";
 import { CardBox } from "@/shared/ui/cards";
-import { useUpdateUser } from "@/entities/user/api";
+import { apiInstance } from "@/shared/api";
 import { toast } from "sonner";
 import { Icon } from "@iconify/react";
 
 const schema = z
   .object({
+    currentPassword: z.string().min(1, "كلمة المرور الحالية مطلوبة"),
     newPassword: z.string().min(8, "يجب أن تكون كلمة المرور 8 أحرف على الأقل"),
     newPasswordConfirmation: z.string(),
   })
@@ -22,15 +23,11 @@ const schema = z
 
 type FormVals = z.infer<typeof schema>;
 
-export default function ChangePasswordForm({
-  userId,
-}: {
-  userId: number | string;
-}) {
+export default function ChangePasswordForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [show1, setShow1] = useState(false);
   const [show2, setShow2] = useState(false);
   const [show3, setShow3] = useState(false);
-  const updateUser = useUpdateUser(userId);
 
   const {
     register,
@@ -42,18 +39,16 @@ export default function ChangePasswordForm({
   const onSubmit = async (values: FormVals) => {
     setIsSubmitting(true);
     try {
-      // Laravel-style fields
-      await updateUser.mutateAsync({
-        password: values.newPassword as any,
-        password_confirmation: values.newPasswordConfirmation as any,
-      } as any);
+      await apiInstance.post("/auth/change-password", {
+        currentPassword: values.currentPassword,
+        newPassword: values.newPassword,
+        newPasswordConfirmation: values.newPasswordConfirmation,
+      });
       toast.success("تم تحديث كلمة المرور بنجاح");
       reset();
     } catch (e: any) {
       const message =
-        e?.body?.message ||
-        e?.response?.data?.message ||
-        "فشل تحديث كلمة المرور";
+        e?.body?.message || e?.response?.data?.message || "فشل تحديث كلمة المرور";
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -64,14 +59,38 @@ export default function ChangePasswordForm({
     <CardBox className="p-6">
       <div className="mb-4">
         <h3 className="font-semibold">تغيير كلمة المرور</h3>
-        <p className="text-xs text-darklink mt-1">
-          قم بتحديث كلمة مرورك من هنا.
-        </p>
+        <p className="text-xs text-darklink mt-1">قم بتحديث كلمة مرورك من هنا.</p>
       </div>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="grid gap-4 md:grid-cols-2"
-      >
+
+      <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 md:grid-cols-2">
+        <div className="space-y-2 md:col-span-1">
+          <Label htmlFor="currentPassword" value="كلمة المرور الحالية" />
+          <div className="relative">
+            <TextInput
+              id="currentPassword"
+              type={show1 ? "text" : "password"}
+              {...register("currentPassword")}
+              color={errors.currentPassword ? "failure" : undefined}
+              aria-invalid={!!errors.currentPassword}
+              disabled={isSubmitting}
+              helperText={
+                errors.currentPassword ? (
+                  <span className="text-xs">{errors.currentPassword.message}</span>
+                ) : undefined
+              }
+            />
+            <button
+              type="button"
+              onClick={() => setShow1((s) => !s)}
+              className="absolute inset-y-0 left-0 flex items-center px-3 text-darklink hover:text-primary disabled:opacity-50"
+              aria-label={show1 ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
+              disabled={isSubmitting}
+            >
+              <Icon icon={show1 ? "tabler:eye-off" : "tabler:eye"} height={20} />
+            </button>
+          </div>
+        </div>
+
         <div className="space-y-2 md:col-span-1">
           <Label htmlFor="newPassword" value="كلمة المرور الجديدة" />
           <div className="relative">
@@ -95,10 +114,7 @@ export default function ChangePasswordForm({
               aria-label={show2 ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
               disabled={isSubmitting}
             >
-              <Icon
-                icon={show2 ? "tabler:eye-off" : "tabler:eye"}
-                height={20}
-              />
+              <Icon icon={show2 ? "tabler:eye-off" : "tabler:eye"} height={20} />
             </button>
           </div>
         </div>
@@ -115,9 +131,7 @@ export default function ChangePasswordForm({
               disabled={isSubmitting}
               helperText={
                 errors.newPasswordConfirmation ? (
-                  <span className="text-xs">
-                    {errors.newPasswordConfirmation.message}
-                  </span>
+                  <span className="text-xs">{errors.newPasswordConfirmation.message}</span>
                 ) : undefined
               }
             />
@@ -128,10 +142,7 @@ export default function ChangePasswordForm({
               aria-label={show3 ? "إخفاء كلمة المرور" : "إظهار كلمة المرور"}
               disabled={isSubmitting}
             >
-              <Icon
-                icon={show3 ? "tabler:eye-off" : "tabler:eye"}
-                height={20}
-              />
+              <Icon icon={show3 ? "tabler:eye-off" : "tabler:eye"} height={20} />
             </button>
           </div>
         </div>

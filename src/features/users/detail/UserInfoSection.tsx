@@ -183,57 +183,63 @@ export default function UserInfoSection({ user }: { user: User }) {
           )}
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm">حالة الحساب</label>
-          <Select
-            disabled={!isManager}
-            {...register("is_active", {
-              setValueAs: (v) => v === "true" || v === "1",
-            })}
-          >
-            <option value="true">نشط</option>
-            <option value="false">غير نشط</option>
-          </Select>
-        </div>
+        {isManager && (
+          <>
+            <div className="space-y-2">
+              <label className="block text-sm">حالة الحساب</label>
+              <Select
+                disabled={!isManager}
+                {...register("is_active", {
+                  setValueAs: (v) => v === "true" || v === "1",
+                })}
+              >
+                <option value="true">نشط</option>
+                <option value="false">غير نشط</option>
+              </Select>
+            </div>
 
-        {user.role === "employee" && (
-          <div className="space-y-2">
-            <label className="block text-sm">القسم</label>
-            <Select
-              disabled={!isManager || catsLoading || catsError}
-              {...register("category_id")}
-            >
-              <option value="">
-                {catsLoading
-                  ? "جاري التحميل..."
-                  : catsError
-                  ? "فشل التحميل"
-                  : "اختر قسماً"}
-              </option>
-              {!catsLoading &&
-                !catsError &&
-                categories.map((d) => (
-                  <option key={d.id} value={String(d.id)}>
-                    {d.name}
+            {user.role === "employee" && (
+              <div className="space-y-2">
+                <label className="block text-sm">القسم</label>
+                <Select
+                  disabled={!isManager || catsLoading || catsError}
+                  {...register("category_id")}
+                >
+                  <option value="">
+                    {catsLoading
+                      ? "جاري التحميل..."
+                      : catsError
+                      ? "فشل التحميل"
+                      : "اختر قسماً"}
                   </option>
-                ))}
-            </Select>
-            {errors.category_id && (
-              <p className="text-xs text-red-600">
-                {errors.category_id.message as any}
-              </p>
+                  {!catsLoading &&
+                    !catsError &&
+                    categories.map((d) => (
+                      <option key={d.id} value={String(d.id)}>
+                        {d.name}
+                      </option>
+                    ))}
+                </Select>
+                {errors.category_id && (
+                  <p className="text-xs text-red-600">
+                    {errors.category_id.message as any}
+                  </p>
+                )}
+              </div>
             )}
-          </div>
+          </>
         )}
+
         <div className="md:col-span-2 pt-2 flex gap-3 justify-end">
-          <Button
-            color="failure"
-            onClick={() => setShowDeleteConfirm(true)}
-            size="sm"
-            disabled={!isManager}
-          >
-            حذف
-          </Button>
+          {isManager && (
+            <Button
+              color="failure"
+              onClick={() => setShowDeleteConfirm(true)}
+              size="sm"
+            >
+              حذف
+            </Button>
+          )}
           <Button
             type="button"
             color="outlineprimary"

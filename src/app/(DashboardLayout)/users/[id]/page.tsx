@@ -15,16 +15,16 @@ export default function UserDetailPage() {
   const query = useUserDetail(intId);
   const currentUserId = useSessionStore((s) => s.user?.id);
 
-  if (query.isLoading) return (
-    <div className="space-y-6">
-      <BreadcrumbComp
-        title={"جاري التحميل..."}
-        items={[{ title: "المستخدمون", to: "/users" }, { title: "مستخدم" }]}
-      />
-
-      <UserDetailSkeleton />;
-    </div>
-  );
+  if (query.isLoading)
+    return (
+      <div className="space-y-6">
+        <BreadcrumbComp
+          title={"جاري التحميل..."}
+          items={[{ title: "المستخدمون", to: "/users" }, { title: "مستخدم" }]}
+        />
+        <UserDetailSkeleton />;
+      </div>
+    );
   if (query.isError || !query.data)
     return (
       <p className="text-center text-sm text-red-500">تعذر تحميل المستخدم</p>
@@ -38,12 +38,15 @@ export default function UserDetailPage() {
     <div className="space-y-6">
       <BreadcrumbComp
         title={user.name}
-        items={[{ title: "المستخدمون", to: "/users" }, { title: query.data.name }]}
+        items={[
+          { title: "المستخدمون", to: "/users" },
+          { title: query.data.name },
+        ]}
       />
 
       <div className="grid gap-6">
         <UserInfoSection user={user} />
-  {isCurrentUser && <ChangePasswordForm userId={user.id} />}
+        {isCurrentUser && <ChangePasswordForm />}
         {user.role === "customer" && (
           <UserOrdersTable userId={user.id as number} />
         )}

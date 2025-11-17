@@ -2,6 +2,7 @@
 import { useParams, useRouter } from "next/navigation";
 import BreadcrumbComp from "@/widgets/breadcrumb/BreadcrumbComp";
 import React from "react";
+import { useSessionStore } from "@/entities/session/model/sessionStore";
 import {
   useProductDetail,
   useDeleteProduct,
@@ -38,6 +39,8 @@ export default function ProductDetailPage() {
   const params = useParams();
   const id = (params as any)?.id as string;
   const router = useRouter();
+  const isManager = useSessionStore((s) => s.isManager);
+  const canEdit = isManager; // الموظف يشاهد فقط
   const detail = useProductDetail(id);
   const update = useUpdateProduct(id);
   const del = useDeleteProduct(id);
@@ -108,6 +111,10 @@ export default function ProductDetailPage() {
   }, [p?.id, reset]);
 
   async function submitForm(data: FormVals) {
+    if (!canEdit) {
+      toast.error("ليست لديك صلاحية التعديل");
+      return;
+    }
     const fd = new FormData();
     const df = dirtyFields as Record<string, boolean>;
     const appended: string[] = [];
@@ -178,9 +185,11 @@ export default function ProductDetailPage() {
               <div className="flex flex-col md:grid md:grid-cols-2 md:gap-12 gap-4">
                 <div className="text-right md:pl-6 md:order-2">
                   <h3 className="font-semibold text-lg">بيانات الصنف</h3>
-                  <p className="mt-1 text-xs text-gray-500">
-                    لتعديل بيانات الصنف قم بتحديثها واحفظ من هنا
-                  </p>
+                  {canEdit && (
+                    <p className="mt-1 text-xs text-gray-500">
+                      لتعديل بيانات الصنف قم بتحديثها واحفظ من هنا
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-12">
@@ -191,6 +200,7 @@ export default function ProductDetailPage() {
                         <label className="block text-sm">اسم الصنف</label>
                         <TextInput
                           disabled={loading}
+                          readOnly={!canEdit}
                           {...register("name")}
                           color={errors.name ? "failure" : undefined}
                         />
@@ -205,6 +215,7 @@ export default function ProductDetailPage() {
                         <Textarea
                           rows={3}
                           disabled={loading}
+                          readOnly={!canEdit}
                           {...register("description")}
                           className="resize-none"
                         />
@@ -223,6 +234,7 @@ export default function ProductDetailPage() {
                               checked={normalizedIsActive}
                               label={normalizedIsActive ? "نشط" : "غير نشط"}
                               onChange={async (next) => {
+                                if (!canEdit) return;
                                 if (toggleProduct.isPending) return;
                                 try {
                                   await toggleProduct.mutateAsync(id);
@@ -242,6 +254,7 @@ export default function ProductDetailPage() {
                               checked={normalizedIsFeatured}
                               label={normalizedIsFeatured ? "مميز" : "غير مميز"}
                               onChange={async (next) => {
+                                if (!canEdit) return;
                                 if (loading || toggleFeatured.isPending) return;
                                 if (next === normalizedIsFeatured) return;
                                 try {
@@ -286,23 +299,29 @@ export default function ProductDetailPage() {
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      disabled={loading}
+                      disabled={loading || !canEdit}
                       {...register("image")}
                     />
-                    <Button
-                      type="button"
-                      size="xs"
-                      onClick={() =>
-                        document.getElementById("product_image_input")?.click()
-                      }
-                      color={"primary"}
-                      disabled={loading}
-                    >
-                      اختر صورة
-                    </Button>
-                    <p className="text-[10px] text-gray-500">
-                      يسمح بالصور jpg / png حتى 200kb
-                    </p>
+                    {canEdit && (
+                      <>
+                        <Button
+                          type="button"
+                          size="xs"
+                          onClick={() =>
+                            document
+                              .getElementById("product_image_input")
+                              ?.click()
+                          }
+                          color={"primary"}
+                          disabled={loading || !canEdit}
+                        >
+                          اختر صورة
+                        </Button>
+                        <p className="text-[10px] text-gray-500">
+                          يسمح بالصور jpg / png حتى 200kb
+                        </p>
+                      </>
+                    )}
                     {errors.image && (
                       <p className="text-[10px] text-red-600">
                         {errors.image.message as any}
@@ -312,49 +331,53 @@ export default function ProductDetailPage() {
                 </div>
               </div>
               <div className="flex flex-col-reverse sm:flex-row flex-wrap gap-3 pt-4 sm:justify-end">
-                <Button
-                  type="button"
-                  color="failure"
-                  outline
-                  onClick={() => setDeleteOpen(true)}
-                  disabled={loading}
-                >
-                  حذف
-                </Button>
-                {normalizedIsDeleted && (
-                  <Button
-                    type="button"
-                    color="success"
-                    onClick={async () => {
-                      try {
-                        await restore.mutateAsync();
-                        toast.success("تم الاستعادة");
-                      } catch (e: any) {
-                        toast.error(e?.body?.message || "فشل الاستعادة");
-                      }
-                    }}
-                    disabled={loading}
-                  >
-                    استعادة
-                  </Button>
+                {canEdit && (
+                  <>
+                    <Button
+                      type="button"
+                      color="failure"
+                      outline
+                      onClick={() => setDeleteOpen(true)}
+                      disabled={loading}
+                    >
+                      حذف
+                    </Button>
+                    {normalizedIsDeleted && (
+                      <Button
+                        type="button"
+                        color="success"
+                        onClick={async () => {
+                          try {
+                            await restore.mutateAsync();
+                            toast.success("تم الاستعادة");
+                          } catch (e: any) {
+                            toast.error(e?.body?.message || "فشل الاستعادة");
+                          }
+                        }}
+                        disabled={loading}
+                      >
+                        استعادة
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      color="outlineprimary"
+                      onClick={() => reset()}
+                      disabled={loading}
+                    >
+                      إلغاء التغييرات
+                    </Button>
+                    <Button
+                      type="submit"
+                      isProcessing={update.isPending}
+                      disabled={loading}
+                      color={"primary"}
+                      className="transition-colors duration-300"
+                    >
+                      حفظ التغييرات
+                    </Button>
+                  </>
                 )}
-                <Button
-                  type="button"
-                  color="outlineprimary"
-                  onClick={() => reset()}
-                  disabled={loading}
-                >
-                  إلغاء التغييرات
-                </Button>
-                <Button
-                  type="submit"
-                  isProcessing={update.isPending}
-                  disabled={loading}
-                  color={"primary"}
-                  className="transition-colors duration-300"
-                >
-                  حفظ التغييرات
-                </Button>
               </div>
             </form>
           </div>
@@ -364,22 +387,24 @@ export default function ProductDetailPage() {
           </div> */}
         </div>
       )}
-      <ConfirmDeleteModal
-        open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
-        isLoading={del.isPending}
-        title="حذف الصنف"
-        description="سيتم حذف الصنف. هل أنت متأكد؟"
-        onConfirm={async () => {
-          try {
-            await del.mutateAsync();
-            toast.success("تم الحذف");
-            router.push("/products");
-          } catch (e: any) {
-            toast.error(e?.body?.message || "فشل الحذف");
-          }
-        }}
-      />
+      {canEdit && (
+        <ConfirmDeleteModal
+          open={deleteOpen}
+          onClose={() => setDeleteOpen(false)}
+          isLoading={del.isPending}
+          title="حذف الصنف"
+          description="سيتم حذف الصنف. هل أنت متأكد؟"
+          onConfirm={async () => {
+            try {
+              await del.mutateAsync();
+              toast.success("تم الحذف");
+              router.push("/products");
+            } catch (e: any) {
+              toast.error(e?.body?.message || "فشل الحذف");
+            }
+          }}
+        />
+      )}
     </div>
   );
 }

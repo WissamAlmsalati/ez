@@ -2,6 +2,7 @@
 import { useParams, useRouter } from "next/navigation";
 import BreadcrumbComp from "@widgets/breadcrumb/BreadcrumbComp";
 import React from "react";
+import { useSessionStore } from "@/entities/session/model/sessionStore";
 import {
   useTypeDetail,
   useDeleteType,
@@ -34,6 +35,8 @@ export default function TypeDetailPage() {
   const params = useParams();
   const id = (params as any)?.id as string;
   const router = useRouter();
+  const isManager = useSessionStore((s) => s.isManager);
+  const canEdit = isManager; // الموظف يشاهد فقط
   const detail = useTypeDetail(id);
   const update = useUpdateType(id);
   const toggleType = useToggleType();
@@ -44,7 +47,10 @@ export default function TypeDetailPage() {
   const [createProductOpen, setCreateProductOpen] = React.useState(false);
   const products = useProductsQueryV2({ type_id: Number(id), per_page: 50 });
   const toggleProduct = useToggleProduct();
-  const BCrumb = [{ title: "المجموعات", to: "/types" }, { title: detail.data?.name || "تفاصيل مجموعة" }];
+  const BCrumb = [
+    { title: "المجموعات", to: "/types" },
+    { title: detail.data?.name || "تفاصيل مجموعة" },
+  ];
 
   const loading = detail.isLoading;
   const loadError = detail.isError || !detail.data;
@@ -97,6 +103,10 @@ export default function TypeDetailPage() {
   }, [t?.id, reset]);
 
   async function submitForm(data: FormVals) {
+    if (!canEdit) {
+      toast.error("ليست لديك صلاحية التعديل");
+      return;
+    }
     const fd = new FormData();
     const df = dirtyFields as Record<string, boolean>;
     const appended: string[] = [];
@@ -160,9 +170,11 @@ export default function TypeDetailPage() {
               <div className="flex flex-col md:grid md:grid-cols-2 md:gap-12 gap-4">
                 <div className="text-right md:pl-6 md:order-2">
                   <h3 className="font-semibold text-lg">بيانات المجموعة</h3>
-                  <p className="mt-1 text-xs text-gray-500">
-                    لتعديل بيانات المجموعة قم بتحديثها واحفظ من هنا
-                  </p>
+                  {canEdit && (
+                    <p className="mt-1 text-xs text-gray-500">
+                      لتعديل بيانات المجموعة قم بتحديثها واحفظ من هنا
+                    </p>
+                  )}
                 </div>
               </div>
               <div className="flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-12">
@@ -173,6 +185,7 @@ export default function TypeDetailPage() {
                         <label className="block text-sm">اسم المجموعة</label>
                         <TextInput
                           disabled={loading}
+                          readOnly={!canEdit}
                           {...register("name")}
                           color={errors.name ? "failure" : undefined}
                         />
@@ -187,6 +200,7 @@ export default function TypeDetailPage() {
                         <Textarea
                           rows={3}
                           disabled={loading}
+                          readOnly={!canEdit}
                           {...register("description")}
                           className="resize-none"
                         />
@@ -203,6 +217,7 @@ export default function TypeDetailPage() {
                             checked={normalizedIsActive}
                             label={normalizedIsActive ? "نشط" : "غير نشط"}
                             onChange={async () => {
+                              if (!canEdit) return; // منع الموظف من التعديل
                               if (toggleType.isPending) return;
                               try {
                                 await toggleType.mutateAsync(id);
@@ -246,23 +261,27 @@ export default function TypeDetailPage() {
                       type="file"
                       accept="image/*"
                       className="hidden"
-                      disabled={loading}
+                      disabled={loading || !canEdit}
                       {...register("image")}
                     />
-                    <Button
-                      type="button"
-                      size="xs"
-                      onClick={() =>
-                        document.getElementById("type_image_input")?.click()
-                      }
-                      color={"primary"}
-                      disabled={loading}
-                    >
-                      اختر صورة
-                    </Button>
-                    <p className="text-[10px] text-gray-500">
-                      يسمح بالصور jpg / png حتى 200kb
-                    </p>
+                    {canEdit && (
+                      <>
+                        <Button
+                          type="button"
+                          size="xs"
+                          onClick={() =>
+                            document.getElementById("type_image_input")?.click()
+                          }
+                          color={"primary"}
+                          disabled={loading || !canEdit}
+                        >
+                          اختر صورة
+                        </Button>
+                        <p className="text-[10px] text-gray-500">
+                          يسمح بالصور jpg / png حتى 200kb
+                        </p>
+                      </>
+                    )}
                     {errors.image && (
                       <p className="text-[10px] text-red-600">
                         {errors.image.message as any}
@@ -272,49 +291,53 @@ export default function TypeDetailPage() {
                 </div>
               </div>
               <div className="flex flex-col-reverse sm:flex-row flex-wrap gap-3 pt-4 sm:justify-end">
-                <Button
-                  type="button"
-                  color="failure"
-                  outline
-                  onClick={() => setDeleteOpen(true)}
-                  disabled={loading}
-                >
-                  حذف
-                </Button>
-                {t?.is_deleted && (
-                  <Button
-                    type="button"
-                    color="success"
-                    onClick={async () => {
-                      try {
-                        await restore.mutateAsync();
-                        toast.success("تم الاستعادة");
-                      } catch (e: any) {
-                        toast.error(e?.body?.message || "فشل الاستعادة");
-                      }
-                    }}
-                    disabled={loading}
-                  >
-                    استعادة
-                  </Button>
+                {canEdit && (
+                  <>
+                    <Button
+                      type="button"
+                      color="failure"
+                      outline
+                      onClick={() => setDeleteOpen(true)}
+                      disabled={loading}
+                    >
+                      حذف
+                    </Button>
+                    {t?.is_deleted && (
+                      <Button
+                        type="button"
+                        color="success"
+                        onClick={async () => {
+                          try {
+                            await restore.mutateAsync();
+                            toast.success("تم الاستعادة");
+                          } catch (e: any) {
+                            toast.error(e?.body?.message || "فشل الاستعادة");
+                          }
+                        }}
+                        disabled={loading}
+                      >
+                        استعادة
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      color="outlineprimary"
+                      onClick={() => reset()}
+                      disabled={loading}
+                    >
+                      إلغاء التغييرات
+                    </Button>
+                    <Button
+                      type="submit"
+                      isProcessing={update.isPending}
+                      disabled={loading}
+                      color={"primary"}
+                      className="transition-colors duration-300"
+                    >
+                      حفظ التغييرات
+                    </Button>
+                  </>
                 )}
-                <Button
-                  type="button"
-                  color="outlineprimary"
-                  onClick={() => reset()}
-                  disabled={loading}
-                >
-                  إلغاء التغييرات
-                </Button>
-                <Button
-                  type="submit"
-                  isProcessing={update.isPending}
-                  disabled={loading}
-                  color={"primary"}
-                  className="transition-colors duration-300"
-                >
-                  حفظ التغييرات
-                </Button>
               </div>
             </form>
           </div>
@@ -322,13 +345,15 @@ export default function TypeDetailPage() {
             <div className="flex items-center justify-between">
               <h3 className="font-semibold text-base">الأصناف التابعة</h3>
               <div className="flex items-center gap-3">
-                <Button
-                  size="sm"
-                  color="primary"
-                  onClick={() => setCreateProductOpen(true)}
-                >
-                  إضافة صنف
-                </Button>
+                {canEdit && (
+                  <Button
+                    size="sm"
+                    color="primary"
+                    onClick={() => setCreateProductOpen(true)}
+                  >
+                    إضافة صنف
+                  </Button>
+                )}
               </div>
             </div>
             {products.isLoading ? (
@@ -355,26 +380,30 @@ export default function TypeDetailPage() {
           </div>
         </div>
       )}
-      <ConfirmDeleteModal
-        open={deleteOpen}
-        onClose={() => setDeleteOpen(false)}
-        isLoading={del.isPending}
-        title="حذف المجموعة"
-        description="سيتم حذف المجموعة. هل أنت متأكد؟"
-        onConfirm={async () => {
-          await del.mutateAsync();
-          toast.success("تم الحذف");
-          router.push("/types");
-        }}
-      />
-      <CreateProductModal
-        open={createProductOpen}
-        typeId={Number(id)}
-        onClose={() => {
-          setCreateProductOpen(false);
-          products.refetch();
-        }}
-      />
+      {canEdit && (
+        <ConfirmDeleteModal
+          open={deleteOpen}
+          onClose={() => setDeleteOpen(false)}
+          isLoading={del.isPending}
+          title="حذف المجموعة"
+          description="سيتم حذف المجموعة. هل أنت متأكد؟"
+          onConfirm={async () => {
+            await del.mutateAsync();
+            toast.success("تم الحذف");
+            router.push("/types");
+          }}
+        />
+      )}
+      {canEdit && (
+        <CreateProductModal
+          open={createProductOpen}
+          typeId={Number(id)}
+          onClose={() => {
+            setCreateProductOpen(false);
+            products.refetch();
+          }}
+        />
+      )}
     </div>
   );
 }

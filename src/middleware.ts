@@ -65,6 +65,16 @@ export async function middleware(request: NextRequest) {
   );
 
   if (isManagerOnlyRoute && userRole !== "manager") {
+    // السماح للموظف بالوصول إلى صفحة بياناته الشخصية فقط /users/{id}
+    const userId = (token as any)?.user?.id as string | number | undefined;
+    const match = pathname.match(/^\/users\/(\d+)(?:$|\/)/);
+    if (userRole === "employee" && match && userId != null) {
+      const requestedId = match[1];
+      // مقارنة بعد تحويل الرقمين إلى نص لتفادي اختلاف النوع
+      if (String(requestedId) === String(userId)) {
+        return NextResponse.next();
+      }
+    }
     return NextResponse.redirect(new URL("/", request.url));
   }
 

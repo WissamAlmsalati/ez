@@ -40,7 +40,6 @@ export default function UserInfoSection({ user }: { user: User }) {
   const isManager = useSessionStore((s) => s.isManager);
   const update = useUpdateUser(user.id);
   const delUser = useDeleteUser(user.id);
-  const restoreUser = useRestoreUser(user.id);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const router = useRouter();
   const {
@@ -55,7 +54,11 @@ export default function UserInfoSection({ user }: { user: User }) {
       name: user.name || "",
       email: user.email || "",
       phone: user.phone || "",
-      category_id: user.department?.id ? String(user.department.id) : "",
+      // If employee, initialize from the first category assigned (if any)
+      category_id:
+        user.role === "employee" && user.categories?.length
+          ? String(user.categories[0].id)
+          : "",
       is_active: !!user.is_active,
     }),
     [user]
@@ -79,11 +82,14 @@ export default function UserInfoSection({ user }: { user: User }) {
     reset(defaultValues);
   }, [defaultValues, reset]);
 
-  // After departments load, ensure the select shows the user's department on refresh
+  // After categories load, ensure the select shows the user's category on refresh
   useEffect(() => {
     if (user.role !== "employee") return;
     if (catsLoading || catsError) return;
-    const target = user.department?.id ? String(user.department.id) : "";
+    const target =
+      user.categories?.length && user.categories[0]?.id
+        ? String(user.categories[0].id)
+        : "";
     const current = getValues("category_id") as any;
     if (!current && target) {
       setValue("category_id", target, {
@@ -91,14 +97,7 @@ export default function UserInfoSection({ user }: { user: User }) {
         shouldTouch: false,
       });
     }
-  }, [
-    catsLoading,
-    catsError,
-    user.role,
-    user.department?.id,
-    getValues,
-    setValue,
-  ]);
+  }, [catsLoading, catsError, user.role, user.categories, getValues, setValue]);
 
   // no-op: can watch is_active if needed
 
@@ -146,7 +145,7 @@ export default function UserInfoSection({ user }: { user: User }) {
         <div className="space-y-2">
           <label className="block text-sm">اسم المستخدم</label>
           <TextInput
-            disabled={!isManager}
+            readOnly={!isManager}
             {...register("name")}
             color={errors.name ? "failure" : undefined}
           />
@@ -158,7 +157,7 @@ export default function UserInfoSection({ user }: { user: User }) {
         <div className="space-y-2">
           <label className="block text-sm">البريد الإلكتروني</label>
           <TextInput
-            disabled={!isManager}
+            readOnly={!isManager}
             {...register("email")}
             color={errors.email ? "failure" : undefined}
           />
@@ -172,7 +171,7 @@ export default function UserInfoSection({ user }: { user: User }) {
         <div className="space-y-2">
           <label className="block text-sm">رقم الهاتف</label>
           <TextInput
-            disabled={!isManager}
+            readOnly={!isManager}
             {...register("phone")}
             color={errors.phone ? "failure" : undefined}
           />
@@ -227,36 +226,34 @@ export default function UserInfoSection({ user }: { user: User }) {
                 )}
               </div>
             )}
+
+            <div className="md:col-span-2 pt-2 flex gap-3 justify-end">
+              <Button
+                color="failure"
+                onClick={() => setShowDeleteConfirm(true)}
+                size="sm"
+              >
+                حذف
+              </Button>
+              <Button
+                type="button"
+                color="outlineprimary"
+                onClick={() => reset(defaultValues)}
+                disabled={!isManager}
+              >
+                إلغاء التغييرات
+              </Button>
+              <Button
+                type="submit"
+                color="dark"
+                disabled={!isManager}
+                isProcessing={update.isPending}
+              >
+                حفظ التغييرات
+              </Button>
+            </div>
           </>
         )}
-
-        <div className="md:col-span-2 pt-2 flex gap-3 justify-end">
-          {isManager && (
-            <Button
-              color="failure"
-              onClick={() => setShowDeleteConfirm(true)}
-              size="sm"
-            >
-              حذف
-            </Button>
-          )}
-          <Button
-            type="button"
-            color="outlineprimary"
-            onClick={() => reset(defaultValues)}
-            disabled={!isManager}
-          >
-            إلغاء التغييرات
-          </Button>
-          <Button
-            type="submit"
-            color="dark"
-            disabled={!isManager}
-            isProcessing={update.isPending}
-          >
-            حفظ التغييرات
-          </Button>
-        </div>
         <Modal
           show={showDeleteConfirm}
           size="md"

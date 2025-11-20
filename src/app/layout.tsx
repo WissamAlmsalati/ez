@@ -9,6 +9,7 @@ import QueryProvider from "./providers/QueryProvider";
 import AuthProvider from "./providers/AuthProvider";
 import { SessionInitializer } from "@/entities/session/ui/SessionInitializer";
 import ToastProvider from "./providers/ToastProvider";
+import { Analytics } from "@vercel/analytics/next"
 
 const alexandria = Alexandria({
   subsets: ["arabic", "latin"],
@@ -41,6 +42,7 @@ export default function RootLayout({
               </QueryProvider>
             </CustomizerContextProvider>
           </AuthProvider>
+          <Analytics/>
         </Flowbite>
       </body>
     </html>

@@ -31,7 +31,7 @@ export default function LatestOrdersTable({ orders }: Props) {
     <CardBox className="space-y-4">
       <div className="mb-1 font-semibold">أحدث الطلبات</div>
       <div className="overflow-x-auto">
-        <Table className="table-no-radius rounded-none table-fixed centered-table white-header">
+        <Table className="table-no-radius rounded-none centered-table white-header">
           <Table.Head className="border-b border-gray-200 text-xs">
             <Table.HeadCell>رقم الطلبية</Table.HeadCell>
             <Table.HeadCell>الزبون</Table.HeadCell>

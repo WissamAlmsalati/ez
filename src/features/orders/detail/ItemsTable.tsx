@@ -16,7 +16,7 @@ export function ItemsTable({ order }: { order: Order }) {
         <Table className="min-w-[900px]">
           <Table.Head>
             <Table.HeadCell>#</Table.HeadCell>
-            <Table.HeadCell>اسم المنتج</Table.HeadCell>
+            <Table.HeadCell>اسم الصنف</Table.HeadCell>
             <Table.HeadCell>الوحدة</Table.HeadCell>
             <Table.HeadCell>الكمية / الحجم</Table.HeadCell>
             <Table.HeadCell>السعر للوحدة</Table.HeadCell>

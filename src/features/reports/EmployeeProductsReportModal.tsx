@@ -26,29 +26,41 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     () => [
       {
         value: "employee-products",
-        label: "تقرير الأصناف والكميات",
+        label: "تقرير الموظف - الأصناف والكميات",
         roles: ["employee"],
         path: "/reports/employee/products",
       },
       {
         value: "employee-products-by-store",
-        label: "تقرير الأصناف حسب الزبون/المتجر",
+        label: "تقرير الموظف - الأصناف حسب المتجر",
         roles: ["employee"],
         path: "/reports/employee/products-by-store",
       },
       {
         value: "manager-dashboard",
-        label: "تقرير المدير الشامل",
+        label: "تقرير المدير - حسب المتاجر",
         roles: ["manager"],
         path: "/reports/manager/dashboard",
+      },
+      {
+        value: "manager-by-categories",
+        label: "تقرير المدير - حسب الأقسام",
+        roles: ["manager"],
+        path: "/reports/manager/by-categories",
+      },
+      {
+        value: "manager-quantities-by-categories",
+        label: "تقرير المدير - كميات لكل قسم",
+        roles: ["manager"],
+        path: "/reports/manager/quantities-by-categories",
       },
     ],
     []
   );
 
   const allowedOptions: ReportOption[] = useMemo(() => {
-    // Managers should see all report types
-    if (isManager) return allOptions;
+    // Separate visibility: managers see manager reports only; employees see employee reports only
+    if (isManager) return allOptions.filter((o) => o.roles.includes("manager"));
     if (isEmployee)
       return allOptions.filter((o) => o.roles.includes("employee"));
     return allOptions;
@@ -74,75 +86,29 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     return found?.path;
   }, [allOptions, reportType]);
 
-  /** Build a more formal, print-ready RTL HTML document from manager dashboard JSON */
-  const buildManagerDashboardHtml = (data: any) => {
-    if (!data || typeof data !== "object") return null;
-    const title = data.report_title || "تقرير المدير";
-    const generatedAt = data.generatedAt.split(" ")[0] || "";
-    const summary = data.summary || {};
-    const categories: any[] = Array.isArray(data.categories)
-      ? data.categories
-      : [];
-    const esc = (v: any) =>
-      String(v ?? "")
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-    const formatNumber = (v: any) => {
-      const n = Number(v);
-      if (Number.isNaN(n)) return esc(v);
-      try {
-        return new Intl.NumberFormat("ar-LY", {
-          maximumFractionDigits: 2,
-        }).format(n);
-      } catch {
-        return String(n);
-      }
-    };
-    const categorySections = categories
-      .map((cat) => {
-        const products = Array.isArray(cat.products) ? cat.products : [];
-        const productRows = products
-          .map(
-            (p: any, i: number) => `
-        <tr>
-          <td class="c">${i + 1}</td>
-          <td>${esc(p.name)}</td>
-          <td class="c">${esc(p.unit)}</td>
-          <td class="num">${formatNumber(p.price)}</td>
-          <td>${(p.orderedBy || [])
-            .map((n: string) => `${esc(n)}`)
-            .join(", ")}</td>
-        </tr>`
-          )
-          .join("");
-        return `
-      <section class="category">
-        <h3>
-          <span class="cat-title">${esc(cat.categoryName)}</span>
-          <span class="count">(${esc(cat.itemsCount)} صنف)</span>
-        </h3>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th style="width:50px" class="c">#</th>
-                <th>الصنف</th>
-                <th style="width:120px" class="c">الوحدة</th>
-                <th style="width:120px" class="num">السعر</th>
-                <th style="min-width:220px">الزبون</th>
-              </tr>
-            </thead>
-            <tbody>${
-              productRows ||
-              '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'
-            }</tbody>
-          </table>
-        </div>
-      </section>`;
-      })
-      .join("\n");
-    return `<!DOCTYPE html>
+  // --- Common helpers & base styled shell (RTL print-friendly) ---
+  const esc = (v: any) =>
+    String(v ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  const formatNumber = (v: any) => {
+    const n = Number(v);
+    if (Number.isNaN(n)) return esc(v);
+    try {
+      return new Intl.NumberFormat("ar-LY", {
+        maximumFractionDigits: 2,
+      }).format(n);
+    } catch {
+      return String(n);
+    }
+  };
+
+  const renderShell = (
+    title: string,
+    date: string,
+    innerHtml: string
+  ) => `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -155,35 +121,23 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     body { margin: 0; font-family: 'Arial','Segoe UI',system-ui,-apple-system,sans-serif; }
     .sheet { margin: 16px; background: var(--bg); padding: 24px 24px 40px; border: 1px solid var(--border); border-radius: 0px; box-shadow: 0 4px 16px rgba(0,0,0,.06); }
     .brandbar { display:flex; align-items:center; justify-content:right; gap:32px;  }
-    .header{font-size:18px; font-weight:500; color:var(--primary);}
+    .header{font-size:18px; font-weight:500; color:var(--primary);} 
     .brand-left { display:flex; flex-direction: column; align-items:right; gap:4px; }
     .logo { width:56px; height:100px; object-fit:contain; }
-    .org { font-size:18px; font-weight:700; color:var(--primary); }
-    .org-sub { font-size:12px; color:var(--muted); }
     .doc-title { text-align:center; margin:18px 0 8px; font-size:22px; font-weight:800; color:var(--accent); letter-spacing:.5px; }
-    .generated { text-align:center; font-weight:600; }
-    .meta { display:flex; gap:24px; justify-content:center; color:var(--muted); font-size:12px; margin-bottom:18px; }
-    .summary-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:6px; margin:44px 0 28px; }
-    .card { background:var(--bg); border:1px solid var(--border); border-radius:0px; padding:12px 14px; }
-    .card h4 { margin:0 0 6px; font-size:12px; font-weight:700; color:var(--muted); }
-    .card .value { font-size:22px; font-weight:800; color:var(--primary); }
-    section.category { margin: 26px 0 34px; page-break-inside: avoid; }
-    section.category h3 { margin:0 0 10px; font-size:16px; font-weight500;  display:flex; align-items:center; gap:8px; }
-    section.category h3 .cat-title { padding:3px 10px; border-radius:0px; }
-    section.category h3 .count {  font-weight:500; font-size:12px; }
+    .meta { text-align:center; color:var(--muted); font-size:12px; margin-bottom:18px; font-weight:600 }
+    section.block { margin: 26px 0 34px; page-break-inside: avoid; }
+    section.block h3 { margin:0 0 10px; font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; }
+    section.block h3 .sub {  font-weight:500; font-size:12px; color:var(--muted); }
     .table-wrapper { overflow:auto; border:1px solid var(--border); border-radius:0px; background:var(--bg); }
-  table { width:100%; border-collapse:collapse; font-size:12px; text-align:center; border-radius:0; }
-  th, td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:center; border-radius:0; }
-  th { background:#f1f5f9; color:#0f172a; font-weight:800; font-size:11px; text-align:center; }
+    table { width:100%; border-collapse:collapse; font-size:12px; text-align:center; border-radius:0; }
+    th, td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:center; border-radius:0; }
+    th { background:#f1f5f9; color:#0f172a; font-weight:800; font-size:11px; text-align:center; }
     tbody tr:nth-child(even) { background:#fafafa; }
     tbody tr:hover { background:#f5faff; }
     td.num { text-align:center; font-variant-numeric: tabular-nums; direction:ltr; }
     td.c, th.c { text-align:center; }
-    .badge { background:#2563eb; color:white; padding:3px 8px; border-radius:999px; font-size:10px; margin:2px; display:inline-block; }
     .muted { color:var(--muted); }
-    .signatures { display:grid; grid-template-columns:repeat(3,1fr); gap:24px; margin-top:36px; }
-    .sig { text-align:center; }
-    .sig .line { height:1px; background:var(--border); margin:28px 0 6px; }
     .footer { margin-top:26px; text-align:center; color:var(--muted); font-size:11px; }
     .actions { position:fixed; top:12px; left:16px; display:flex; gap:8px; z-index:50; }
     .btn { background:#111827; color:#fff; border:none; padding:8px 14px; font-size:12px; border-radius:8px; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,.15); }
@@ -192,11 +146,9 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
       html,body { background:#fff; }
       .sheet { margin: 0; border: none; border-radius:0; box-shadow:none; padding: 0 6mm 8mm; }
       .actions { display:none; }
-      .brandbar { padding: 3mm 0 0mm; solid var(--primary); }
+      .brandbar { padding: 3mm 0 0mm; }
       .doc-title { margin: 3mm 0 0; }
     }
-    /* * Optional subtle watermark: uncomment to enable */
-    /* body::before { content:"الازدهار للحلويات"; position:fixed; inset:0; display:flex; align-items:center; justify-content:center; font-size:64px; color:#0f172a; opacity:0.03; pointer-events:none; font-weight:800; } */
     * { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
   </style>
   <script>
@@ -211,52 +163,264 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     <button class="btn secondary" onclick="closeTab()">إغلاق</button>
   </div>
   <div class="sheet">
-
     <div class="brandbar">
-        <img class="logo" src="/Izdihar_logo_report.svg" alt="Izdihar Sweets" />
-        <div class="brand-left header">
-          <div>شركة الازدهار للحلويات</div>
-          <div> ${title}</div>
-          <div>${generatedAt}</div>
-        </div>
+      <img class="logo" src="/Izdihar_logo_report.svg" alt="Izdihar Sweets" />
+      <div class="brand-left header">
+        <div>شركة الازدهار للحلويات</div>
+        <div>${esc(title)}</div>
+        <div>${esc(date || "")}</div>
+      </div>
     </div>
     <hr/>
-    <div class="summary-cards">
-      ${
-        summary.totalStores !== undefined
-          ? `<div class="card"><h4>عدد المتاجر</h4><div class="value">${formatNumber(
-              summary.totalStores
-            )}</div></div>`
-          : ""
-      }
-      ${
-        summary.totalCategories !== undefined
-          ? `<div class="card"><h4>عدد الأقسام</h4><div class="value">${formatNumber(
-              summary.totalCategories
-            )}</div></div>`
-          : ""
-      }
-      ${
-        summary.totalItems !== undefined
-          ? `<div class="card"><h4>عدد الأصناف</h4><div class="value">${formatNumber(
-              summary.totalItems
-            )}</div></div>`
-          : ""
-      }
-      ${
-        summary.totalOrders !== undefined
-          ? `<div class="card"><h4>عدد الطلبات</h4><div class="value">${formatNumber(
-              summary.totalOrders
-            )}</div></div>`
-          : ""
-      }
-      </div>
-      ${categorySections}
-
-    <div class="footer"> مملوك لشركة الازدهار للحلويات — &copy; ${new Date().getFullYear()}</div>
+    ${innerHtml}
+    <div class="footer">مملوك لشركة الازدهار للحلويات — &copy; ${new Date().getFullYear()}</div>
   </div>
 </body>
 </html>`;
+
+  // Manager: dashboard (grouped by stores)
+  const buildManagerDashboardHtml = (data: any) => {
+    if (!data || typeof data !== "object") return null;
+    const title = data.report_title || "تقرير المدير - حسب المتاجر";
+    const date = data.date || "";
+    const stores: any[] = Array.isArray(data.stores) ? data.stores : [];
+    const sections = stores
+      .map((s) => {
+        const items = Array.isArray(s.items) ? s.items : [];
+        const rows = items
+          .map(
+            (it: any, idx: number) => `
+          <tr>
+            <td class="c">${idx + 1}</td>
+            <td>${esc(it.category_name ?? it.categoryName)}</td>
+            <td>${esc(it.product_name ?? it.productName)}</td>
+            <td>${esc(it.unit_name ?? it.unitName ?? it.unit)}</td>
+            <td class="num">${formatNumber(it.quantity)}</td>
+          </tr>`
+          )
+          .join("");
+        return `
+        <section class="block">
+          <h3>${esc(s.store_name ?? s.storeName)} <span class="sub">(${
+          items.length
+        } صنف)</span></h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th class="c" style="width:50px">#</th>
+                  <th>القسم</th>
+                  <th>الصنف</th>
+                  <th style="width:140px">الوحدة</th>
+                  <th style="width:120px">الكمية</th>
+                </tr>
+              </thead>
+              <tbody>${
+                rows ||
+                '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'
+              }</tbody>
+            </table>
+          </div>
+        </section>`;
+      })
+      .join("\n");
+    return renderShell(
+      title,
+      date,
+      sections || '<p class="muted">لا توجد بيانات</p>'
+    );
+  };
+
+  // Manager: by categories (grouped by category, shows stores)
+  const buildManagerByCategoriesHtml = (data: any) => {
+    if (!data || typeof data !== "object") return null;
+    const title = data.report_title || "تقرير المدير - حسب الأقسام";
+    const date = data.date || "";
+    const cats: any[] = Array.isArray(data.categories) ? data.categories : [];
+    const sections = cats
+      .map((c) => {
+        const items = Array.isArray(c.items) ? c.items : [];
+        const rows = items
+          .map(
+            (it: any, idx: number) => `
+          <tr>
+            <td class="c">${idx + 1}</td>
+            <td>${esc(it.store_name ?? it.storeName)}</td>
+            <td>${esc(it.product_name ?? it.productName)}</td>
+            <td>${esc(it.unit_name ?? it.unitName ?? it.unit)}</td>
+            <td class="num">${formatNumber(it.quantity)}</td>
+          </tr>`
+          )
+          .join("");
+        return `
+        <section class="block">
+          <h3>${esc(c.category_name ?? c.categoryName)} <span class="sub">(${
+          items.length
+        } عنصر)</span></h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th class="c" style="width:50px">#</th>
+                  <th>المتجر</th>
+                  <th>الصنف</th>
+                  <th style="width:140px">الوحدة</th>
+                  <th style="width:120px">الكمية</th>
+                </tr>
+              </thead>
+              <tbody>${
+                rows ||
+                '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'
+              }</tbody>
+            </table>
+          </div>
+        </section>`;
+      })
+      .join("\n");
+    return renderShell(
+      title,
+      date,
+      sections || '<p class="muted">لا توجد بيانات</p>'
+    );
+  };
+
+  // Manager: quantities by categories (aggregate quantities)
+  const buildManagerQuantitiesByCategoriesHtml = (data: any) => {
+    if (!data || typeof data !== "object") return null;
+    const title = data.report_title || "تقرير المدير - كميات لكل قسم";
+    const date = data.date || "";
+    const cats: any[] = Array.isArray(data.categories) ? data.categories : [];
+    const sections = cats
+      .map((c) => {
+        const items = Array.isArray(c.items) ? c.items : [];
+        const rows = items
+          .map(
+            (it: any, idx: number) => `
+          <tr>
+            <td class="c">${idx + 1}</td>
+            <td>${esc(it.product_name ?? it.productName)}</td>
+            <td>${esc(it.unit_name ?? it.unitName)}</td>
+            <td class="num">${formatNumber(it.quantity)}</td>
+          </tr>`
+          )
+          .join("");
+        return `
+        <section class="block">
+          <h3>${esc(c.category_name ?? c.categoryName)} <span class="sub">(${
+          items.length
+        } عنصر)</span></h3>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th class="c" style="width:50px">#</th>
+                  <th>الصنف</th>
+                  <th style="width:140px">الوحدة</th>
+                  <th style="width:120px">الكمية</th>
+                </tr>
+              </thead>
+              <tbody>${
+                rows ||
+                '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'
+              }</tbody>
+            </table>
+          </div>
+        </section>`;
+      })
+      .join("\n");
+    return renderShell(
+      title,
+      date,
+      sections || '<p class="muted">لا توجد بيانات</p>'
+    );
+  };
+
+  // Employee: products (single category summary)
+  const buildEmployeeProductsHtml = (data: any) => {
+    if (!data || typeof data !== "object") return null;
+    const title = data.report_title || "تقرير الموظف - الأصناف والكميات";
+    const date = data.date || "";
+    const items: any[] = Array.isArray(data.items) ? data.items : [];
+    const rows = items
+      .map(
+        (it: any, idx: number) => `
+      <tr>
+        <td class="c">${idx + 1}</td>
+  <td>${esc(it.product_name ?? it.productName)}</td>
+  <td>${esc(it.unit_name ?? it.unitName)}</td>
+  <td class="num">${formatNumber(it.quantity)}</td>
+      </tr>`
+      )
+      .join("");
+    const content = `
+      <div class="doc-title">${esc(
+        (data.category_name ?? data.categoryName) || ""
+      )}</div>
+      <div class="meta">${esc(date)}</div>
+      <section class="block">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th class="c" style="width:50px">#</th>
+                <th>الصنف</th>
+                <th style="width:140px">الوحدة</th>
+                <th style="width:120px">الكمية</th>
+              </tr>
+            </thead>
+            <tbody>${
+              rows ||
+              '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'
+            }</tbody>
+          </table>
+        </div>
+      </section>`;
+    return renderShell(title, date, content);
+  };
+
+  // Employee: products by store (flat list with store and product)
+  const buildEmployeeProductsByStoreHtml = (data: any) => {
+    if (!data || typeof data !== "object") return null;
+    const title = data.report_title || "تقرير الموظف - الأصناف حسب المتجر";
+    const date = data.date || "";
+    const items: any[] = Array.isArray(data.items) ? data.items : [];
+    const rows = items
+      .map(
+        (it: any, idx: number) => `
+      <tr>
+        <td class="c">${idx + 1}</td>
+        <td>${esc(it.store_name ?? it.storeName)}</td>
+        <td>${esc(it.product_name ?? it.productName)}</td>
+        <td>${esc(it.unit_name ?? it.unitName)}</td>
+        <td class="num">${formatNumber(it.quantity)}</td>
+      </tr>`
+      )
+      .join("");
+    const content = `
+      <div class="doc-title">${esc(
+        (data.category_name ?? data.categoryName) || ""
+      )}</div>
+      <div class="meta">${esc(date)}</div>
+      <section class="block">
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th class="c" style="width:50px">#</th>
+                <th>المتجر</th>
+                <th>الصنف</th>
+                <th style="width:140px">الوحدة</th>
+                <th style="width:120px">الكمية</th>
+              </tr>
+            </thead>
+            <tbody>${
+              rows ||
+              '<tr><td colspan="6" class="muted c">لا توجد بيانات</td></tr>'
+            }</tbody>
+          </table>
+        </div>
+      </section>`;
+    return renderShell(title, date, content);
   };
 
   const buildFallbackHtml = (json: any) => {
@@ -309,12 +473,29 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
       const res = await apiInstance.get(selectedPath, {
         headers: { Accept: "application/json" },
       });
-      const data = res.data;
+      // New API wraps payload as { success, data }
+      const payload = res?.data?.data ?? res?.data;
       let html: string | null = null;
-      if (reportType === "manager-dashboard" || data?.report_title) {
-        html = buildManagerDashboardHtml(data);
+      switch (reportType) {
+        case "manager-dashboard":
+          html = buildManagerDashboardHtml(payload);
+          break;
+        case "manager-by-categories":
+          html = buildManagerByCategoriesHtml(payload);
+          break;
+        case "manager-quantities-by-categories":
+          html = buildManagerQuantitiesByCategoriesHtml(payload);
+          break;
+        case "employee-products":
+          html = buildEmployeeProductsHtml(payload);
+          break;
+        case "employee-products-by-store":
+          html = buildEmployeeProductsByStoreHtml(payload);
+          break;
+        default:
+          html = buildFallbackHtml(payload);
       }
-      if (!html) html = buildFallbackHtml(data);
+      if (!html) html = buildFallbackHtml(payload);
       reportWindow.document.open();
       reportWindow.document.write(html);
       reportWindow.document.close();

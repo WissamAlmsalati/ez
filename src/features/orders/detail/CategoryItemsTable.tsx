@@ -23,7 +23,7 @@ export default function CategoryItemsTable({ order }: Props) {
             <Table className="table-fixed centered-table white-header min-w-[900px] ">
               <Table.Head className="border-b border-gray-200 text-xs">
                 <Table.HeadCell>#</Table.HeadCell>
-                <Table.HeadCell>اسم المنتج</Table.HeadCell>
+                <Table.HeadCell>اسم الصنف</Table.HeadCell>
                 <Table.HeadCell>الوحدة</Table.HeadCell>
                 <Table.HeadCell>الكمية</Table.HeadCell>
                 <Table.HeadCell>السعر للوحدة</Table.HeadCell>

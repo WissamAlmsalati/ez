@@ -25,7 +25,6 @@ export default function CreateProductModal({
 }: {
   open: boolean;
   onClose: () => void;
-  /** ثابت اختياري لربط المنتج بنوع محدد */
   typeId?: number;
 }) {
   const createMutation = useCreateProduct();

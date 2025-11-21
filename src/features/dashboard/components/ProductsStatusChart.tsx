@@ -37,10 +37,10 @@ export default function ProductsStatusChart({ active, inactive }: Props) {
 
   return (
     <CardBox className="p-5">
-      <div className="mb-4 font-semibold">حالة المنتجات</div>
+      <div className="mb-4 font-semibold">حالة الأصناف</div>
       <Chart
         options={options}
-        series={[{ name: "عدد المنتجات", data }]}
+        series={[{ name: "عدد الأصناف", data }]}
         type="bar"
         height={240}
       />

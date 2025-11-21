@@ -7,7 +7,7 @@ import { useOrdersFilters } from "./useOrdersFilters";
 import { useMemo } from "react";
 import { CardBox } from "@/shared/ui/cards";
 import { OrdersTableSkeleton } from "./OrdersTableSkeleton";
-import { useRouter } from "next/navigation";  
+import { useRouter } from "next/navigation";
 
 export function OrdersTable() {
   const router = useRouter();
@@ -57,7 +57,7 @@ export function OrdersTable() {
   return (
     <CardBox className="space-y-4">
       <div className="overflow-x-auto">
-        <Table className="table-fixed centered-table white-header">
+        <Table className="table-no-radius rounded-none table-fixed centered-table white-header">
           <Table.Head className="border-b border-gray-200 text-xs">
             <Table.HeadCell>رقم الطلبية</Table.HeadCell>
             <Table.HeadCell>الزبون</Table.HeadCell>
@@ -70,36 +70,35 @@ export function OrdersTable() {
           </Table.Head>
           <Table.Body className="divide-y">
             {items.map((o) => {
-              const pickupDate = o.delivery_date || o.delivery_time ? o.delivery_date ?? o.delivery_time : null;
+              const pickupDate =
+                o.delivery_date || o.delivery_time
+                  ? o.delivery_date ?? o.delivery_time
+                  : null;
               const placedAt = parseDateTime(o.created_at);
               return (
                 <Table.Row
                   key={o.id}
                   className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:cursor-pointer text-xs"
-                  onClick={ () => router.push(`/orders/${o.id}`)}
-                  >
+                  onClick={() => router.push(`/orders/${o.id}`)}
+                >
                   {/* <Link
                       href={`/orders/${o.id}`}
                       aria-label={`عرض الطلب رقم ${o.order_number}`}
                       className="block w-full h-full no-underline text-gray-900 dark:text-white"
                     > */}
-                  <Table.Cell 
+                  <Table.Cell
                   // className="whitespace-nowrap font-medium text-gray-900 dark:text-white"
                   >
-                      {o.order_number}                  
+                    {o.order_number}
                   </Table.Cell>
-                  <Table.Cell>
-                      {o.customer_name}
-                  </Table.Cell>
+                  <Table.Cell>{o.customer_name}</Table.Cell>
                   <Table.Cell className="whitespace-nowrap ">
-                      {o.customer_phone}
+                    {o.customer_phone}
                   </Table.Cell>
                   {/* <Table.Cell>
                       {pickupDate ? new Date(pickupDate).toLocaleDateString("ar-EG") : "-"}
                   </Table.Cell> */}
-                  <Table.Cell>
-                      {o.formatted_total ?? o.total_amount}
-                  </Table.Cell>
+                  <Table.Cell>{o.formatted_total ?? o.total_amount}</Table.Cell>
                   {/* <Table.Cell className="max-w-[200px] truncate">
                     <Link
                       href={`/orders/${o.id}`}
@@ -113,12 +112,9 @@ export function OrdersTable() {
                         : "-"}
                     </Link>
                   </Table.Cell> */}
+                  <Table.Cell>{o.status_text || o.status}</Table.Cell>
                   <Table.Cell>
-                      {o.status_text || o.status}
-                  </Table.Cell>
-                  <Table.Cell>
-
-                      {placedAt ? placedAt.toLocaleDateString("ar-LY") : "-"}
+                    {placedAt ? placedAt.toLocaleDateString("ar-LY") : "-"}
                   </Table.Cell>
                   {/* </Link> */}
                 </Table.Row>

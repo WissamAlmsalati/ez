@@ -20,7 +20,7 @@ export default function CategoryItemsTable({ order }: Props) {
             </h3>
           </div>
           <div className="overflow-x-auto">
-            <Table className="table-fixed centered-table white-header min-w-[900px] ">
+            <Table className="table-no-radius rounded-none table-fixed centered-table white-header min-w-[900px]">
               <Table.Head className="border-b border-gray-200 text-xs">
                 <Table.HeadCell>#</Table.HeadCell>
                 <Table.HeadCell>اسم الصنف</Table.HeadCell>
@@ -38,11 +38,24 @@ export default function CategoryItemsTable({ order }: Props) {
                   >
                     <Table.Cell>{idx + 1}</Table.Cell>
                     <Table.Cell>{p.product_name}</Table.Cell>
-                    <Table.Cell>{p.unit_name}</Table.Cell>
-                    <Table.Cell>{p.quantity}</Table.Cell>
-                    <Table.Cell>{p.unit_price ?? "-"} د.ل</Table.Cell>
-                    <Table.Cell>{p.line_total ?? "-"} د.ل</Table.Cell>
-                    <Table.Cell>{p.notes ?? "-"}</Table.Cell>
+                    <Table.Cell className="whitespace-nowrap">
+                      {p.unit_name}
+                    </Table.Cell>
+                    <Table.Cell className="whitespace-nowrap">
+                      {p.quantity}
+                    </Table.Cell>
+                    <Table.Cell className="whitespace-nowrap">
+                      {p.unit_price ?? "-"}
+                    </Table.Cell>
+                    <Table.Cell className="whitespace-nowrap">
+                      {p.line_total ?? "-"}
+                    </Table.Cell>
+                    <Table.Cell
+                      className="max-w-[240px] truncate"
+                      title={p.notes ?? undefined}
+                    >
+                      {p.notes ?? "-"}
+                    </Table.Cell>
                   </Table.Row>
                 ))}
               </Table.Body>

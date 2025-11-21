@@ -134,11 +134,22 @@
   }
 }
 
-
 .centered-table th,
 .centered-table td {
   text-align: center !important;
 }
 .white-header th {
   background-color: white !important;
+}
+
+/* Remove border radius for specific tables */
+.table-no-radius {
+  border-radius: 0 !important;
+}
+.table-no-radius thead,
+.table-no-radius tbody,
+.table-no-radius tr,
+.table-no-radius th,
+.table-no-radius td {
+  border-radius: 0 !important;
 }

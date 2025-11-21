@@ -19,7 +19,7 @@ export function SearchFilter({ className, autoFocus }: Props) {
   }, [autoFocus]);
 
   return (
-    <div className={className + " w-full"} style={{ maxWidth: 200 }}>
+    <div className={className + " w-full"} style={{ maxWidth: 210 }}>
       <TextInput
         ref={ref}
         placeholder="ابحث…"

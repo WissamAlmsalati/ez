@@ -55,24 +55,35 @@ function TypesPageContent() {
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-start gap-3">
-          <SearchFilter />
+      <div
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+        aria-label="مرشحات وإجراءات المجموعات"
+      >
+        <div className="flex items-stretch gap-2 sm:gap-1 w-full">
+          <div className="w-2/6 sm:w-auto order-1">
+            <SearchFilter />
+          </div>
           {isManager && (
             <>
-              <CategoryFilter />
-              <ActiveStatusFilter />
+              <div className="w-2/6 sm:w-auto order-2">
+                <CategoryFilter />
+              </div>
+              <div className="order-3">
+                <ActiveStatusFilter />
+              </div>
             </>
           )}
         </div>
         {isManager && (
-          <Button
-            color="primary"
-            className="transition-colors duration-300"
-            onClick={() => setOpen(true)}
-          >
-            إضافة مجموعة
-          </Button>
+          <div className="w-full md:w-auto order-last">
+            <Button
+              color="primary"
+              className="transition-colors duration-300 w-full md:w-auto"
+              onClick={() => setOpen(true)}
+            >
+              إضافة مجموعة
+            </Button>
+          </div>
         )}
       </div>
       {isLoading ? (

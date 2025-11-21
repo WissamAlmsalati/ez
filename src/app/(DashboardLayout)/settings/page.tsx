@@ -17,10 +17,12 @@ export default function SettingsPage() {
   return (
     <>
       <BreadcrumbComp title="إعدادات النظام" items={BCrumb} />
+      <div className="space-y-4">
 
-      <OrderWindowsSection />
+        <OrderWindowsSection />
 
-      <BlackoutPeriodsSection />
+        <BlackoutPeriodsSection />
+      </div>
     </>
   );
 }

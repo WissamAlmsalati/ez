@@ -31,7 +31,7 @@ export default function OrderDetailPage() {
           { title: order.order_number },
         ]}
       />
-      <div className="grid gap-6">
+      <div className="flex flex-col gap-4">
         <OrderInfoSection order={order} />
         <CustomerSection order={order} />
         {/* Render per-category tables if provided by backend; otherwise fallback to flat items table */}

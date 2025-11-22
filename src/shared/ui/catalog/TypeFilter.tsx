@@ -30,7 +30,7 @@ export function TypeFilter({ className, perPage = 100, categoryIdDep }: Props) {
       disabled={isLoading || isError}
       onChange={(e) => update({ type_id: e.target.value })}
     >
-      <option value="">كل المجموعات</option>
+      <option value="">المجموعات</option>
       {isLoading && (
         <option value="" disabled>
           جاري التحميل...

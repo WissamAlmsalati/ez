@@ -15,7 +15,7 @@ export function ActiveStatusFilter({ className }: Props) {
       value={filters.is_active ?? ""}
       onChange={(e) => update({ is_active: e.target.value })}
     >
-      <option value="">الكل</option>
+      <option value="">الحالة</option>
       <option value="1">نشط</option>
       <option value="0">غير نشط</option>
     </Select>

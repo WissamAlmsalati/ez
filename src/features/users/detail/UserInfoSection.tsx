@@ -227,7 +227,7 @@ export default function UserInfoSection({ user }: { user: User }) {
               </div>
             )}
 
-            <div className="md:col-span-2 pt-2 flex gap-3 justify-end">
+            <div className="md:col-span-2 pt-2 flex-col flex md:flex-row gap-3 justify-end">
               <Button
                 color="failure"
                 onClick={() => setShowDeleteConfirm(true)}

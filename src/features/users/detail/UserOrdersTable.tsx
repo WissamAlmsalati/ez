@@ -24,7 +24,7 @@ export default function UserOrdersTable({ userId }: { userId: number }) {
   };
 
   return (
-    <CardBox className="p-6 space-y-4">
+    <CardBox className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="font-semibold">آخر الطلبات</h3>
         <Button
@@ -36,14 +36,30 @@ export default function UserOrdersTable({ userId }: { userId: number }) {
           عرض الكل
         </Button>
       </div>
-      <div className="overflow-x-auto">
-        <Table className="table-no-radius rounded-none table-fixed centered-table white-header">
-          <Table.Head className="border-b border-gray-200 text-xs">
-            <Table.HeadCell>رقم الطلبية</Table.HeadCell>
-            <Table.HeadCell>الهاتف</Table.HeadCell>
-            <Table.HeadCell>المبلغ الكلي</Table.HeadCell>
-            <Table.HeadCell>الحالة</Table.HeadCell>
-            <Table.HeadCell>تاريخ الطلب</Table.HeadCell>
+      {/* Responsive scroll wrapper matching main orders table */}
+      <div
+        className="overflow-x-auto -mx-1 sm:mx-0"
+        role="region"
+        aria-label="آخر طلبات المستخدم (اسحب أفقيًا على الشاشات الصغيرة)"
+        tabIndex={0}
+      >
+        <Table className="table-no-radius rounded-none centered-table white-header min-w-[900px] w-max text-xs sm:text-sm">
+          <Table.Head className="border-b border-gray-200 text-xs whitespace-nowrap sticky top-0 bg-white z-10">
+            <Table.HeadCell className="whitespace-nowrap">
+              رقم الطلبية
+            </Table.HeadCell>
+            <Table.HeadCell className="whitespace-nowrap">
+              الهاتف
+            </Table.HeadCell>
+            <Table.HeadCell className="whitespace-nowrap">
+              المبلغ الكلي
+            </Table.HeadCell>
+            <Table.HeadCell className="whitespace-nowrap">
+              الحالة
+            </Table.HeadCell>
+            <Table.HeadCell className="whitespace-nowrap">
+              تاريخ الطلب
+            </Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
             {(query.data?.data ?? []).map((o) => {
@@ -51,16 +67,31 @@ export default function UserOrdersTable({ userId }: { userId: number }) {
               return (
                 <Table.Row
                   key={o.id}
-                  className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:cursor-pointer text-xs"
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-400"
                   onClick={() => router.push(`/orders/${o.id}`)}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`عرض الطلب رقم ${o.order_number}`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      router.push(`/orders/${o.id}`);
+                    }
+                  }}
                 >
-                  <Table.Cell>{o.order_number}</Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">
+                    {o.order_number}
+                  </Table.Cell>
                   <Table.Cell className="whitespace-nowrap">
                     {o.customer_phone}
                   </Table.Cell>
-                  <Table.Cell>{o.formatted_total ?? o.total_amount}</Table.Cell>
-                  <Table.Cell>{o.status_text || o.status}</Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">
+                    {o.formatted_total ?? o.total_amount}
+                  </Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">
+                    {o.status_text || o.status}
+                  </Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">
                     {placedAt ? placedAt.toLocaleDateString("ar-LY") : "-"}
                   </Table.Cell>
                 </Table.Row>
@@ -88,6 +119,13 @@ export default function UserOrdersTable({ userId }: { userId: number }) {
             )}
           </Table.Body>
         </Table>
+        {/* Scroll hint for mobile */}
+        <div
+          className="sm:hidden text-[11px] text-gray-400 mt-2 pr-1"
+          aria-hidden="true"
+        >
+          اسحب أفقيًا لعرض بقية الأعمدة ←→
+        </div>
       </div>
     </CardBox>
   );

@@ -44,7 +44,7 @@ export default function UserDetailPage() {
         ]}
       />
 
-      <div className="grid gap-6">
+      <div className="flex flex-col gap-4">
         <UserInfoSection user={user} />
         {isCurrentUser && <ChangePasswordForm />}
         {user.role === "customer" && (

@@ -9,25 +9,33 @@ import EmployeeProductsReportModal from "@/features/reports/EmployeeProductsRepo
 export default function OrdersPage() {
   const [openReport, setOpenReport] = useState(false);
   return (
-    <>
-      <BreadcrumbComp title="الطلبات" items={[{ title: "الطلبات" }]} />
+    <main className="space-y-4 sm:space-y-6 pt-2 sm:pt-3" aria-label="صفحة الطلبات">
+      <div className="sm:px-0">
+        <BreadcrumbComp title="الطلبات" items={[{ title: "الطلبات" }]} />
+      </div>
       <Suspense
         fallback={
           <div className="p-4 text-sm text-neutral-500">جارٍ التحميل...</div>
         }
       >
-        <div className="space-y-6">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex-1 min-w-[300px]">
+        <div className="space-y-5 sm:px-0">
+          {/* Filters & actions */}
+          <div
+            className="flex flex-col md:flex-row md:items-center md:justify-between gap-3"
+            aria-label="مرشحات وإجراءات الطلبات"
+          >
+            <div className="md:flex-1">
               <OrdersFilters />
             </div>
-            <Button
-              color={"primary"}
-              className="shrink-0"
-              onClick={() => setOpenReport(true)}
-            >
-              استخراج تقرير
-            </Button>
+            <div className="w-full md:w-auto flex flex-col sm:flex-row gap-2">
+              <Button
+                color={"primary"}
+                className="transition-colors duration-300 w-full sm:w-auto"
+                onClick={() => setOpenReport(true)}
+              >
+                استخراج تقرير
+              </Button>
+            </div>
           </div>
           <OrdersTable />
         </div>
@@ -36,6 +44,6 @@ export default function OrdersPage() {
         open={openReport}
         onClose={() => setOpenReport(false)}
       />
-    </>
+    </main>
   );
 }

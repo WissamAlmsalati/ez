@@ -6,7 +6,7 @@ export function RoleFilter({ className }: { className?: string }) {
   const { filters, update } = useCatalogFilters();
   return (
     <Select
-      className={(className || "") + " min-w-40"}
+      className={(className || "") + " min-w-20"}
       value={filters.role ?? ""}
       onChange={(e) => update({ role: e.target.value })}
     >

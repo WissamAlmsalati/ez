@@ -23,18 +23,6 @@ export function OrdersFilters() {
           onChange={(e) => update({ search: e.target.value })}
         />
       </div>
-      <Select
-        className="min-w-44"
-        value={filters.status ?? ""}
-        onChange={(e) => update({ status: e.target.value as any })}
-      >
-        <option value="">كل الحالات</option>
-        {statuses.map((s) => (
-          <option key={s.value} value={s.value}>
-            {s.label}
-          </option>
-        ))}
-      </Select>
     </div>
   );
 }

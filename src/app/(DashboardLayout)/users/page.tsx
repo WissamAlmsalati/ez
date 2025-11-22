@@ -23,12 +23,17 @@ export default function UsersPage() {
   ];
 
   return (
-    <>
-      <BreadcrumbComp title="المستخدمون" items={BCrumb} />
+    <main
+      className="space-y-4 sm:space-y-5 pt-2 sm:pt-3"
+      aria-label="صفحة المستخدمين"
+    >
+      <div className="sm:px-0">
+        <BreadcrumbComp title="المستخدمون" items={BCrumb} />
+      </div>
       <Suspense fallback={<CatalogSkeleton />}>
         <UsersPageContent />
       </Suspense>
-    </>
+    </main>
   );
 }
 
@@ -59,18 +64,28 @@ function UsersPageContent() {
   });
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-start gap-3">
-          <SearchFilter />
-          <RoleFilter />
-          <ActiveStatusFilter />
+    <div className="space-y-5 sm:px-0">
+      <div
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
+        aria-label="مرشحات وإجراءات المستخدمين"
+      >
+        <div className="flex items-stretch gap-2 sm:gap-3">
+          <div className="w-1/3 sm:w-auto order-1">
+            <SearchFilter />
+          </div>
+          <div className="w-1/3 sm:w-auto order-2 ">
+            <RoleFilter />
+          </div>
+          <div className="order-3">
+            <ActiveStatusFilter />
+          </div>
         </div>
         {isManager && (
-          <div>
+          <div className="w-full md:w-auto order-last">
             <Button
               size="sm"
               color="primary"
+              className="w-full md:w-auto"
               onClick={() => setOpenCreate(true)}
             >
               إضافة مستخدم
@@ -97,14 +112,22 @@ function UsersPageContent() {
               hideImage
               footer={
                 <span className="text-xs">
-                  { user.role === "manager" ? "مدير" : user.role === "employee" ? "موظف" : "زبون"}
+                  {user.role === "manager"
+                    ? "مدير"
+                    : user.role === "employee"
+                    ? "موظف"
+                    : "زبون"}
                 </span>
               }
             />
           ))}
         </CatalogGrid>
       )}
-      {data?.meta && <Pagination meta={data.meta} />}
+      {data?.meta && (
+        <div className="pt-2">
+          <Pagination meta={data.meta} />
+        </div>
+      )}
       <CreateUserModal open={openCreate} onClose={() => setOpenCreate(false)} />
     </div>
   );

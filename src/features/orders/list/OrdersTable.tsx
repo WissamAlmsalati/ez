@@ -56,17 +56,20 @@ export function OrdersTable() {
   };
   return (
     <CardBox className="space-y-4">
-      <div className="overflow-x-auto">
-        <Table className="table-no-radius rounded-none table-fixed centered-table white-header">
-          <Table.Head className="border-b border-gray-200 text-xs">
-            <Table.HeadCell>رقم الطلبية</Table.HeadCell>
-            <Table.HeadCell>الزبون</Table.HeadCell>
-            <Table.HeadCell>الهاتف</Table.HeadCell>
-            {/* <Table.HeadCell>تاريخ الاستلام</Table.HeadCell> */}
-            <Table.HeadCell>المبلغ الكلي</Table.HeadCell>
-            {/* <Table.HeadCell>ملاحظات</Table.HeadCell> */}
-            <Table.HeadCell>الحالة</Table.HeadCell>
-            <Table.HeadCell>تاريخ الطلب</Table.HeadCell>
+      <div
+        className="overflow-x-auto -mx-1 sm:mx-0"
+        role="region"
+        aria-label="جدول الطلبات قابل للتمرير أفقيًا في الشاشات الصغيرة"
+        tabIndex={0}
+      >
+        <Table className="table-no-radius rounded-none centered-table white-header min-w-[900px] w-max text-xs sm:text-sm">
+          <Table.Head className="border-b border-gray-200 text-xs whitespace-nowrap sticky top-0 bg-white z-10">
+            <Table.HeadCell className="whitespace-nowrap">رقم الطلبية</Table.HeadCell>
+            <Table.HeadCell className="whitespace-nowrap">الزبون</Table.HeadCell>
+            <Table.HeadCell className="whitespace-nowrap">الهاتف</Table.HeadCell>
+            <Table.HeadCell className="whitespace-nowrap">المبلغ الكلي</Table.HeadCell>
+            <Table.HeadCell className="whitespace-nowrap">الحالة</Table.HeadCell>
+            <Table.HeadCell className="whitespace-nowrap">تاريخ الطلب</Table.HeadCell>
           </Table.Head>
           <Table.Body className="divide-y">
             {items.map((o) => {
@@ -78,42 +81,29 @@ export function OrdersTable() {
               return (
                 <Table.Row
                   key={o.id}
-                  className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 hover:cursor-pointer text-xs"
+                  className="bg-white dark:border-gray-700 dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-xs cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-400"
                   onClick={() => router.push(`/orders/${o.id}`)}
+                  tabIndex={0}
+                  role="button"
+                  aria-label={`عرض الطلب رقم ${o.order_number}`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      router.push(`/orders/${o.id}`);
+                    }
+                  }}
                 >
                   {/* <Link
                       href={`/orders/${o.id}`}
                       aria-label={`عرض الطلب رقم ${o.order_number}`}
                       className="block w-full h-full no-underline text-gray-900 dark:text-white"
                     > */}
-                  <Table.Cell
-                  // className="whitespace-nowrap font-medium text-gray-900 dark:text-white"
-                  >
-                    {o.order_number}
-                  </Table.Cell>
-                  <Table.Cell>{o.customer_name}</Table.Cell>
-                  <Table.Cell className="whitespace-nowrap ">
-                    {o.customer_phone}
-                  </Table.Cell>
-                  {/* <Table.Cell>
-                      {pickupDate ? new Date(pickupDate).toLocaleDateString("ar-EG") : "-"}
-                  </Table.Cell> */}
-                  <Table.Cell>{o.formatted_total ?? o.total_amount}</Table.Cell>
-                  {/* <Table.Cell className="max-w-[200px] truncate">
-                    <Link
-                      href={`/orders/${o.id}`}
-                      title={o.notes || ""}
-                      className="block w-full h-full no-underline text-current"
-                    >
-                      {o.notes
-                        ? o.notes.length > 40
-                          ? o.notes.slice(0, 40) + "…"
-                          : o.notes
-                        : "-"}
-                    </Link>
-                  </Table.Cell> */}
-                  <Table.Cell>{o.status_text || o.status}</Table.Cell>
-                  <Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">{o.order_number}</Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">{o.customer_name}</Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">{o.customer_phone}</Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">{o.formatted_total ?? o.total_amount}</Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">{o.status_text || o.status}</Table.Cell>
+                  <Table.Cell className="whitespace-nowrap">
                     {placedAt ? placedAt.toLocaleDateString("ar-LY") : "-"}
                   </Table.Cell>
                   {/* </Link> */}
@@ -122,6 +112,10 @@ export function OrdersTable() {
             })}
           </Table.Body>
         </Table>
+        {/* Scroll hint */}
+        <div className="sm:hidden text-[11px] text-gray-400 mt-2 pr-1" aria-hidden="true">
+          اسحب أفقيًا لعرض بقية الأعمدة ←→
+        </div>
       </div>
       {meta && <Pagination meta={meta} />}
     </CardBox>

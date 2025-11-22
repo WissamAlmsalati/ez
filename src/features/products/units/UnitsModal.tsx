@@ -57,19 +57,27 @@ const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
   }
 
   return (
-    <Modal show={open} size="xl" onClose={onClose} popup>
-      <Modal.Header className="p-4">
-        <span className="text-lg font-semibold rtl:text-right">
+    <Modal
+      show={open}
+      size="xl"
+      onClose={onClose}
+      popup
+      className="max-w-[95%] sm:max-w-4xl mx-auto"
+    >
+      <Modal.Header className="p-3 sm:p-4">
+        <span className="text-base sm:text-lg font-semibold rtl:text-right">
           إدارة الوحدات
         </span>
       </Modal.Header>
       <Modal.Body>
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
+        <div className="space-y-4 px-1 sm:px-0">
+          {/* Search bar */}
+          <div className="flex flex-col sm:flex-row items-stretch gap-2">
             <TextInput
               placeholder="ابحث عن وحدة..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
+              className="w-full"
             />
           </div>
 
@@ -79,12 +87,21 @@ const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
             </div>
           )}
 
-          <div className="overflow-x-auto max-h-[60vh] overflow-y-auto">
-            <Table className="white-header centered-table">
-              <Table.Head className="border-b ">
-                <Table.HeadCell>الاسم</Table.HeadCell>
-                <Table.HeadCell>الوصف</Table.HeadCell>
-                <Table.HeadCell></Table.HeadCell>
+          <div
+            className="overflow-x-auto max-h-[60vh] overflow-y-auto -mx-1 sm:mx-0"
+            role="region"
+            aria-label="جدول الوحدات قابل للتمرير أفقيًا في الشاشات الصغيرة"
+            tabIndex={0}
+          >
+            <Table className="white-header centered-table min-w-[640px] w-max text-xs sm:text-sm">
+              <Table.Head className="border-b sticky top-0 bg-white z-10 text-xs">
+                <Table.HeadCell className="whitespace-nowrap">
+                  الاسم
+                </Table.HeadCell>
+                <Table.HeadCell className="whitespace-nowrap">
+                  الوصف
+                </Table.HeadCell>
+                <Table.HeadCell className="whitespace-nowrap"></Table.HeadCell>
               </Table.Head>
               <Table.Body className="divide-y">
                 {/* Inline new row */}
@@ -130,7 +147,7 @@ const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
                   <Table.Row>
                     <Table.Cell
                       colSpan={3}
-                      className="text-center text-sm py-6"
+                      className="text-center text-xs sm:text-sm py-6"
                     >
                       لا توجد وحدات
                     </Table.Cell>
@@ -138,6 +155,13 @@ const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
                 )}
               </Table.Body>
             </Table>
+            {/* Scroll hint for mobile */}
+            <div
+              className="sm:hidden text-[11px] text-gray-400 mt-2 pr-2"
+              aria-hidden="true"
+            >
+              اسحب أفقيًا لعرض بقية المحتوى ←→
+            </div>
           </div>
         </div>
 
@@ -209,24 +233,26 @@ const InlineNewRow: React.FC<{
   }
 
   return (
-    <Table.Row className="">
-      <Table.Cell>
+    <Table.Row className="bg-white">
+      <Table.Cell className="align-top">
         <TextInput
           sizing="sm"
           placeholder="اسم الوحدة"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          className="w-full"
         />
       </Table.Cell>
-      <Table.Cell>
+      <Table.Cell className="align-top">
         <TextInput
           sizing="sm"
           placeholder="الوصف (اختياري)"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
+          className="w-full"
         />
       </Table.Cell>
-      <Table.Cell>
+      <Table.Cell className="align-top">
         <div className="flex items-center gap-2 rtl:space-x-reverse">
           <Tooltip content="إضافة" style="light">
             <button
@@ -297,8 +323,8 @@ const UnitRow: React.FC<{
   }
 
   return (
-    <Table.Row className="bg-white">
-      <Table.Cell>
+    <Table.Row className="bg-white text-xs sm:text-sm">
+      <Table.Cell className="whitespace-nowrap max-w-[180px]">
         {editing ? (
           <TextInput
             sizing="sm"
@@ -309,7 +335,10 @@ const UnitRow: React.FC<{
           unit.name
         )}
       </Table.Cell>
-      <Table.Cell>
+      <Table.Cell
+        className="max-w-[260px] truncate"
+        title={unit.description ?? undefined}
+      >
         {editing ? (
           <TextInput
             sizing="sm"
@@ -320,7 +349,7 @@ const UnitRow: React.FC<{
           unit.description
         )}
       </Table.Cell>
-      <Table.Cell>
+      <Table.Cell className="whitespace-nowrap">
         <div className="flex items-center gap-2 rtl:space-x-reverse">
           {editing ? (
             <>

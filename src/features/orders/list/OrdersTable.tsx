@@ -63,7 +63,7 @@ export function OrdersTable() {
         tabIndex={0}
       >
         <Table className="table-no-radius rounded-none centered-table white-header min-w-[900px] w-max text-xs sm:text-sm">
-          <Table.Head className="border-b border-gray-200 text-xs whitespace-nowrap sticky top-0 bg-white z-10">
+          <Table.Head className="border-b border-gray-200 text-xs whitespace-nowrap sticky top-0 bg-white ">
             <Table.HeadCell className="whitespace-nowrap">رقم الطلبية</Table.HeadCell>
             <Table.HeadCell className="whitespace-nowrap">الزبون</Table.HeadCell>
             <Table.HeadCell className="whitespace-nowrap">الهاتف</Table.HeadCell>

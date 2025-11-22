@@ -164,7 +164,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   </div>
   <div class="sheet">
     <div class="brandbar">
-      <img class="logo" src="/Izdihar_logo_report.svg" alt="Izdihar Sweets" />
+      <img class="logo" src="/BLUE AND GOLD SCG.svg" alt="Izdihar Sweets" />
       <div class="brand-left header">
         <div>شركة الازدهار للحلويات</div>
         <div>${esc(title)}</div>
@@ -447,7 +447,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
 <body>
   <div class="actions"><button class="btn" onclick="doPrint()">طباعة</button></div>
   <div class="sheet">
-    <div class="head"><img class="logo" src="/Izdihar_logo_report.svg" alt="Izdihar"/><div class="title">بيانات التقرير (نص خام)</div></div>
+    <div class="head"><img class="logo" src="/BLUE AND GOLD SCG.svg" alt="Izdihar"/><div class="title">بيانات التقرير </div></div>
     <pre>${pretty}</pre>
   </div>
 </body>

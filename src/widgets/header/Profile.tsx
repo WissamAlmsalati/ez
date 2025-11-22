@@ -33,9 +33,9 @@ const Profile = () => {
         className="w-screen sm:w-[360px] py-6  rounded-sm"
         dismissOnClick={false}
         renderTrigger={() => (
-          <span className="h-10 w-10 hover:text-primary hover:bg-lightprimary rounded-full flex justify-center items-center cursor-pointer group-hover/menu:bg-lightprimary group-hover/menu:text-primary">
+          <span className=" h-10 w-10 hover:text-primary hover:bg-lightprimary rounded-full flex justify-center items-center cursor-pointer group-hover/menu:bg-lightprimary group-hover/menu:text-primary">
             <Image
-              src="/image.png"
+              src="/photo.svg"
               alt="logo"
               height="35"
               width="35"
@@ -48,7 +48,7 @@ const Profile = () => {
           <div className="flex items-center gap-6 pb-5 border-b mt-5 mb-3">
             <Link href={`/users/${user?.id}`} className="hover:underline cursor:pointer">
               <Image
-                src={"/image.png"}
+                src={"/photo.svg"}
                 alt="logo"
                 height="80"
                 width="80"

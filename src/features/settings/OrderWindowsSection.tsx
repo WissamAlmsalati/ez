@@ -40,13 +40,12 @@ export default function OrderWindowsSection() {
 
   return (
     <div className="space-y-4">
-      <CardBox className="p-6">
-        <div className="mb-2">
+        {/* <div className="mb-2">
           <h2 className="text-lg font-semibold">أوقات السماح للطلبات</h2>
           <p className="text-sm text-gray-500">
             تحكم في الفترات الزمنية المسموح بها لكل يوم.
           </p>
-        </div>
+        </div> */}
         {isLoading ? (
           <div className="text-sm text-gray-500">جاري التحميل...</div>
         ) : (
@@ -64,7 +63,6 @@ export default function OrderWindowsSection() {
               ))}
           </div>
         )}
-      </CardBox>
     </div>
   );
 }
@@ -81,7 +79,7 @@ function DayBlock({
   setEdit: React.Dispatch<React.SetStateAction<EditState>>;
 }) {
   return (
-    <CardBox className="p-4">
+    <CardBox className="p-4 ">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="text-base font-medium">
           {daysMap[dow] ?? items[0]?.dayName}
@@ -198,7 +196,7 @@ function OrderWindowRow({
         </span>
       </Table.Cell>
       <Table.Cell>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center justify-center gap-2">
           <Button
             size="xs"
             color="light"

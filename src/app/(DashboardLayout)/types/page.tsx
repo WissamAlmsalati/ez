@@ -59,7 +59,7 @@ function TypesPageContent() {
         className="flex flex-col md:flex-row md:items-center md:justify-between gap-4"
         aria-label="مرشحات وإجراءات المجموعات"
       >
-        <div className="flex items-stretch gap-2 sm:gap-1 w-full">
+        <div className="flex items-stretch gap-2 sm:gap-1">
           <div className="w-2/6 sm:w-auto order-1">
             <SearchFilter />
           </div>

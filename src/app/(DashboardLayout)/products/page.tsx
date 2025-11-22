@@ -25,12 +25,17 @@ export default function ProductsPage() {
     },
   ];
   return (
-    <>
-      <BreadcrumbComp title="الأصناف" items={BCrumb} />
+    <main
+      className="space-y-4 sm:space-y-5 pt-2 sm:pt-3"
+      aria-label="صفحة الأصناف"
+    >
+      <div className="sm:px-0">
+        <BreadcrumbComp title="الأصناف" items={BCrumb} />
+      </div>
       <Suspense fallback={<CatalogSkeleton />}>
         <ProductsPageContent />
       </Suspense>
-    </>
+    </main>
   );
 }
 
@@ -59,25 +64,38 @@ function ProductsPageContent() {
   const [unitsOpen, setUnitsOpen] = useState(false);
 
   return (
-    <div className="space-y-5">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center justify-start gap-3">
-          <SearchFilter />
+    <div className="space-y-5 sm:px-0">
+      <div
+        className="flex flex-col md:flex-row md:items-center md:justify-between gap-4" 
+        aria-label="مرشحات وإجراءات الأصناف"
+      >
+        <div className="flex items-stretch gap-2 sm:gap-3">
+          <div className="w-1/4 sm:w-auto order-1">
+            <SearchFilter />
+          </div>
           {isManager ? (
             <>
-              <CategoryFilter />
-              <TypeFilter />
-              <ActiveStatusFilter />
+              <div className="w-1/4 sm:w-auto order-2">
+                <CategoryFilter />
+              </div>
+              <div className="w-1/4 sm:w-auto order-3">
+                <TypeFilter />
+              </div>
+              <div className= "w-1/4 sm:w-auto order-4 ">
+                <ActiveStatusFilter />
+              </div>
             </>
           ) : (
-            <TypeFilter />
+            <div className="order-2">
+              <TypeFilter />
+            </div>
           )}
         </div>
         {isManager && (
-          <div className="flex items-center gap-2">
+          <div className="flex items-stretch gap-2 w-full md:w-auto order-last">
             <Button
               color="light"
-              className="transition-colors duration-300"
+              className="transition-colors duration-300 w-1/2 sm:w-auto"
               onClick={() => setUnitsOpen(true)}
             >
               الوحدات
@@ -85,7 +103,7 @@ function ProductsPageContent() {
 
             <Button
               color="primary"
-              className="transition-colors duration-300"
+              className="transition-colors duration-300 w-1/2 sm:w-auto"
               onClick={() => setOpen(true)}
             >
               إضافة صنف
@@ -115,7 +133,11 @@ function ProductsPageContent() {
           ))}
         </CatalogGrid>
       )}
-      {data?.meta && <Pagination meta={data.meta} />}
+      {data?.meta && (
+        <div className="pt-2">
+          <Pagination meta={data.meta} />
+        </div>
+      )}
       {isManager && (
         <CreateProductModal open={open} onClose={() => setOpen(false)} />
       )}

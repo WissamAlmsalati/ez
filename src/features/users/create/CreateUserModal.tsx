@@ -119,7 +119,7 @@ export default function CreateUserModal({
               placeholder="09XXXXXXXX"
               maxLength={10}
               inputMode="numeric"
-              pattern="^09\\d{8}$"
+              // pattern="^09\\d{8}$"
               color={errors.phone ? "failure" : undefined}
             />
             {errors.phone && (

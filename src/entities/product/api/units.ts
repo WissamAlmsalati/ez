@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiInstance } from "@/shared/api";
 import { PRODUCT_PATH, productKeysV2 } from "../api";
 import type { ProductUnit } from "../types";
@@ -8,29 +8,64 @@ import type { ProductUnit } from "../types";
 // PUT    /products/:productId/units/:unitRowId
 // DELETE /products/:productId/units/:unitRowId
 
-interface UpsertUnitPayload {
+interface CreateUnitJsonPayload {
   unit_id: number;
-  unit_size: number;
   price: number;
-  is_active?: boolean;
+  min_qty: number;
+  step_qty: number;
+  is_default?: boolean;
 }
 
 function extract<T>(data: any): T {
   return (data?.data || data) as T;
 }
 
+// API response shape for units listing under a product
+export interface ProductUnitRowApi {
+  id: number;
+  productId: number;
+  unitId: number;
+  unit: null | { id: number; name: string; symbol?: string };
+  price: string | number;
+  formattedPrice?: string;
+  minQty?: string | number;
+  stepQty?: string | number;
+  isDefault?: boolean;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export function useProductUnits(productId: number | string | undefined) {
+  return useQuery({
+    queryKey: productId
+      ? [...productKeysV2.detail(productId), "units"]
+      : [PRODUCT_PATH, "detail", null, "units"],
+    enabled: !!productId,
+    queryFn: async () => {
+      const { data } = await apiInstance.get(
+        `dashboard/products/${productId}/units`
+      );
+      return extract<ProductUnitRowApi[]>(data);
+    },
+  });
+}
+
 export function useAddProductUnit(productId: number | string) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: UpsertUnitPayload) => {
+    mutationFn: async (payload: CreateUnitJsonPayload) => {
       const { data } = await apiInstance.post(
-        `${PRODUCT_PATH}/${productId}/units`,
+        `dashboard/products/${productId}/units`,
         payload
       );
       return extract<ProductUnit>(data);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: productKeysV2.detail(productId) });
+      qc.invalidateQueries({
+        queryKey: [...productKeysV2.detail(productId), "units"],
+      });
     },
   });
 }
@@ -41,15 +76,18 @@ export function useUpdateProductUnit(
 ) {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: async (payload: Partial<UpsertUnitPayload>) => {
+    mutationFn: async (payload: Partial<CreateUnitJsonPayload>) => {
       const { data } = await apiInstance.put(
-        `${PRODUCT_PATH}/${productId}/units/${unitRowId}`,
+        `dashboard/products/${productId}/units/${unitRowId}`,
         payload
       );
       return extract<ProductUnit>(data);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: productKeysV2.detail(productId) });
+      qc.invalidateQueries({
+        queryKey: [...productKeysV2.detail(productId), "units"],
+      });
     },
   });
 }
@@ -62,12 +100,15 @@ export function useDeleteProductUnit(
   return useMutation({
     mutationFn: async () => {
       const { data } = await apiInstance.delete(
-        `${PRODUCT_PATH}/${productId}/units/${unitRowId}`
+        `dashboard/products/${productId}/units/${unitRowId}`
       );
       return extract<{ success: boolean }>(data);
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: productKeysV2.detail(productId) });
+      qc.invalidateQueries({
+        queryKey: [...productKeysV2.detail(productId), "units"],
+      });
     },
   });
 }

@@ -13,7 +13,7 @@ export const unitKeys = {
   list: (params?: ListParams) => catalogKeys.list(UNIT_PATH, params),
 };
 
-export const useUnitsQuery = buildListQuery<Unit>(UNIT_PATH, mapUnitApi);
+export const useUnitsQuery = buildListQuery<Unit>("units?per_page=100", mapUnitApi);
 
 // Create Unit (JSON payload)
 export function useCreateUnit() {

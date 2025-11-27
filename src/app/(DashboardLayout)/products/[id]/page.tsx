@@ -12,28 +12,30 @@ import {
   useToggleProduct,
 } from "@/entities/product/api";
 import type { ProductDetails } from "@/entities/product/types";
-import { Button, Spinner, TextInput, Textarea } from "flowbite-react";
+import {
+  Button,
+  Spinner,
+  Table,
+  TextInput,
+  Textarea,
+  Modal,
+  Select,
+} from "flowbite-react";
 import { toast } from "sonner";
 import { StatusSwitch } from "@/shared/ui/detail/StatusSwitch";
 import ConfirmDeleteModal from "@/shared/ui/detail/ConfirmDeleteModal";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import dynamic from "next/dynamic";
 import { mapServerFieldErrors } from "@/shared/lib/mapServerFieldErrors";
 import RetryError from "@/shared/ui/feedback/RetryError";
 import { ProductDetailSkeleton } from "@/shared/ui/skeleton/ProductDetailSkeleton";
 import { getImageUrl } from "@/shared/lib/getImageUrl";
 import Image from "next/image";
-const ProductUnitsEditor = dynamic(
-  () => import("@/features/products/units/ProductUnitsEditor"),
-  {
-    ssr: false,
-    loading: () => (
-      <p className="text-sm text-gray-500">...تحميل محرر الوحدات</p>
-    ),
-  }
-);
+import { CardBox } from "@/shared/ui/cards";
+import { useProductUnits } from "@/entities/product/api/units";
+import { useUnitsQuery } from "@/entities/unit/api";
+import { useAddProductUnit } from "@/entities/product/api/units";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -47,6 +49,40 @@ export default function ProductDetailPage() {
   const restore = useRestoreProduct(id);
   const toggleFeatured = useToggleFeaturedProduct(id);
   const toggleProduct = useToggleProduct();
+  const units = useProductUnits(id);
+  const allUnits = useUnitsQuery();
+  const addUnit = useAddProductUnit(id);
+  const [addOpen, setAddOpen] = React.useState(false);
+  const addSchema = z.object({
+    unit_id: z.coerce.number().min(1, "اختر الوحدة"),
+    price: z.coerce.number().positive("السعر مطلوب"),
+    min_qty: z.coerce.number().positive("أقل كمية مطلوبة"),
+    step_qty: z.coerce.number().positive("زيادة الكمية مطلوبة"),
+    is_default: z.boolean().optional(),
+  });
+  // Use Zod input type for RHF to avoid resolver type mismatch
+  type AddFormVals = z.input<typeof addSchema>;
+  const {
+    register: registerAdd,
+    handleSubmit: handleSubmitAdd,
+    formState: { errors: addErrors },
+    reset: resetAdd,
+  } = useForm<AddFormVals>({
+    resolver: zodResolver(addSchema),
+    defaultValues: { is_default: false },
+  });
+  async function onSubmitAdd(data: AddFormVals) {
+    try {
+      const parsed = addSchema.parse(data);
+      await addUnit.mutateAsync(parsed);
+      toast.success("تمت إضافة السعر");
+      setAddOpen(false);
+      resetAdd();
+      await units.refetch();
+    } catch (e: any) {
+      toast.error(e?.body?.message || "فشل إضافة السعر");
+    }
+  }
   const [deleteOpen, setDeleteOpen] = React.useState(false);
   const [localImage, setLocalImage] = React.useState<string | null>(null);
   const BCrumb = [
@@ -381,10 +417,206 @@ export default function ProductDetailPage() {
               </div>
             </form>
           </div>
-          {/* <div className="space-y-4 bg-white rounded-lg p-4 sm:p-6 md:p-8 shadow-sm border">
-            {!loading && !loadError && p && <ProductUnitsEditor product={p} />}
-            {loading && <Spinner />}
-          </div> */}
+          <CardBox className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">الأسعار</h3>
+              <Button size="xs" color="light" onClick={() => setAddOpen(true)}>
+                إضافة سعر
+              </Button>
+            </div>
+            {/* Responsive scroll wrapper matching main orders table */}
+            <div
+              className="overflow-x-auto -mx-1 sm:mx-0"
+              role="region"
+              aria-label="آخر طلبات المستخدم (اسحب أفقيًا على الشاشات الصغيرة)"
+              tabIndex={0}
+            >
+              <Table className="table-no-radius rounded-none centered-table white-header min-w-[900px] w-max text-xs sm:text-sm">
+                <Table.Head className="border-b border-gray-200 text-xs whitespace-nowrap sticky top-0 bg-white z-10">
+                  <Table.HeadCell className="whitespace-nowrap">
+                    #
+                  </Table.HeadCell>
+                  <Table.HeadCell className="whitespace-nowrap">
+                    الوحدة
+                  </Table.HeadCell>
+                  <Table.HeadCell className="whitespace-nowrap">
+                    السعر
+                  </Table.HeadCell>
+                  <Table.HeadCell className="whitespace-nowrap">
+                    أقل كمية
+                  </Table.HeadCell>
+                  <Table.HeadCell className="whitespace-nowrap">
+                    زيادة الكمية
+                  </Table.HeadCell>
+                  <Table.HeadCell className="whitespace-nowrap"></Table.HeadCell>
+                </Table.Head>
+                <Table.Body className="divide-y">
+                  {units.isLoading && (
+                    <Table.Row>
+                      <Table.Cell colSpan={5} className="text-center">
+                        <div className="flex items-center justify-center gap-2 py-4">
+                          <Spinner size="sm" />
+                          <span className="text-xs text-gray-500">
+                            جاري التحميل...
+                          </span>
+                        </div>
+                      </Table.Cell>
+                    </Table.Row>
+                  )}
+                  {!units.isLoading && units.isError && (
+                    <Table.Row>
+                      <Table.Cell
+                        colSpan={5}
+                        className="text-center py-4 text-red-600 text-xs"
+                      >
+                        فشل تحميل الأسعار
+                      </Table.Cell>
+                    </Table.Row>
+                  )}
+                  {!units.isLoading &&
+                    !units.isError &&
+                    (!units.data || units.data.length === 0) && (
+                      <Table.Row>
+                        <Table.Cell
+                          colSpan={5}
+                          className="text-center py-4 text-gray-500 text-xs"
+                        >
+                          لا توجد أسعار لهذا الصنف
+                        </Table.Cell>
+                      </Table.Row>
+                    )}
+                  {!units.isLoading &&
+                    !units.isError &&
+                    units.data?.map((row, idx) => {
+                      const unitName =
+                        (row as any).unit?.name ?? `#${(row as any).unit_id}`;
+                      const price =
+                        (row as any).formattedPrice ?? (row as any).price;
+                      const minQty =
+                        (row as any).minQty ?? (row as any).unit_size ?? "-";
+                      const stepQty = (row as any).stepQty ?? "-";
+                      return (
+                        <Table.Row key={(row as any).id} className="bg-white">
+                          <Table.Cell className="whitespace-nowrap">
+                            {idx + 1}
+                          </Table.Cell>
+                          <Table.Cell className="whitespace-nowrap">
+                            {unitName}
+                          </Table.Cell>
+                          <Table.Cell className="whitespace-nowrap">
+                            {price}
+                          </Table.Cell>
+                          <Table.Cell className="whitespace-nowrap">
+                            {minQty}
+                          </Table.Cell>
+                          <Table.Cell className="whitespace-nowrap">
+                            {stepQty}
+                          </Table.Cell>
+                          <Table.Cell className="whitespace-nowrap"></Table.Cell>
+                        </Table.Row>
+                      );
+                    })}
+                </Table.Body>
+              </Table>
+              {/* Scroll hint for mobile */}
+              <div
+                className="sm:hidden text-[11px] text-gray-400 mt-2 pr-1"
+                aria-hidden="true"
+              >
+                اسحب أفقيًا لعرض بقية الأعمدة ←→
+              </div>
+            </div>
+          </CardBox>
+          <Modal show={addOpen} dismissible onClose={() => setAddOpen(false)}>
+            <Modal.Header>إضافة سعر للوحدة</Modal.Header>
+            <Modal.Body>
+              <form
+                className="space-y-4"
+                onSubmit={handleSubmitAdd(onSubmitAdd)}
+              >
+                <div className="space-y-1">
+                  <label className="block text-sm">الوحدة</label>
+                  <Select
+                    disabled={allUnits.isLoading}
+                    {...registerAdd("unit_id")}
+                    color={addErrors.unit_id ? "failure" : undefined}
+                  >
+                    <option value="">اختر الوحدة</option>
+                    {(allUnits.data?.data || []).map((u: any) => (
+                      <option key={u.id} value={u.id}>
+                        {u.name}
+                      </option>
+                    ))}
+                  </Select>
+                  {addErrors.unit_id && (
+                    <p className="text-xs text-red-600">
+                      {addErrors.unit_id.message as any}
+                    </p>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="space-y-1">
+                    <label className="block text-sm">السعر</label>
+                    <TextInput
+                      type="number"
+                      step="0.001"
+                      {...registerAdd("price")}
+                      color={addErrors.price ? "failure" : undefined}
+                    />
+                    {addErrors.price && (
+                      <p className="text-xs text-red-600">
+                        {addErrors.price.message as any}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-sm">أقل كمية</label>
+                    <TextInput
+                      type="number"
+                      step="0.001"
+                      {...registerAdd("min_qty")}
+                      color={addErrors.min_qty ? "failure" : undefined}
+                    />
+                    {addErrors.min_qty && (
+                      <p className="text-xs text-red-600">
+                        {addErrors.min_qty.message as any}
+                      </p>
+                    )}
+                  </div>
+                  <div className="space-y-1">
+                    <label className="block text-sm">زيادة الكمية</label>
+                    <TextInput
+                      type="number"
+                      step="0.001"
+                      {...registerAdd("step_qty")}
+                      color={addErrors.step_qty ? "failure" : undefined}
+                    />
+                    {addErrors.step_qty && (
+                      <p className="text-xs text-red-600">
+                        {addErrors.step_qty.message as any}
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <Button
+                    type="button"
+                    color="gray"
+                    onClick={() => setAddOpen(false)}
+                  >
+                    إلغاء
+                  </Button>
+                  <Button
+                    type="submit"
+                    color="primary"
+                    isProcessing={addUnit.isPending}
+                  >
+                    حفظ
+                  </Button>
+                </div>
+              </form>
+            </Modal.Body>
+          </Modal>
         </div>
       )}
       {canEdit && (

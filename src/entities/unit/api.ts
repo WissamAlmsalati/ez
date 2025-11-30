@@ -46,7 +46,7 @@ export function useUpdateUnit(id: number | string) {
       description?: string | null;
       is_active?: boolean;
     }) => {
-      const { data } = await apiInstance.put(`${UNIT_PATH}/${id}`, payload, {
+      const { data } = await apiInstance.post(`${UNIT_PATH}/${id}`, payload, {
         headers: { Accept: "application/json" },
       });
       return data;

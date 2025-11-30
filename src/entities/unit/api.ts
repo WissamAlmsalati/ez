@@ -5,7 +5,7 @@ import { mapUnitApi } from "@/entities/catalog/mapper";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiInstance } from "@/shared/api";
 
-export const UNIT_PATH = "/units"; // assuming endpoint
+export const UNIT_PATH = "/units"; // قاعدة المسار الموحدة لكل عمليات الوحدات
 
 export const unitKeys = {
   ...catalogKeys,
@@ -13,7 +13,9 @@ export const unitKeys = {
   list: (params?: ListParams) => catalogKeys.list(UNIT_PATH, params),
 };
 
-export const useUnitsQuery = buildListQuery<Unit>("units?per_page=100", mapUnitApi);
+// توحيد المسار: كان الاستعلام يستخدم "units?per_page=100" بدون الشرطة المائلة ومع بارامز ضمنية
+// مما يمنع invalidateQueries من التقاطه لأن مفاتيح الكاش تختلف. الآن نستخدم نفس UNIT_PATH ونمرر per_page من الخارج.
+export const useUnitsQuery = buildListQuery<Unit>(UNIT_PATH, mapUnitApi);
 
 // Create Unit (JSON payload)
 export function useCreateUnit() {

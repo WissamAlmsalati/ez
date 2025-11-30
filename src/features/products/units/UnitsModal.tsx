@@ -23,7 +23,7 @@ interface Props {
   onClose: () => void;
 }
 
-type RowValues = { name: string; description?: string | null };
+type RowValues = { name: string };
 
 const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
   const [search, setSearch] = React.useState("");
@@ -57,13 +57,7 @@ const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
   }
 
   return (
-    <Modal
-      show={open}
-      size="xl"
-      onClose={onClose}
-      popup
-      className="max-w-[95%] sm:max-w-4xl mx-auto"
-    >
+    <Modal show={open} size="xl" onClose={onClose} popup>
       <Modal.Header className="p-3 sm:p-4">
         <span className="text-base sm:text-lg font-semibold rtl:text-right">
           إدارة الوحدات
@@ -93,13 +87,10 @@ const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
             aria-label="جدول الوحدات قابل للتمرير أفقيًا في الشاشات الصغيرة"
             tabIndex={0}
           >
-            <Table className="white-header centered-table min-w-[640px] w-max text-xs sm:text-sm">
+            <Table className="white-header centered-table  w-full text-xs sm:text-sm">
               <Table.Head className="border-b sticky top-0 bg-white z-10 text-xs">
                 <Table.HeadCell className="whitespace-nowrap">
                   الاسم
-                </Table.HeadCell>
-                <Table.HeadCell className="whitespace-nowrap">
-                  الوصف
                 </Table.HeadCell>
                 <Table.HeadCell className="whitespace-nowrap"></Table.HeadCell>
               </Table.Head>
@@ -111,7 +102,6 @@ const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
                       try {
                         await createMut.mutateAsync({
                           name: values.name,
-                          description: values.description,
                           is_active: true,
                         });
                         toast.success("تمت إضافة الوحدة");
@@ -146,7 +136,7 @@ const UnitsModal: React.FC<Props> = ({ open, onClose }) => {
                 ) : (
                   <Table.Row>
                     <Table.Cell
-                      colSpan={3}
+                      colSpan={2}
                       className="text-center text-xs sm:text-sm py-6"
                     >
                       لا توجد وحدات
@@ -201,9 +191,6 @@ const SkeletonRow: React.FC = () => (
       <div className="h-3 w-24 bg-gray-200 rounded animate-pulse" />
     </Table.Cell>
     <Table.Cell>
-      <div className="h-3 w-40 bg-gray-200 rounded animate-pulse" />
-    </Table.Cell>
-    <Table.Cell>
       <div className="h-3 w-12 bg-gray-200 rounded animate-pulse" />
     </Table.Cell>
   </Table.Row>
@@ -213,7 +200,6 @@ const InlineNewRow: React.FC<{
   onCreate: (values: RowValues) => Promise<void>;
 }> = ({ onCreate }) => {
   const [name, setName] = React.useState("");
-  const [description, setDescription] = React.useState("");
   const [pending, setPending] = React.useState(false);
   const canSave = name.trim().length > 0 && !pending;
 
@@ -223,10 +209,8 @@ const InlineNewRow: React.FC<{
     try {
       await onCreate({
         name: name.trim(),
-        description: description.trim() || undefined,
       });
       setName("");
-      setDescription("");
     } finally {
       setPending(false);
     }
@@ -240,15 +224,6 @@ const InlineNewRow: React.FC<{
           placeholder="اسم الوحدة"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full"
-        />
-      </Table.Cell>
-      <Table.Cell className="align-top">
-        <TextInput
-          sizing="sm"
-          placeholder="الوصف (اختياري)"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
           className="w-full"
         />
       </Table.Cell>
@@ -281,15 +256,13 @@ const UnitRow: React.FC<{
   const deleteMut = useDeleteUnit(unit.id);
   const updateMut = useUpdateUnit(unit.id);
   const [name, setName] = React.useState(unit.name);
-  const [description, setDescription] = React.useState(unit.description ?? "");
   const [saving, setSaving] = React.useState(false);
 
   React.useEffect(() => {
     if (editing) {
       setName(unit.name);
-      setDescription(unit.description ?? "");
     }
-  }, [editing, unit.name, unit.description]);
+  }, [editing, unit.name]);
 
   function onDeleteClick() {
     const doDelete = async () => {
@@ -299,10 +272,8 @@ const UnitRow: React.FC<{
   }
 
   const trimmedName = name.trim();
-  const trimmedDesc = description.trim();
   const origName = (unit.name ?? "").trim();
-  const origDesc = (unit.description ?? "").trim();
-  const dirty = trimmedName !== origName || trimmedDesc !== origDesc;
+  const dirty = trimmedName !== origName;
   const canSave = trimmedName.length > 0 && dirty && !saving;
 
   async function onSave() {
@@ -311,7 +282,6 @@ const UnitRow: React.FC<{
     try {
       await updateMut.mutateAsync({
         name: trimmedName,
-        description: trimmedDesc || undefined,
       });
       toast.success("تم الحفظ");
       onSaved();
@@ -335,22 +305,8 @@ const UnitRow: React.FC<{
           unit.name
         )}
       </Table.Cell>
-      <Table.Cell
-        className="max-w-[260px] truncate"
-        title={unit.description ?? undefined}
-      >
-        {editing ? (
-          <TextInput
-            sizing="sm"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        ) : (
-          unit.description
-        )}
-      </Table.Cell>
       <Table.Cell className="whitespace-nowrap">
-        <div className="flex items-center gap-2 rtl:space-x-reverse">
+        <div className="flex items-center gap-0 ">
           {editing ? (
             <>
               <Tooltip content="حفظ" style="light">

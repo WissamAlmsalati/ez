@@ -92,12 +92,31 @@ export function mapOrderApi(raw: any): Order {
         unit_name: p.unit_name ?? p.unitName,
         unit_price: p.unit_price ?? p.unitPrice ?? null,
         line_total: p.line_total ?? p.lineTotal ?? null,
-        notes: p.notes ?? null,
+        notes: normalizeNotes(p.notes),
       })),
     }));
   }
 
   return mapped;
+}
+
+// Normalize notes into unified shape { desc, desc_image }
+function normalizeNotes(value: any): { desc: string | null; desc_image: string | null } | null {
+  if (value == null) return null;
+  // If backend already returns the desired object shape
+  if (typeof value === "object") {
+    const desc = value.desc ?? value.description ?? null;
+    const img = value.desc_image ?? value.image ?? value.descImage ?? null;
+    // If object had neither field and was empty, fall back to null
+    if (desc == null && img == null) return null;
+    return { desc, desc_image: img };
+  }
+  // If a plain string, treat as description only
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed ? { desc: trimmed, desc_image: null } : null;
+  }
+  return null;
 }
 
 export const useOrdersQuery = buildListQuery<any, Order>(

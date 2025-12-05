@@ -1,8 +1,17 @@
 import { z } from "zod";
 
 export const unitPriceSchema = z.object({
-  unit_id: z.coerce.number().refine((v) => !Number.isNaN(v), "الوحدة مطلوبة"),
-  price: z.coerce.number().min(0, "السعر غير صالح"),
+  unit_id: z
+    .any()
+    .transform((v) =>
+      typeof v === "string" || typeof v === "number" ? Number(v) : NaN
+    )
+    .superRefine((v, ctx) => {
+      if (!Number.isFinite(v) || !Number.isInteger(v) || v <= 0) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "الوحدة مطلوبة" });
+      }
+    }),
+  price: z.coerce.number().gt(0, "السعر مطلوب"),
   is_default: z.boolean().default(false),
   min_qty: z.coerce.number().min(0, "أقل كمية غير صالحة"),
   step_qty: z.coerce.number().min(0, "خطوة الكمية غير صالحة"),
@@ -11,7 +20,16 @@ export const unitPriceSchema = z.object({
 export const createProductSchema = z.object({
   name: z.string().min(1, "الاسم مطلوب"),
   description: z.string().optional(),
-  type_id: z.coerce.number().refine((v) => !Number.isNaN(v), "النوع مطلوب"),
+  type_id: z
+    .any()
+    .transform((v) =>
+      typeof v === "string" || typeof v === "number" ? Number(v) : NaN
+    )
+    .superRefine((v, ctx) => {
+      if (!Number.isFinite(v) || !Number.isInteger(v) || v <= 0) {
+        ctx.addIssue({ code: z.ZodIssueCode.custom, message: "النوع مطلوب" });
+      }
+    }),
   is_active: z.boolean().default(true),
   is_featured: z.boolean().default(false),
   image: z.any().optional(),

@@ -74,7 +74,10 @@ export interface OrderItem {
   quantity: number;
   unit_price: number;
   total_price: number;
-  notes?: string | null;
+  notes?: {
+    desc: string | null;
+    desc_image: string | null;
+  } | null;
   created_at?: string;
   updated_at?: string;
   product_unit: OrderItemProductUnit;
@@ -148,7 +151,10 @@ export interface Order /* internal normalized shape */ {
       unit_name: string;
       unit_price?: string | null;
       line_total?: string | null;
-      notes?: string | null;
+      notes?: {
+        desc: string | null;
+        desc_image: string | null;
+      } | null;
     }>;
   }>;
 }

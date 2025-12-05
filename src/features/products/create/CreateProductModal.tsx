@@ -45,7 +45,13 @@ export default function CreateProductModal({
       // إذا كان النوع ثابتاً نضعه هنا لضمان نجاح التحقق مباشرةً
       ...(typeId ? { type_id: typeId } : {}),
       prices: [
-        { unit_id: 1, price: 0, is_default: true, min_qty: 1, step_qty: 1 },
+        {
+          unit_id: undefined as any, // يلزم اختيار وحدة صراحةً
+          price: 0,
+          is_default: true,
+          min_qty: 1,
+          step_qty: 1,
+        },
       ],
     },
   });
@@ -269,6 +275,7 @@ function PriceCard({
   const pricesWatch = watch("prices");
   const current = pricesWatch?.[i];
   const unitError = errors.prices?.[i]?.unit_id;
+  const priceError = errors.prices?.[i]?.price;
   // Local hook binding for unit selection (stores object locally, id in form)
   const { option: selectedUnit, onChange: onUnitChange } =
     useRemoteSelectField<any>(`prices.${i}.unit_id`, setValue);
@@ -323,7 +330,7 @@ function PriceCard({
       </div>
       <div className="space-y-3">
         <div className="space-y-1">
-          <Label value="الوحد" />
+          <Label value="الوحدة" />
           <RemoteSelect
             path="/units"
             pageSize={100}
@@ -366,6 +373,9 @@ function PriceCard({
               step={0.01}
               {...register(`prices.${i}.price`)}
             />
+            {priceError && (
+              <p className="text-[10px] text-red-500">{priceError.message as any}</p>
+            )}
           </div>
         </div>
       </div>

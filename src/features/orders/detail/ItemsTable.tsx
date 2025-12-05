@@ -38,7 +38,7 @@ export function ItemsTable({ order }: { order: Order }) {
                   }`}</Table.Cell>
                   <Table.Cell>{it.unit_price}</Table.Cell>
                   <Table.Cell>{it.total_price}</Table.Cell>
-                  <Table.Cell>{it.notes || "-"}</Table.Cell>
+                  <Table.Cell>{it.notes?.desc || "-"}</Table.Cell>
                 </Table.Row>
               );
             })}

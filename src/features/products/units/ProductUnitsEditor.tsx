@@ -69,7 +69,16 @@ const ProductUnitsEditor: React.FC<Props> = ({ product }) => {
         await updateMut.mutateAsync(values);
         toast.success("تم تعديل الوحدة");
       } else {
-        await addMut.mutateAsync(values);
+        // Map legacy form fields to API payload shape
+        const payload = {
+          unit_id: values.unit_id,
+          price: values.price,
+          // Use unit_size as the minimum quantity for ordering
+          min_qty: values.unit_size,
+          // Default step quantity to 1 unless UI adds a field later
+          step_qty: 1,
+        };
+        await addMut.mutateAsync(payload);
         toast.success("تمت إضافة الوحدة");
       }
       setOpen(false);

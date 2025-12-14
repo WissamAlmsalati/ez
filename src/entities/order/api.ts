@@ -1,5 +1,5 @@
 import { buildListQuery, catalogKeys } from "@/entities/catalog/api";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiInstance } from "@/shared/api/axios";
 import type { OrdersListParams, Order } from "./types";
 
@@ -101,7 +101,9 @@ export function mapOrderApi(raw: any): Order {
 }
 
 // Normalize notes into unified shape { desc, desc_image }
-function normalizeNotes(value: any): { desc: string | null; desc_image: string | null } | null {
+function normalizeNotes(
+  value: any
+): { desc: string | null; desc_image: string | null } | null {
   if (value == null) return null;
   // If backend already returns the desired object shape
   if (typeof value === "object") {
@@ -134,5 +136,35 @@ export function useOrderQuery(id: number | string | undefined) {
       return mapOrderApi(data.data ?? data);
     },
     enabled: !!id,
+  });
+}
+
+// Update order status API
+export async function updateOrderStatus(
+  id: number | string,
+  status: "in_progress" | "completed" | "cancelled"
+) {
+  const { data } = await apiInstance.post(`${ORDERS_PATH}/${id}/status`, {
+    status,
+  });
+  // Some APIs return the updated order; if so, map it
+  const payload = data?.data ?? data;
+  return payload?.order ? mapOrderApi(payload.order) : payload;
+}
+
+// Mutation hook to update order status and invalidate detail/list queries
+export function useUpdateOrderStatusMutation(id: number | string | undefined) {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (status: "in_progress" | "completed" | "cancelled") => {
+      if (!id) throw new Error("Order id is required");
+      return updateOrderStatus(id, status);
+    },
+    onSuccess: async () => {
+      if (id) {
+        await qc.invalidateQueries({ queryKey: orderKeys.detail(id) });
+      }
+      await qc.invalidateQueries({ queryKey: orderKeys.base() });
+    },
   });
 }

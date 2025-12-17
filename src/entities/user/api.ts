@@ -72,6 +72,15 @@ export function useUpdateUser(id: number | string) {
   });
 }
 
+export function useReAssignPassword(id: number | string) {
+  return useMutation({
+    mutationFn: async (payload: {password: string}) => {
+      const { data } = await apiInstance.post(`${USERS_PATH}/${id}`, payload);
+      return data;
+    },
+  });
+}
+
 export function useCreateUser() {
   const qc = useQueryClient();
   return useMutation({

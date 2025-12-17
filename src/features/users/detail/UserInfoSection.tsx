@@ -5,6 +5,7 @@ import {
   useUpdateUser,
   useDeleteUser,
   useRestoreUser,
+  useReAssignPassword,
 } from "@/entities/user/api";
 import type { User } from "@/entities/user/types";
 import { useForm } from "react-hook-form";
@@ -40,7 +41,9 @@ export default function UserInfoSection({ user }: { user: User }) {
   const isManager = useSessionStore((s) => s.isManager);
   const update = useUpdateUser(user.id);
   const delUser = useDeleteUser(user.id);
+  const reAssign = useReAssignPassword(user.id);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showReassignConfirm, setShowReassignConfirm] = useState(false);
   const router = useRouter();
   const {
     data: catsData,
@@ -129,6 +132,16 @@ export default function UserInfoSection({ user }: { user: User }) {
         setError(f as any, { message: String(msg) })
       );
       toast.error(e?.body?.message || "فشل الحفظ");
+    }
+  };
+
+  const onReAssign = async () => {
+    const password = user.phone || "12345678";
+    try {
+      await reAssign.mutateAsync({password});
+      toast.success("تم إعادة تعيين كلمة المرور");
+    } catch (e: any) {
+      toast.error("فشل إعادة تعيين كلمة المرور");
     }
   };
 
@@ -227,7 +240,7 @@ export default function UserInfoSection({ user }: { user: User }) {
               </div>
             )}
 
-            <div className="md:col-span-2 pt-2 flex-col flex md:flex-row gap-3 justify-end">
+            <div className="md:col-span-2 pt-2 flex-col-reverse flex md:flex-row gap-3 justify-end">
               <Button
                 color="failure"
                 onClick={() => setShowDeleteConfirm(true)}
@@ -238,11 +251,21 @@ export default function UserInfoSection({ user }: { user: User }) {
               <Button
                 type="button"
                 color="outlineprimary"
+                onClick={() => setShowReassignConfirm(true)}
+                disabled={!isManager}
+                isProcessing={reAssign.isPending}
+                className=""
+              >
+                إعادة تعيين كلمة المرور
+              </Button>
+              {/* <Button
+                type="button"
+                color="outlineprimary"
                 onClick={() => reset(defaultValues)}
                 disabled={!isManager}
               >
                 إلغاء التغييرات
-              </Button>
+              </Button> */}
               <Button
                 type="submit"
                 color="dark"
@@ -297,6 +320,47 @@ export default function UserInfoSection({ user }: { user: User }) {
                   disabled={!isManager}
                 >
                   تأكيد الحذف
+                </Button>
+              </div>
+            </div>
+          </Modal.Body>
+        </Modal>
+
+        {/* Reassign Password Confirmation Modal */}
+        <Modal
+          show={showReassignConfirm}
+          size="md"
+          popup
+          onClose={() =>
+            reAssign.isPending ? null : setShowReassignConfirm(false)
+          }
+        >
+          <Modal.Header />
+          <Modal.Body>
+            <div className="space-y-4">
+              <p className="text-sm text-gray-700">
+                هل أنت متأكد أنك تريد إعادة تعيين كلمة المرور لهذا المستخدم؟
+              </p>
+              <div className="flex justify-end gap-2">
+                <Button
+                  color="gray"
+                  type="button"
+                  onClick={() => setShowReassignConfirm(false)}
+                  disabled={reAssign.isPending}
+                >
+                  إلغاء
+                </Button>
+                <Button
+                  color="primary"
+                  type="button"
+                  isProcessing={reAssign.isPending}
+                  onClick={async () => {
+                    await onReAssign();
+                    setShowReassignConfirm(false);
+                  }}
+                  disabled={!isManager}
+                >
+                  تأكيد إعادة التعيين
                 </Button>
               </div>
             </div>

@@ -30,7 +30,10 @@ type ProductPricesProps = {
 export default function ProductPrices({ productId }: ProductPricesProps) {
   const isManager = useSessionStore((s) => s.isManager);
   const units = useProductUnits(productId);
-  const allUnits = useUnitsQuery();
+  const allUnits = useUnitsQuery({
+    page: 1,
+    per_page: 2000,
+  });
   const addUnit = useAddProductUnit(productId);
   const [addOpen, setAddOpen] = React.useState(false);
   const [deleteOpen, setDeleteOpen] = React.useState(false);

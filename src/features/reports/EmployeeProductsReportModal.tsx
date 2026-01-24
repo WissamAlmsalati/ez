@@ -196,6 +196,8 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <td>${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName ?? it.unit)}</td>
             <td class="num">${formatNumber(it.quantity)}</td>
+            <td>${esc(it.notes ?? "")}</td>
+            <td class="c">${it.hasImage ? "📷" : ""}</td>
           </tr>`
           )
           .join("");
@@ -213,11 +215,13 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                   <th>الصنف</th>
                   <th style="width:140px">الوحدة</th>
                   <th style="width:120px">الكمية</th>
+                  <th>ملاحظات</th>
+                  <th style="width:60px">صورة</th>
                 </tr>
               </thead>
               <tbody>${
                 rows ||
-                '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'
+                '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>'
               }</tbody>
             </table>
           </div>
@@ -249,6 +253,8 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <td>${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName ?? it.unit)}</td>
             <td class="num">${formatNumber(it.quantity)}</td>
+            <td>${esc(it.notes ?? "")}</td>
+            <td class="c">${it.hasImage ? "📷" : ""}</td>
           </tr>`
           )
           .join("");
@@ -266,11 +272,13 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                   <th>الصنف</th>
                   <th style="width:140px">الوحدة</th>
                   <th style="width:120px">الكمية</th>
+                  <th>ملاحظات</th>
+                  <th style="width:60px">صورة</th>
                 </tr>
               </thead>
               <tbody>${
                 rows ||
-                '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'
+                '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>'
               }</tbody>
             </table>
           </div>
@@ -301,6 +309,8 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <td>${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName)}</td>
             <td class="num">${formatNumber(it.quantity)}</td>
+            <td>${esc(it.notes ?? "")}</td>
+            <td class="c">${it.hasImage ? "📷" : ""}</td>
           </tr>`
           )
           .join("");
@@ -317,11 +327,13 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                   <th>الصنف</th>
                   <th style="width:140px">الوحدة</th>
                   <th style="width:120px">الكمية</th>
+                  <th>ملاحظات</th>
+                  <th style="width:60px">صورة</th>
                 </tr>
               </thead>
               <tbody>${
                 rows ||
-                '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'
+                '<tr><td colspan="6" class="muted c">لا توجد بيانات</td></tr>'
               }</tbody>
             </table>
           </div>
@@ -349,6 +361,8 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   <td>${esc(it.product_name ?? it.productName)}</td>
   <td>${esc(it.unit_name ?? it.unitName)}</td>
   <td class="num">${formatNumber(it.quantity)}</td>
+  <td>${esc(it.notes ?? "")}</td>
+  <td class="c">${it.hasImage ? "📷" : ""}</td>
       </tr>`
       )
       .join("");
@@ -366,11 +380,13 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                 <th>الصنف</th>
                 <th style="width:140px">الوحدة</th>
                 <th style="width:120px">الكمية</th>
+                <th>ملاحظات</th>
+                <th style="width:60px">صورة</th>
               </tr>
             </thead>
             <tbody>${
               rows ||
-              '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'
+              '<tr><td colspan="6" class="muted c">لا توجد بيانات</td></tr>'
             }</tbody>
           </table>
         </div>
@@ -393,6 +409,8 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
         <td>${esc(it.product_name ?? it.productName)}</td>
         <td>${esc(it.unit_name ?? it.unitName)}</td>
         <td class="num">${formatNumber(it.quantity)}</td>
+        <td>${esc(it.notes ?? "")}</td>
+        <td class="c">${it.hasImage ? "📷" : ""}</td>
       </tr>`
       )
       .join("");
@@ -411,11 +429,13 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                 <th>الصنف</th>
                 <th style="width:140px">الوحدة</th>
                 <th style="width:120px">الكمية</th>
+                <th>ملاحظات</th>
+                <th style="width:60px">صورة</th>
               </tr>
             </thead>
             <tbody>${
               rows ||
-              '<tr><td colspan="6" class="muted c">لا توجد بيانات</td></tr>'
+              '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>'
             }</tbody>
           </table>
         </div>

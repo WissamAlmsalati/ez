@@ -121,24 +121,24 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     body { margin: 0; font-family: 'Arial','Segoe UI',system-ui,-apple-system,sans-serif; }
     .sheet { margin: 16px; background: var(--bg); padding: 24px 24px 40px; border: 1px solid var(--border); border-radius: 0px; box-shadow: 0 4px 16px rgba(0,0,0,.06); }
     .brandbar { display:flex; align-items:center; justify-content:right; gap:32px;  }
-    .header{font-size:18px; font-weight:500; color:var(--primary);} 
+    .header{font-size:20px; font-weight:500; color:var(--primary);} 
     .brand-left { display:flex; flex-direction: column; align-items:right; gap:4px; }
     .logo { width:56px; height:100px; object-fit:contain; }
-    .doc-title { text-align:center; margin:18px 0 8px; font-size:22px; font-weight:800; color:var(--accent); letter-spacing:.5px; }
-    .meta { text-align:center; color:var(--muted); font-size:12px; margin-bottom:18px; font-weight:600 }
+    .doc-title { text-align:center; margin:18px 0 8px; font-size:24px; font-weight:800; color:var(--accent); letter-spacing:.5px; }
+    .meta { text-align:center; color:var(--muted); font-size:14px; margin-bottom:18px; font-weight:600 }
     section.block { margin: 26px 0 34px; page-break-inside: avoid; }
-    section.block h3 { margin:0 0 10px; font-size:16px; font-weight:700; display:flex; align-items:center; gap:8px; }
-    section.block h3 .sub {  font-weight:500; font-size:12px; color:var(--muted); }
+    section.block h3 { margin:0 0 10px; font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px; }
+    section.block h3 .sub {  font-weight:500; font-size:14px; color:var(--muted); }
     .table-wrapper { overflow:auto; border:1px solid var(--border); border-radius:0px; background:var(--bg); }
-    table { width:100%; border-collapse:collapse; font-size:12px; text-align:center; border-radius:0; }
+    table { width:100%; border-collapse:collapse; font-size:14px; text-align:center; border-radius:0; }
     th, td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:center; border-radius:0; }
-    th { background:#f1f5f9; color:#0f172a; font-weight:800; font-size:11px; text-align:center; }
+    th { background:#f1f5f9; color:#0f172a; font-weight:800; font-size:13px; text-align:center; }
     tbody tr:nth-child(even) { background:#fafafa; }
     tbody tr:hover { background:#f5faff; }
     td.num { text-align:center; font-variant-numeric: tabular-nums; direction:ltr; }
     td.c, th.c { text-align:center; }
     .muted { color:var(--muted); }
-    .footer { margin-top:26px; text-align:center; color:var(--muted); font-size:11px; }
+    .footer { margin-top:26px; text-align:center; color:var(--muted); font-size:12px; }
     .actions { position:fixed; top:12px; left:16px; display:flex; gap:8px; z-index:50; }
     .btn { background:#111827; color:#fff; border:none; padding:8px 14px; font-size:12px; border-radius:8px; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,.15); }
     .btn.secondary { background:#6b7280; }
@@ -457,7 +457,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     .head{display:flex;align-items:center;gap:12px;border-bottom:2px solid #111827;padding-bottom:10px;margin-bottom:12px;}
     .logo{width:56px;height:56px;object-fit:contain}
     .title{font-weight:800}
-    pre{background:#0f172a;color:#f8fafc;padding:16px;border-radius:0px;overflow:auto;font-size:12px;direction:ltr;text-align:left}
+    pre{background:#0f172a;color:#f8fafc;padding:16px;border-radius:0px;overflow:auto;font-size:14px;direction:ltr;text-align:left}
     .actions{position:fixed;top:12px;left:16px;display:flex;gap:8px}
     .btn{background:#111827;color:#fff;border:none;padding:8px 16px;border-radius:6px;cursor:pointer}
     @media print{.actions{display:none}.sheet{margin:0;border:none;border-radius:0}}

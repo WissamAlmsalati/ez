@@ -55,7 +55,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
         path: "/reports/manager/quantities-by-categories",
       },
     ],
-    []
+    [],
   );
 
   const allowedOptions: ReportOption[] = useMemo(() => {
@@ -107,7 +107,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   const renderShell = (
     title: string,
     date: string,
-    innerHtml: string
+    innerHtml: string,
   ) => `<!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -166,7 +166,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     <div class="brandbar">
       <img class="logo" src="/BLUE AND GOLD SCG.svg" alt="Izdihar Sweets" />
       <div class="brand-left header">
-        <div>شركة الازدهار للحلويات</div>
+        <div> شركة الازدهار للحلويات</div>
         <div>${esc(title)}</div>
         <div>${esc(date || "")}</div>
       </div>
@@ -184,10 +184,29 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     const title = data.report_title || "تقرير المدير - حسب المتاجر";
     const date = data.date || "";
     const stores: any[] = Array.isArray(data.stores) ? data.stores : [];
+
     const sections = stores
       .map((s) => {
         const items = Array.isArray(s.items) ? s.items : [];
-        const rows = items
+
+        // دمج الصفوف المتكررة
+        const mergedItems = items.reduce((acc: any[], item: any) => {
+          const existingItem = acc.find(
+            (i) =>
+              i.productName === item.productName &&
+              i.unitName === item.unitName &&
+              i.storeName === item.storeName &&
+              i.categoryName === item.categoryName     // Ensure all fields match exactly
+          );
+          if (existingItem) {
+            existingItem.quantity = `${existingItem.quantity}, ${item.quantity}`; // Merge quantities only
+          } else {
+            acc.push({ ...item }); // Add new item if no match
+          }
+          return acc;
+        }, []);
+
+        const rows = mergedItems
           .map(
             (it: any, idx: number) => `
           <tr>
@@ -195,17 +214,22 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <td>${esc(it.category_name ?? it.categoryName)}</td>
             <td>${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName ?? it.unit)}</td>
-            <td class="num">${formatNumber(it.quantity)}</td>
+            <td class="num">${esc(it.quantity)}</td>
             <td>${esc(it.notes ?? "")}</td>
             <td class="c">${it.hasImage ? "📷" : ""}</td>
-          </tr>`
+          </tr>`,
           )
           .join("");
+
+        const rowsContent =
+          rows ||
+          '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>';
+
         return `
         <section class="block">
           <h3>${esc(s.store_name ?? s.storeName)} <span class="sub">(${
-          items.length
-        } صنف)</span></h3>
+            items.length
+          } صنف)</span></h3>
           <div class="table-wrapper">
             <table>
               <thead>
@@ -219,19 +243,17 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                   <th style="width:60px">صورة</th>
                 </tr>
               </thead>
-              <tbody>${
-                rows ||
-                '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>'
-              }</tbody>
+              <tbody>${rowsContent}</tbody>
             </table>
           </div>
         </section>`;
       })
       .join("\n");
+
     return renderShell(
       title,
       date,
-      sections || '<p class="muted">لا توجد بيانات</p>'
+      sections || '<p class="muted">لا توجد بيانات</p>',
     );
   };
 
@@ -241,28 +263,52 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     const title = data.report_title || "تقرير المدير - حسب الأقسام";
     const date = data.date || "";
     const cats: any[] = Array.isArray(data.categories) ? data.categories : [];
+
     const sections = cats
       .map((c) => {
         const items = Array.isArray(c.items) ? c.items : [];
-        const rows = items
+
+        // دمج الصفوف المتكررة
+        const mergedItems = items.reduce((acc: any[], item: any) => {
+          const existingItem = acc.find(
+            (i) =>
+              i.product_name === item.product_name &&
+              i.unit_name === item.unit_name &&
+              i.storeName === item.storeName &&
+              i.categoryName === item.categoryName // Ensure all fields match exactly
+          );
+          if (existingItem) {
+            existingItem.quantity = `${existingItem.quantity}, ${item.quantity}`; // Merge quantities only
+          } else {
+            acc.push({ ...item }); // Add new item if no match
+          }
+          return acc;
+        }, []);
+
+        const rows = mergedItems
           .map(
             (it: any, idx: number) => `
           <tr>
             <td class="c">${idx + 1}</td>
             <td>${esc(it.store_name ?? it.storeName)}</td>
             <td>${esc(it.product_name ?? it.productName)}</td>
-            <td>${esc(it.unit_name ?? it.unitName ?? it.unit)}</td>
-            <td class="num">${formatNumber(it.quantity)}</td>
+            <td>${esc(it.unit_name ?? it.unitName)}</td>
+            <td class="num">${esc(it.quantity)}</td>
             <td>${esc(it.notes ?? "")}</td>
             <td class="c">${it.hasImage ? "📷" : ""}</td>
-          </tr>`
+          </tr>`,
           )
           .join("");
+
+        const rowsContent =
+          rows ||
+          '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>';
+
         return `
         <section class="block">
           <h3>${esc(c.category_name ?? c.categoryName)} <span class="sub">(${
-          items.length
-        } عنصر)</span></h3>
+            items.length
+          } عنصر)</span></h3>
           <div class="table-wrapper">
             <table>
               <thead>
@@ -276,26 +322,24 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                   <th style="width:60px">صورة</th>
                 </tr>
               </thead>
-              <tbody>${
-                rows ||
-                '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>'
-              }</tbody>
+              <tbody>${rowsContent}</tbody>
             </table>
           </div>
         </section>`;
       })
       .join("\n");
+
     return renderShell(
       title,
       date,
-      sections || '<p class="muted">لا توجد بيانات</p>'
+      sections || '<p class="muted">لا توجد بيانات</p>',
     );
   };
 
   // Manager: quantities by categories (aggregate quantities)
   const buildManagerQuantitiesByCategoriesHtml = (data: any) => {
     if (!data || typeof data !== "object") return null;
-    const title = data.report_title || "تقرير المدير - كميات لكل قسم";
+    const title = data.report_title || "تقرير المدير - الكميات لكل قسم";
     const date = data.date || "";
     const cats: any[] = Array.isArray(data.categories) ? data.categories : [];
     const sections = cats
@@ -311,14 +355,19 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <td class="num">${formatNumber(it.quantity)}</td>
             <td>${esc(it.notes ?? "")}</td>
             <td class="c">${it.hasImage ? "📷" : ""}</td>
-          </tr>`
+          </tr>`,
           )
           .join("");
+
+        const rowsContent =
+          rows ||
+          '<tr><td colspan="6" class="muted c">لا توجد بيانات</td></tr>';
+
         return `
         <section class="block">
           <h3>${esc(c.category_name ?? c.categoryName)} <span class="sub">(${
-          items.length
-        } عنصر)</span></h3>
+            items.length
+          } عنصر)</span></h3>
           <div class="table-wrapper">
             <table>
               <thead>
@@ -331,10 +380,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                   <th style="width:60px">صورة</th>
                 </tr>
               </thead>
-              <tbody>${
-                rows ||
-                '<tr><td colspan="6" class="muted c">لا توجد بيانات</td></tr>'
-              }</tbody>
+              <tbody>${rowsContent}</tbody>
             </table>
           </div>
         </section>`;
@@ -343,7 +389,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     return renderShell(
       title,
       date,
-      sections || '<p class="muted">لا توجد بيانات</p>'
+      sections || '<p class="muted">لا توجد بيانات</p>',
     );
   };
 
@@ -353,22 +399,44 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     const title = data.report_title || "تقرير الموظف - الأصناف والكميات";
     const date = data.date || "";
     const items: any[] = Array.isArray(data.items) ? data.items : [];
-    const rows = items
+
+    // دمج الصفوف المتكررة
+    const mergedItems = items.reduce((acc: any[], item: any) => {
+      const existingItem = acc.find(
+        (i) =>
+          i.product_name === item.product_name &&
+          i.unit_name === item.unit_name &&
+          i.storeName === item.storeName &&
+          i.categoryName === item.categoryName // Ensure all fields match exactly
+      );
+      if (existingItem) {
+        existingItem.quantity += `, ${item.quantity}`;
+      } else {
+        acc.push({ ...item, quantity: `${item.quantity}` });
+      }
+      return acc;
+    }, []);
+
+    const rows = mergedItems
       .map(
         (it: any, idx: number) => `
       <tr>
         <td class="c">${idx + 1}</td>
-  <td>${esc(it.product_name ?? it.productName)}</td>
-  <td>${esc(it.unit_name ?? it.unitName)}</td>
-  <td class="num">${formatNumber(it.quantity)}</td>
-  <td>${esc(it.notes ?? "")}</td>
-  <td class="c">${it.hasImage ? "📷" : ""}</td>
-      </tr>`
+        <td>${esc(it.product_name ?? it.productName)}</td>
+        <td>${esc(it.unit_name ?? it.unitName)}</td>
+        <td class="num">${esc(it.quantity)}</td>
+        <td>${esc(it.notes ?? "")}</td>
+        <td class="c">${it.hasImage ? "📷" : ""}</td>
+      </tr>`,
       )
       .join("");
+
+    const rowsContent =
+      rows || '<tr><td colspan="6" class="muted c">لا توجد بيانات</td></tr>';
+
     const content = `
       <div class="doc-title">${esc(
-        (data.category_name ?? data.categoryName) || ""
+        (data.category_name ?? data.categoryName) || "",
       )}</div>
       <div class="meta">${esc(date)}</div>
       <section class="block">
@@ -384,10 +452,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                 <th style="width:60px">صورة</th>
               </tr>
             </thead>
-            <tbody>${
-              rows ||
-              '<tr><td colspan="6" class="muted c">لا توجد بيانات</td></tr>'
-            }</tbody>
+            <tbody>${rowsContent}</tbody>
           </table>
         </div>
       </section>`;
@@ -400,23 +465,41 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     const title = data.report_title || "تقرير الموظف - الأصناف حسب المتجر";
     const date = data.date || "";
     const items: any[] = Array.isArray(data.items) ? data.items : [];
-    const rows = items
+    const mergedItems = items.reduce((acc: any[], item: any) => {
+      const existingItem = acc.find(
+        (i) =>
+          (i.storeName === item.storeName) &&
+          (i.productName === item.productName) &&
+          (i.unitName === item.unitName),
+      );
+      if (existingItem) {
+        existingItem.quantity += `, ${item.quantity}`;
+      } else {
+        acc.push({ ...item, quantity: `${item.quantity}` });
+      }
+      return acc;
+    }, []);
+
+    const rows = mergedItems
       .map(
         (it: any, idx: number) => `
       <tr>
         <td class="c">${idx + 1}</td>
-        <td>${esc(it.store_name ?? it.storeName)}</td>
-        <td>${esc(it.product_name ?? it.productName)}</td>
-        <td>${esc(it.unit_name ?? it.unitName)}</td>
-        <td class="num">${formatNumber(it.quantity)}</td>
+        <td>${esc(it.storeName)}</td>
+        <td>${esc(it.productName)}</td>
+        <td>${esc(it.unitName)}</td>
+        <td class="num">${esc(it.quantity)}</td>
         <td>${esc(it.notes ?? "")}</td>
         <td class="c">${it.hasImage ? "📷" : ""}</td>
-      </tr>`
+      </tr>`,
       )
       .join("");
+    const rowsContent =
+      rows || '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>';
+
     const content = `
       <div class="doc-title">${esc(
-        (data.category_name ?? data.categoryName) || ""
+        (data.categoryName) || "",
       )}</div>
       <div class="meta">${esc(date)}</div>
       <section class="block">
@@ -433,10 +516,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
                 <th style="width:60px">صورة</th>
               </tr>
             </thead>
-            <tbody>${
-              rows ||
-              '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>'
-            }</tbody>
+            <tbody>${rowsContent}</tbody>
           </table>
         </div>
       </section>`;
@@ -488,7 +568,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     try {
       setLoading(true);
       reportWindow.document.write(
-        "<p style='font-family:sans-serif'>جاري تحميل التقرير…</p>"
+        "<p style='font-family:sans-serif'>جاري تحميل التقرير…</p>",
       );
       const res = await apiInstance.get(selectedPath, {
         headers: { Accept: "application/json" },
@@ -523,7 +603,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     } catch (e: any) {
       reportWindow.document.body.innerHTML = `<p style='color:red;font-family:sans-serif'>فشل في تحميل التقرير</p>`;
       setError(
-        e?.response?.data?.message || "فشل في تحميل التقرير، حاول لاحقاً"
+        e?.response?.data?.message || "فشل في تحميل التقرير، حاول لاحقاً",
       );
     } finally {
       setLoading(false);

@@ -215,7 +215,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <td>${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName ?? it.unit)}</td>
             <td class="num">${esc(it.quantity)}</td>
-            <td>${esc(it.notes ?? "")}</td>
+            <td>${esc(it.notes.desc ?? "")}</td>
             <td class="c">${it.hasImage ? "📷" : ""}</td>
           </tr>`,
           )
@@ -294,7 +294,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <td>${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName)}</td>
             <td class="num">${esc(it.quantity)}</td>
-            <td>${esc(it.notes ?? "")}</td>
+            <td>${esc(it.notes.desc ?? "")}</td>
             <td class="c">${it.hasImage ? "📷" : ""}</td>
           </tr>`,
           )
@@ -353,7 +353,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <td>${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName)}</td>
             <td class="num">${formatNumber(it.quantity)}</td>
-            <td>${esc(it.notes ?? "")}</td>
+            <td>${esc(it.notes.desc ?? "")}</td>
             <td class="c">${it.hasImage ? "📷" : ""}</td>
           </tr>`,
           )
@@ -425,7 +425,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
         <td>${esc(it.product_name ?? it.productName)}</td>
         <td>${esc(it.unit_name ?? it.unitName)}</td>
         <td class="num">${esc(it.quantity)}</td>
-        <td>${esc(it.notes ?? "")}</td>
+        <td>${esc(it.notes.desc ?? "")}</td>
         <td class="c">${it.hasImage ? "📷" : ""}</td>
       </tr>`,
       )
@@ -489,7 +489,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
         <td>${esc(it.productName)}</td>
         <td>${esc(it.unitName)}</td>
         <td class="num">${esc(it.quantity)}</td>
-        <td>${esc(it.notes ?? "")}</td>
+        <td>${esc(it.notes.desc ?? "")}</td>
         <td class="c">${it.hasImage ? "📷" : ""}</td>
       </tr>`,
       )

@@ -196,7 +196,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
               i.productName === item.productName &&
               i.unitName === item.unitName &&
               i.storeName === item.storeName &&
-              i.categoryName === item.categoryName     // Ensure all fields match exactly
+              i.categoryName === item.categoryName, // Ensure all fields match exactly
           );
           if (existingItem) {
             existingItem.quantity = `${existingItem.quantity}, ${item.quantity}`; // Merge quantities only
@@ -272,15 +272,17 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
         const mergedItems = items.reduce((acc: any[], item: any) => {
           const existingItem = acc.find(
             (i) =>
-              i.product_name === item.product_name &&
-              i.unit_name === item.unit_name &&
+              (i.product_name ?? i.productName) ===
+                (item.product_name ?? item.productName) &&
+              (i.unit_name ?? i.unitName) ===
+                (item.unit_name ?? item.unitName) &&
               i.storeName === item.storeName &&
-              i.categoryName === item.categoryName // Ensure all fields match exactly
+              i.categoryName === item.categoryName,
           );
           if (existingItem) {
-            existingItem.quantity = `${existingItem.quantity}, ${item.quantity}`; // Merge quantities only
+            existingItem.quantity = `${existingItem.quantity}, ${item.quantity}`;
           } else {
-            acc.push({ ...item }); // Add new item if no match
+            acc.push({ ...item });
           }
           return acc;
         }, []);
@@ -404,10 +406,11 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     const mergedItems = items.reduce((acc: any[], item: any) => {
       const existingItem = acc.find(
         (i) =>
-          i.product_name === item.product_name &&
-          i.unit_name === item.unit_name &&
+          (i.product_name ?? i.productName) ===
+            (item.product_name ?? item.productName) &&
+          (i.unit_name ?? i.unitName) === (item.unit_name ?? item.unitName) &&
           i.storeName === item.storeName &&
-          i.categoryName === item.categoryName // Ensure all fields match exactly
+          i.categoryName === item.categoryName,
       );
       if (existingItem) {
         existingItem.quantity += `, ${item.quantity}`;
@@ -468,9 +471,9 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     const mergedItems = items.reduce((acc: any[], item: any) => {
       const existingItem = acc.find(
         (i) =>
-          (i.storeName === item.storeName) &&
-          (i.productName === item.productName) &&
-          (i.unitName === item.unitName),
+          i.storeName === item.storeName &&
+          i.productName === item.productName &&
+          i.unitName === item.unitName,
       );
       if (existingItem) {
         existingItem.quantity += `, ${item.quantity}`;
@@ -498,9 +501,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
       rows || '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>';
 
     const content = `
-      <div class="doc-title">${esc(
-        (data.categoryName) || "",
-      )}</div>
+      <div class="doc-title">${esc(data.categoryName || "")}</div>
       <div class="meta">${esc(date)}</div>
       <section class="block">
         <div class="table-wrapper">

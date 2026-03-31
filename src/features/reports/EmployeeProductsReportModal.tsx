@@ -116,34 +116,38 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   <title>${esc(title)}</title>
   <style>
     :root { --accent:#0f172a; --primary:#111827; --muted:#6b7280; --border:#cbd5e1; --bg:#ffffff; --soft:#f8fafc; --brand:#2563eb; font-family: 'Arial','Segoe UI',system-ui,-apple-system,sans-serif; }
-    @page { size: A4; margin: 14mm 12mm; }
+    @page { size: A4; margin: 10mm 10mm; }
     html,body { background: var(--soft); }
     body { margin: 0; font-family: 'Arial','Segoe UI',system-ui,-apple-system,sans-serif; }
-    .sheet { margin: 16px; background: var(--bg); padding: 24px 24px 40px; border: 1px solid var(--border); border-radius: 0px; box-shadow: 0 4px 16px rgba(0,0,0,.06); }
-    .brandbar { display:flex; align-items:center; justify-content:right; gap:32px;  }
-    .header{font-size:20px; font-weight:500; color:var(--primary);} 
-    .brand-left { display:flex; flex-direction: column; align-items:right; gap:4px; }
-    .logo { width:56px; height:100px; object-fit:contain; }
-    .doc-title { text-align:center; margin:18px 0 8px; font-size:24px; font-weight:800; color:var(--accent); letter-spacing:.5px; }
-    .meta { text-align:center; color:var(--muted); font-size:14px; margin-bottom:18px; font-weight:600 }
-    section.block { margin: 26px 0 34px; page-break-inside: avoid; }
-    section.block h3 { margin:0 0 10px; font-size:18px; font-weight:700; display:flex; align-items:center; gap:8px; }
-    section.block h3 .sub {  font-weight:500; font-size:14px; color:var(--muted); }
-    .table-wrapper { overflow:auto; border:1px solid var(--border); border-radius:0px; background:var(--bg); }
-    table { width:100%; border-collapse:collapse; font-size:14px; text-align:center; border-radius:0; }
-    th, td { padding:10px 12px; border-bottom:1px solid var(--border); text-align:center; border-radius:0; }
-    th { background:#f1f5f9; color:#0f172a; font-weight:800; font-size:13px; text-align:center; }
-    tbody tr:nth-child(even) { background:#fafafa; }
-    tbody tr:hover { background:#f5faff; }
+    .sheet { margin: 16px; background: var(--bg); padding: 16px 16px 24px; border: 1px solid var(--border); border-radius: 0px; box-shadow: 0 4px 16px rgba(0,0,0,.06); }
+    .brandbar { display:flex; align-items:center; justify-content:right; gap:20px;  }
+    .header{font-size:16px; font-weight:500; color:var(--primary);} 
+    .brand-left { display:flex; flex-direction: column; align-items:right; gap:2px; }
+    .logo { width:48px; height:60px; object-fit:contain; }
+    .doc-title { text-align:center; margin:12px 0 6px; font-size:20px; font-weight:800; color:var(--accent); letter-spacing:.5px; }
+    .meta { text-align:center; color:var(--muted); font-size:12px; margin-bottom:12px; font-weight:600 }
+    section.block { margin: 16px 0 20px; break-inside: auto !important; page-break-inside: auto !important; }
+    section.block h3 { margin:0 0 6px; font-size:16px; font-weight:700; display:flex; align-items:center; gap:6px; }
+    section.block h3 .sub {  font-weight:500; font-size:12px; color:var(--muted); }
+    .table-wrapper { overflow:auto; border:1px solid var(--border); border-radius:0px; background:var(--bg); break-inside: auto !important; page-break-inside: auto !important; }
+    table { width:100%; border-collapse:collapse; font-size:12px; text-align:center; border-radius:0; break-inside: auto !important; page-break-inside: auto !important; }
+    tr { break-inside: avoid; page-break-inside: avoid; }
+    th, td { padding:6px 8px; border-bottom:1px solid var(--border); text-align:center; border-radius:0; }
+    th { background:#ffffff; color:#0f172a; font-weight:800; font-size:12px; text-align:center; }
+    tbody tr { background:#ffffff; }
     td.num { text-align:center; font-variant-numeric: tabular-nums; direction:ltr; }
+    td.no-wrap { white-space: nowrap; max-width: 150px; overflow: hidden; text-overflow: ellipsis; }
     td.c, th.c { text-align:center; }
     .muted { color:var(--muted); }
     .footer { margin-top:26px; text-align:center; color:var(--muted); font-size:12px; }
+    .multi-columns { column-count: 1; column-gap: 16px; }
+    .mini-table { width:100%; }
     .actions { position:fixed; top:12px; left:16px; display:flex; gap:8px; z-index:50; }
     .btn { background:#111827; color:#fff; border:none; padding:8px 14px; font-size:12px; border-radius:8px; cursor:pointer; box-shadow:0 1px 2px rgba(0,0,0,.15); }
     .btn.secondary { background:#6b7280; }
     @media print {
       html,body { background:#fff; }
+      .multi-columns { column-count: 2; column-fill: auto; }
       .sheet { margin: 0; border: none; border-radius:0; box-shadow:none; padding: 0 6mm 8mm; }
       .actions { display:none; }
       .brandbar { padding: 3mm 0 0mm; }
@@ -164,16 +168,14 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
   </div>
   <div class="sheet">
     <div class="brandbar">
-      <img class="logo" src="/BLUE AND GOLD SCG.svg" alt="Izdihar Sweets" />
-      <div class="brand-left header">
-        <div> شركة الازدهار للحلويات</div>
-        <div>${esc(title)}</div>
+      <!-- Logo and Company Name removed as requested -->
+      <div class="brand-left header" style="flex-direction: row; justify-content: space-between; width: 100%;">
+        <div style="font-weight:bold; font-size:18px;">${esc(title)}</div>
         <div>${esc(date || "")}</div>
       </div>
     </div>
     <hr/>
     ${innerHtml}
-    <div class="footer">مملوك لشركة الازدهار للحلويات — &copy; ${new Date().getFullYear()}</div>
   </div>
 </body>
 </html>`;
@@ -189,38 +191,80 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
       .map((s) => {
         const items = Array.isArray(s.items) ? s.items : [];
 
-        // دمج الصفوف المتكررة
+        // دمج الصفوف المتكررة مع جمع الملاحظات والصور
         const mergedItems = items.reduce((acc: any[], item: any) => {
+          const note = (item.notes?.desc ?? "").trim();
+          const hasImg = !!item.hasImage || !!item.notes?.desc_image;
           const existingItem = acc.find(
             (i) =>
-              i.productName === item.productName &&
-              i.unitName === item.unitName &&
+              (i.product_name ?? i.productName) ===
+                (item.product_name ?? item.productName) &&
+              (i.unit_name ?? i.unitName) ===
+                (item.unit_name ?? item.unitName) &&
               i.storeName === item.storeName &&
-              i.categoryName === item.categoryName, // Ensure all fields match exactly
+              i.categoryName === item.categoryName &&
+              (i._noteText ?? "") === note &&
+              !!i._hasImage === hasImg,
           );
+
           if (existingItem) {
-            existingItem.quantity = `${existingItem.quantity}, ${item.quantity}`; // Merge quantities only
+            existingItem.quantity = `${existingItem.quantity}, ${item.quantity}`;
+            if (!existingItem._notesArr) existingItem._notesArr = [];
+            if (note && !existingItem._notesArr.includes(note)) {
+              existingItem._notesArr.push(note);
+            }
           } else {
-            acc.push({ ...item }); // Add new item if no match
+            acc.push({
+              ...item,
+              quantity: `${item.quantity}`,
+              _notesArr: note ? [note] : [],
+              _hasImage: hasImg,
+              _noteText: note,
+            });
           }
           return acc;
         }, []);
 
-        const rows = mergedItems
-          .map(
-            (it: any, idx: number) => `
+        // ترتيب الصفوف حسب الملاحظات والصور
+        const sortedMergedItems = mergedItems.slice().sort((a: any, b: any) => {
+          const tier = (item: any) => {
+            const hasNotes = item._notesArr && item._notesArr.length > 0;
+            const hasImage = !!item._hasImage;
+            if (!hasNotes && !hasImage) return 0;
+            if (hasNotes && !hasImage) return 1;
+            if (!hasNotes && hasImage) return 2;
+            return 3;
+          };
+          const productCompare = (
+            a.product_name ??
+            a.productName ??
+            ""
+          ).localeCompare(b.product_name ?? b.productName ?? "");
+          if (productCompare !== 0) return productCompare;
+          const unitCompare = (a.unit_name ?? a.unitName ?? "").localeCompare(
+            b.unit_name ?? b.unitName ?? "",
+          );
+          if (unitCompare !== 0) return unitCompare;
+          return tier(a) - tier(b);
+        });
+        const rows = sortedMergedItems
+          .map((it: any, idx: number) => {
+            let notesHtml = "";
+            if (it._notesArr && it._notesArr.length) {
+              notesHtml = it._notesArr.map(esc).join("<br/>");
+            }
+            return `
           <tr>
-            <td class="c">${idx + 1}</td>
+            <td class="muted">${idx + 1}</td>
             <td>${esc(it.category_name ?? it.categoryName)}</td>
             <td>${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName ?? it.unit)}</td>
             <td class="num">${esc(it.quantity)}</td>
-            <td>${esc(it.notes.desc ?? "")}</td>
-            <td class="c">${it.hasImage ? "📷" : ""}</td>
-          </tr>`,
-          )
+            <td>${notesHtml}</td>
+            <td class="c">${it._hasImage ? "📷" : ""}</td>
+          </tr>`;
+          })
           .join("");
-
         const rowsContent =
           rows ||
           '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>';
@@ -234,7 +278,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <table>
               <thead>
                 <tr>
-                  <th class="c" style="width:50px">#</th>
+                  <th style="width:30px">#</th>
                   <th>القسم</th>
                   <th>الصنف</th>
                   <th style="width:140px">الوحدة</th>
@@ -268,8 +312,10 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
       .map((c) => {
         const items = Array.isArray(c.items) ? c.items : [];
 
-        // دمج الصفوف المتكررة
+        // دمج الصفوف المتكررة مع جمع الملاحظات والصور
         const mergedItems = items.reduce((acc: any[], item: any) => {
+          const note = (item.notes?.desc ?? "").trim();
+          const hasImg = !!item.hasImage || !!item.notes?.desc_image;
           const existingItem = acc.find(
             (i) =>
               (i.product_name ?? i.productName) ===
@@ -277,31 +323,68 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
               (i.unit_name ?? i.unitName) ===
                 (item.unit_name ?? item.unitName) &&
               i.storeName === item.storeName &&
-              i.categoryName === item.categoryName,
+              i.categoryName === item.categoryName &&
+              (i._noteText ?? "") === note &&
+              !!i._hasImage === hasImg,
           );
           if (existingItem) {
             existingItem.quantity = `${existingItem.quantity}, ${item.quantity}`;
+            if (!existingItem._notesArr) existingItem._notesArr = [];
+            if (note && !existingItem._notesArr.includes(note)) {
+              existingItem._notesArr.push(note);
+            }
           } else {
-            acc.push({ ...item });
+            acc.push({
+              ...item,
+              quantity: `${item.quantity}`,
+              _notesArr: note ? [note] : [],
+              _hasImage: hasImg,
+              _noteText: note,
+            });
           }
           return acc;
         }, []);
 
-        const rows = mergedItems
-          .map(
-            (it: any, idx: number) => `
+        // ترتيب الصفوف حسب الملاحظات والصور
+        const sortedMergedItems = mergedItems.slice().sort((a: any, b: any) => {
+          const tier = (item: any) => {
+            const hasNotes = item._notesArr && item._notesArr.length > 0;
+            const hasImage = !!item._hasImage;
+            if (!hasNotes && !hasImage) return 0;
+            if (hasNotes && !hasImage) return 1;
+            if (!hasNotes && hasImage) return 2;
+            return 3;
+          };
+          const productCompare = (
+            a.product_name ??
+            a.productName ??
+            ""
+          ).localeCompare(b.product_name ?? b.productName ?? "");
+          if (productCompare !== 0) return productCompare;
+          const unitCompare = (a.unit_name ?? a.unitName ?? "").localeCompare(
+            b.unit_name ?? b.unitName ?? "",
+          );
+          if (unitCompare !== 0) return unitCompare;
+          return tier(a) - tier(b);
+        });
+        const rows = sortedMergedItems
+          .map((it: any, idx: number) => {
+            let notesHtml = "";
+            if (it._notesArr && it._notesArr.length) {
+              notesHtml = it._notesArr.map(esc).join("<br/>");
+            }
+            return `
           <tr>
-            <td class="c">${idx + 1}</td>
+            <td class="muted">${idx + 1}</td>
             <td>${esc(it.store_name ?? it.storeName)}</td>
-            <td>${esc(it.product_name ?? it.productName)}</td>
+            <td class="no-wrap">${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName)}</td>
             <td class="num">${esc(it.quantity)}</td>
-            <td>${esc(it.notes.desc ?? "")}</td>
-            <td class="c">${it.hasImage ? "📷" : ""}</td>
-          </tr>`,
-          )
+            <td>${notesHtml}</td>
+            <td class="c">${it._hasImage ? "📷" : ""}</td>
+          </tr>`;
+          })
           .join("");
-
         const rowsContent =
           rows ||
           '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>';
@@ -315,7 +398,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <table>
               <thead>
                 <tr>
-                  <th class="c" style="width:50px">#</th>
+                  <th style="width:30px">#</th>
                   <th>المتجر</th>
                   <th>الصنف</th>
                   <th style="width:140px">الوحدة</th>
@@ -351,8 +434,8 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
           .map(
             (it: any, idx: number) => `
           <tr>
-            <td class="c">${idx + 1}</td>
-            <td>${esc(it.product_name ?? it.productName)}</td>
+            <td class="muted">${idx + 1}</td>
+            <td class="no-wrap">${esc(it.product_name ?? it.productName)}</td>
             <td>${esc(it.unit_name ?? it.unitName)}</td>
             <td class="num">${formatNumber(it.quantity)}</td>
             <td>${esc(it.notes.desc ?? "")}</td>
@@ -374,7 +457,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
             <table>
               <thead>
                 <tr>
-                  <th class="c" style="width:50px">#</th>
+                  <th style="width:30px">#</th>
                   <th>الصنف</th>
                   <th style="width:140px">الوحدة</th>
                   <th style="width:120px">الكمية</th>
@@ -402,8 +485,11 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     const date = data.date || "";
     const items: any[] = Array.isArray(data.items) ? data.items : [];
 
-    // دمج الصفوف المتكررة
+    // دمج الصفوف المتكررة: نفس الصنف ونفس الوحدة => نجمع الكميات، ونجمع الملاحظات والصور
     const mergedItems = items.reduce((acc: any[], item: any) => {
+      const note = (item.notes?.desc ?? "").trim();
+      const hasImg = !!item.hasImage || !!item.notes?.desc_image;
+      const qty = Number(item.quantity) || 0;
       const existingItem = acc.find(
         (i) =>
           (i.product_name ?? i.productName) ===
@@ -413,25 +499,62 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
           i.categoryName === item.categoryName,
       );
       if (existingItem) {
-        existingItem.quantity += `, ${item.quantity}`;
+        const currentQty = Number(existingItem.quantity) || 0;
+        existingItem.quantity = currentQty + qty;
+        if (!existingItem._notesArr) existingItem._notesArr = [];
+        if (note && !existingItem._notesArr.includes(note)) {
+          existingItem._notesArr.push(note);
+        }
+        existingItem._hasImage = existingItem._hasImage || hasImg;
       } else {
-        acc.push({ ...item, quantity: `${item.quantity}` });
+        acc.push({
+          ...item,
+          quantity: qty,
+          _notesArr: note ? [note] : [],
+          _hasImage: hasImg,
+        });
       }
       return acc;
     }, []);
 
-    const rows = mergedItems
-      .map(
-        (it: any, idx: number) => `
+    // ترتيب الصفوف حسب الملاحظات والصور
+    const sortedMergedItems = mergedItems.slice().sort((a: any, b: any) => {
+      const tier = (item: any) => {
+        const hasNotes = item._notesArr && item._notesArr.length > 0;
+        const hasImage = !!item._hasImage;
+        if (!hasNotes && !hasImage) return 0;
+        if (hasNotes && !hasImage) return 1;
+        if (!hasNotes && hasImage) return 2;
+        return 3;
+      };
+      const productCompare = (
+        a.product_name ??
+        a.productName ??
+        ""
+      ).localeCompare(b.product_name ?? b.productName ?? "");
+      if (productCompare !== 0) return productCompare;
+      const unitCompare = (a.unit_name ?? a.unitName ?? "").localeCompare(
+        b.unit_name ?? b.unitName ?? "",
+      );
+      if (unitCompare !== 0) return unitCompare;
+      return tier(a) - tier(b);
+    });
+    const rows = sortedMergedItems
+      .map((it: any, idx: number) => {
+        let notesHtml = "";
+        if (it._notesArr && it._notesArr.length) {
+          notesHtml = it._notesArr.map(esc).join("<br/>");
+        }
+        return `
       <tr>
-        <td class="c">${idx + 1}</td>
-        <td>${esc(it.product_name ?? it.productName)}</td>
+        <td class="muted">${idx + 1}</td>
+        <td class="no-wrap">${esc(it.product_name ?? it.productName)}</td>
         <td>${esc(it.unit_name ?? it.unitName)}</td>
-        <td class="num">${esc(it.quantity)}</td>
-        <td>${esc(it.notes.desc ?? "")}</td>
-        <td class="c">${it.hasImage ? "📷" : ""}</td>
-      </tr>`,
-      )
+        <td class="num">${formatNumber(it.quantity)}</td>
+        <td>${notesHtml}</td>
+        <td class="c">${it._hasImage ? "📷" : ""}</td>
+      </tr>`;
+      })
       .join("");
 
     const rowsContent =
@@ -447,7 +570,7 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
           <table>
             <thead>
               <tr>
-                <th class="c" style="width:50px">#</th>
+                <th style="width:30px">#</th>
                 <th>الصنف</th>
                 <th style="width:140px">الوحدة</th>
                 <th style="width:120px">الكمية</th>
@@ -462,66 +585,163 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
     return renderShell(title, date, content);
   };
 
-  // Employee: products by store (flat list with store and product)
+  // Employee: products by store (grouped by store)
   const buildEmployeeProductsByStoreHtml = (data: any) => {
     if (!data || typeof data !== "object") return null;
-    const title = data.report_title || "تقرير الموظف - الأصناف حسب المتجر";
+    let title = data.report_title || "تقرير الموظف - الأصناف حسب المتجر";
+    const categoryTitle = data.category_name || data.categoryName;
+    if (categoryTitle) {
+      title += ` - ${categoryTitle}`;
+    }
     const date = data.date || "";
     const items: any[] = Array.isArray(data.items) ? data.items : [];
-    const mergedItems = items.reduce((acc: any[], item: any) => {
-      const existingItem = acc.find(
-        (i) =>
-          i.storeName === item.storeName &&
-          i.productName === item.productName &&
-          i.unitName === item.unitName,
-      );
-      if (existingItem) {
-        existingItem.quantity += `, ${item.quantity}`;
-      } else {
-        acc.push({ ...item, quantity: `${item.quantity}` });
+
+    // Group items by store_name
+    const storesMap = new Map<string, any[]>();
+    items.forEach((item) => {
+      const storeName = item.store_name || item.storeName || "غير محدد";
+      if (!storesMap.has(storeName)) {
+        storesMap.set(storeName, []);
       }
-      return acc;
-    }, []);
+      storesMap.get(storeName)?.push(item);
+    });
 
-    const rows = mergedItems
-      .map(
-        (it: any, idx: number) => `
-      <tr>
-        <td class="c">${idx + 1}</td>
-        <td>${esc(it.storeName)}</td>
-        <td>${esc(it.productName)}</td>
-        <td>${esc(it.unitName)}</td>
-        <td class="num">${esc(it.quantity)}</td>
-        <td>${esc(it.notes.desc ?? "")}</td>
-        <td class="c">${it.hasImage ? "📷" : ""}</td>
-      </tr>`,
-      )
-      .join("");
-    const rowsContent =
-      rows || '<tr><td colspan="7" class="muted c">لا توجد بيانات</td></tr>';
+    // Convert map to a flattened list of rows and distribute them into two
+    // columns by filling the right column first, then spilling into the left.
+    // This ensures when a store finishes and the next begins, it continues
+    // under the last filled row rather than re-splitting per-store.
+    const allEntries: string[] = [];
+    const tableHead = `<thead>
+          <tr>
+            <th>الصنف</th>
+            <th style="">الوحدة</th>
+            <th style="">الكمية</th>
+            <th>ملاحظات</th>
+            <th style="">صورة</th>
+          </tr>
+        </thead>`;
 
-    const content = `
-      <div class="doc-title">${esc(data.categoryName || "")}</div>
-      <div class="meta">${esc(date)}</div>
+    Array.from(storesMap.entries()).forEach(([storeName, storeItems]) => {
+      // Merge duplicate items within the store (same product + unit + category)
+      const mergedItems = storeItems.reduce((acc: any[], item: any) => {
+        const note = (item.notes?.desc ?? "").trim();
+        const hasImg = !!item.hasImage || !!item.notes?.desc_image;
+        const qty = Number(item.quantity); // Keep as number if possible or handle string
+
+        const existingItem = acc.find(
+          (i) =>
+            (i.product_name ?? i.productName) ===
+              (item.product_name ?? item.productName) &&
+            (i.unit_name ?? i.unitName) === (item.unit_name ?? item.unitName) &&
+            (i._noteText ?? "") === note &&
+            !!i._hasImage === hasImg,
+        );
+
+        if (existingItem) {
+          existingItem.quantity = `${existingItem.quantity}, ${item.quantity}`;
+          if (!existingItem._notesArr) existingItem._notesArr = [];
+          if (note && !existingItem._notesArr.includes(note)) {
+            existingItem._notesArr.push(note);
+          }
+        } else {
+          acc.push({
+            ...item,
+            quantity: `${item.quantity}`,
+            _notesArr: note ? [note] : [],
+            _hasImage: hasImg,
+            _noteText: note,
+          });
+        }
+        return acc;
+      }, []);
+
+      // Sort items
+      const sortedMergedItems = mergedItems.slice().sort((a: any, b: any) => {
+        const tier = (item: any) => {
+          const hasNotes = item._notesArr && item._notesArr.length > 0;
+          const hasImage = !!item._hasImage;
+          if (!hasNotes && !hasImage) return 0;
+          if (hasNotes && !hasImage) return 1;
+          if (!hasNotes && hasImage) return 2;
+          return 3;
+        };
+        const typeCompare = (
+          a.product_type_name ??
+          a.productTypeName ??
+          ""
+        ).localeCompare(b.product_type_name ?? b.productTypeName ?? "");
+        if (typeCompare !== 0) return typeCompare;
+        const productCompare = (
+          a.product_name ??
+          a.productName ??
+          ""
+        ).localeCompare(b.product_name ?? b.productName ?? "");
+        if (productCompare !== 0) return productCompare;
+        return tier(a) - tier(b);
+      });
+      const rows = sortedMergedItems
+        .map((it: any, idx: number) => {
+          let notesHtml = "";
+          if (it._notesArr && it._notesArr.length) {
+            notesHtml = it._notesArr.map(esc).join("<br/>");
+          }
+          return `
+          <tr>
+            <td class="no-wrap">${esc(it.product_name ?? it.productName)}</td>
+            <td>${esc(it.unit_name ?? it.unitName)}</td>
+            <td class="num">${esc(it.quantity)}</td>
+            <td>${notesHtml}</td>
+            <td class="c">${it._hasImage ? "📷" : ""}</td>
+          </tr>`;
+        })
+        .join("");
+
+      // Build a mini-table block per store so CSS multi-column can flow them
+      // sequentially into columns (right column first when RTL + column-fill:auto).
+      const tableHead = `<thead>
+          <tr>
+            <th>الصنف</th>
+            <th style="">الوحدة</th>
+            <th style="">الكمية</th>
+            <th>ملاحظات</th>
+            <th style="">صورة</th>
+          </tr>
+        </thead>`;
+
+      const miniTable = `
+        <div class="mini-table" style="margin-bottom:8px;">
+          <div style="font-weight:700; text-align:right; margin-bottom:6px;">${esc(
+            storeName,
+          )}</div>
+          <div class="table-wrapper">
+            <table>
+              ${tableHead}
+              <tbody>${rows || '<tr><td colspan="5" class="muted c">لا توجد بيانات</td></tr>'}</tbody>
+            </table>
+          </div>
+        </div>`;
+      allEntries.push(miniTable);
+    });
+
+    // If there are no entries, show empty message
+    if (allEntries.length === 0) {
+      const contentWithCategory = '<p class="muted">لا توجد بيانات</p>';
+      return renderShell(title, date, contentWithCategory);
+    }
+
+    // Render using CSS multi-column so content fills the right column first
+    // and then flows into the left on the same page when possible.
+    // Allow the outer section to be split so content can start on page 1;
+    // keep each `mini-table` marked with `break-inside: avoid` to keep
+    // store header + its small table together.
+    const contentWithCategory = `
       <section class="block">
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th class="c" style="width:50px">#</th>
-                <th>المتجر</th>
-                <th>الصنف</th>
-                <th style="width:140px">الوحدة</th>
-                <th style="width:120px">الكمية</th>
-                <th>ملاحظات</th>
-                <th style="width:60px">صورة</th>
-              </tr>
-            </thead>
-            <tbody>${rowsContent}</tbody>
-          </table>
-        </div>
-      </section>`;
-    return renderShell(title, date, content);
+          <div class="multi-columns" style="direction:rtl;">
+            ${allEntries.join("")}
+          </div>
+        </section>`;
+
+    return renderShell(title, date, contentWithCategory);
   };
 
   const buildFallbackHtml = (json: any) => {
@@ -548,7 +768,9 @@ export default function EmployeeProductsReportModal({ open, onClose }: Props) {
 <body>
   <div class="actions"><button class="btn" onclick="doPrint()">طباعة</button></div>
   <div class="sheet">
-    <div class="head"><img class="logo" src="/BLUE AND GOLD SCG.svg" alt="Izdihar"/><div class="title">بيانات التقرير </div></div>
+    <div class="head">
+      <div class="title">بيانات التقرير</div>
+    </div>
     <pre>${pretty}</pre>
   </div>
 </body>

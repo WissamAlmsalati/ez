@@ -29,10 +29,39 @@ export default function Pagination({ meta }: { meta: MetaLike }) {
     return null; // hide single-page pagination
   }
 
-  // generate page numbers (simple; could be improved with truncation if large)
-  const pages = Array.from({ length: last_page }, (_, i) => i + 1);
+  const getPageNumbers = () => {
+    const pagesList: (number | string)[] = [];
+    if (last_page <= 7) {
+      for (let i = 1; i <= last_page; i++) pagesList.push(i);
+    } else {
+      if (current_page <= 4) {
+        for (let i = 1; i <= 5; i++) pagesList.push(i);
+        pagesList.push("...");
+        pagesList.push(last_page);
+      } else if (current_page >= last_page - 3) {
+        pagesList.push(1);
+        pagesList.push("...");
+        for (let i = last_page - 4; i <= last_page; i++) pagesList.push(i);
+      } else {
+        pagesList.push(1);
+        pagesList.push("...");
+        pagesList.push(current_page - 1);
+        pagesList.push(current_page);
+        pagesList.push(current_page + 1);
+        pagesList.push("...");
+        pagesList.push(last_page);
+      }
+    }
+    return pagesList;
+  };
+
+  const pages = getPageNumbers();
+
   return (
-    <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
+    <div
+      className="flex items-center justify-center gap-2 mt-4 flex-wrap"
+      dir="rtl"
+    >
       <Button
         size="xs"
         color="gray"
@@ -41,17 +70,23 @@ export default function Pagination({ meta }: { meta: MetaLike }) {
       >
         السابق
       </Button>
-      {pages.map((p) => (
-        <Button
-          key={p}
-          size="xs"
-          color={p === current_page ? "primary" : "light"}
-          onClick={() => setPage(p)}
-          className="transition-colors duration-300"
-        >
-          {p}
-        </Button>
-      ))}
+      {pages.map((p, idx) =>
+        p === "..." ? (
+          <span key={`dots-${idx}`} className="px-2 text-gray-500">
+            ...
+          </span>
+        ) : (
+          <Button
+            key={p}
+            size="xs"
+            color={p === current_page ? "primary" : "light"}
+            onClick={() => setPage(p as number)}
+            className="transition-colors duration-300 min-w-[32px]"
+          >
+            {p}
+          </Button>
+        ),
+      )}
       <Button
         size="xs"
         color="gray"
